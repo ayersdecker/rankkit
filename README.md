@@ -1,46 +1,251 @@
-# Getting Started with Create React App
+# RankKit - AI-Powered Document Optimization
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+RankKit is a professional SaaS platform for optimizing resumes and social media content using AI. Features include ATS resume optimization, social media SEO, document management, version history, and export functionality.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+### Document Management
+- 📤 Upload documents (TXT, PDF, DOCX) or paste text
+- 📁 Organize documents by type (resume, post, other)
+- 📝 Edit and manage all documents in one place
+- 🗑️ Delete documents with cascade deletion of versions
 
-### `npm start`
+### AI Optimization
+- 🎯 **ATS Resume Optimization** - Match resumes to job postings
+- 📱 **Social Media SEO** - Optimize for Instagram, TikTok, YouTube, Twitter
+- 📊 **Scoring System** - Get match/engagement scores (0-100)
+- 💡 **Smart Suggestions** - AI-powered improvement recommendations
+- #️⃣ **Hashtag Generation** - Auto-generate relevant hashtags for posts
+- 🔍 **Keyword Analysis** - Identify missing keywords in resumes
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Version Control
+- 📜 Track all optimization versions
+- 🔄 Compare original vs optimized side-by-side
+- 💾 Auto-save every optimization
+- 📈 View version history per document
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Export & Save
+- 📋 Copy to clipboard
+- 💾 Export as .txt files
+- 🔄 Save optimized versions to library
 
-### `npm test`
+### User Experience
+- 🎨 Clean, modern interface
+- 📱 Fully responsive design
+- ⚡ Fast, optimized performance
+- 🔒 Secure authentication (Email + Google)
+- 🚨 Error boundaries with graceful fallbacks
+- ♻️ Request caching for better performance
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Tech Stack
 
-### `npm run build`
+- **Frontend:** React 19, TypeScript
+- **Routing:** React Router 7
+- **Backend:** Firebase (Auth + Firestore)
+- **AI:** OpenAI GPT-4
+- **Styling:** Custom CSS
+- **Testing:** Jest, React Testing Library
+- **Deployment:** GitHub Actions → GitHub Pages
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Getting Started
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Prerequisites
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Node.js 18+ and npm
+- Firebase account
+- OpenAI API key
 
-### `npm run eject`
+### Installation
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/ayersdecker/rankkit.git
+   cd rankkit
+   ```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+3. **Create Firebase Project**
+   - Go to [Firebase Console](https://console.firebase.google.com)
+   - Create new project "RankKit"
+   - Enable Authentication:
+     - Email/Password
+     - Google Sign-In
+   - Create Firestore database (production mode)
+   - Get your Firebase config from Project Settings
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+4. **Get OpenAI API Key**
+   - Go to [OpenAI Platform](https://platform.openai.com/api-keys)
+   - Create new API key
+   - Copy the key
 
-## Learn More
+5. **Configure Environment**
+   
+   Edit `src/config.ts`:
+   ```typescript
+   export const firebaseConfig = {
+     apiKey: "YOUR_FIREBASE_API_KEY",
+     authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+     projectId: "YOUR_PROJECT_ID",
+     storageBucket: "YOUR_PROJECT_ID.appspot.com",
+     messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+     appId: "YOUR_APP_ID"
+   };
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+   export const OPENAI_API_KEY = "YOUR_OPENAI_API_KEY";
+   ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+6. **Run Development Server**
+   ```bash
+   npm start
+   ```
+   
+   Open [http://localhost:3000](http://localhost:3000)
+
+### Running Tests
+
+```bash
+npm test
+```
+
+For coverage report:
+```bash
+npm test -- --coverage
+```
+
+## Project Structure
+
+```
+rankkit/
+├── src/
+│   ├── components/
+│   │   ├── Auth/              # Login & Signup
+│   │   ├── Dashboard/         # Main dashboard, documents, optimization, profile
+│   │   └── Shared/            # Reusable components (ErrorBoundary, Loading)
+│   ├── services/
+│   │   ├── firebase.ts        # Firebase initialization
+│   │   ├── firestore.ts       # Firestore CRUD operations
+│   │   └── openai.ts          # OpenAI API integration
+│   ├── hooks/
+│   │   └── useAuth.tsx        # Authentication hook
+│   ├── utils/
+│   │   └── fileUtils.ts       # File handling utilities
+│   ├── types/
+│   │   └── index.ts           # TypeScript type definitions
+│   ├── App.tsx                # Main app component
+│   └── config.ts              # Configuration
+├── public/                    # Static assets
+└── package.json
+```
+
+## Key Services
+
+### OpenAI Service (`src/services/openai.ts`)
+- ✅ Input validation
+- ✅ Retry logic with exponential backoff
+- ✅ Request caching (5 min TTL)
+- ✅ Error handling with custom error types
+- ✅ Score clamping (0-100)
+- ✅ 30-second timeout
+- ✅ Rate limit handling
+
+### Firestore Service (`src/services/firestore.ts`)
+- ✅ CRUD operations for documents
+- ✅ Version history management
+- ✅ Batch deletion (cascade delete)
+- ✅ Input validation
+- ✅ User statistics
+- ✅ Usage count tracking
+- ✅ Custom error types
+- ✅ Logging
+
+## Deployment
+
+### GitHub Pages (Automatic)
+
+1. **Enable GitHub Pages**
+   - Go to repo Settings → Pages
+   - Source: "GitHub Actions"
+
+2. **Push to main branch**
+   ```bash
+   git push origin main
+   ```
+
+3. **Access your site**
+   - https://ayersdecker.github.io/rankkit
+
+The GitHub Actions workflow automatically builds and deploys on every push to main.
+
+## Usage Limits
+
+### Free Tier
+- 3 optimizations per month
+- Unlimited document storage
+- All features included
+
+### Premium Plans
+- **ResumeRank:** $25/month - Unlimited resume optimizations
+- **PostRank:** $20/month - Unlimited post optimizations
+- **Bundle:** $35/month - Both tools + save $10/month
+
+## Error Handling
+
+- **API Errors:** Graceful error messages with retry logic
+- **Validation Errors:** Clear, actionable error messages
+- **Network Errors:** Automatic retry with exponential backoff
+- **UI Errors:** Error boundaries prevent app crashes
+- **Rate Limits:** User-friendly messages with guidance
+
+## Performance Optimizations
+
+- ✅ Request caching (5-minute TTL)
+- ✅ Lazy loading of components
+- ✅ Optimized Firebase queries
+- ✅ Batch operations for deletions
+- ✅ Debounced search/filter operations
+- ✅ CSS optimizations
+
+## Security
+
+- ✅ Firebase Authentication (Email + Google)
+- ✅ Protected routes
+- ✅ User-scoped data access
+- ✅ Input validation and sanitization
+- ✅ Content length limits
+- ✅ API key protection (server-side recommended for production)
+
+## Future Enhancements
+
+- [ ] PDF/DOCX parsing (add `pdf-parse` and `mammoth`)
+- [ ] Export as PDF/DOCX
+- [ ] Stripe payment integration
+- [ ] A/B testing for social posts
+- [ ] Analytics dashboard
+- [ ] Team collaboration
+- [ ] Scheduled optimizations
+- [ ] Multi-language support
+- [ ] Dark mode
+
+## Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+## License
+
+This project is private and proprietary.
+
+## Support
+
+For issues or questions, contact: ayersdecker@gmail.com
+
+---
+
+**Built with ❤️ by Decker Ayers**
