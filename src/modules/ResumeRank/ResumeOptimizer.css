@@ -1,0 +1,172 @@
+.optimizer-container {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.optimizer-nav {
+  background: white;
+  padding: 20px 40px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.optimizer-nav h1 {
+  margin: 0;
+  color: #667eea;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.optimizer-nav h1:hover {
+  color: #5568d3;
+}
+
+.optimizer-content {
+  max-width: 1400px;
+  margin: 40px auto;
+  padding: 0 40px;
+}
+
+.optimizer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.input-section,
+.output-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-section h3,
+.output-section h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+textarea {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.optimize-button {
+  padding: 15px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.optimize-button:hover:not(:disabled) {
+  background: #5568d3;
+}
+
+.optimize-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.score-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.score-circle {
+  margin-top: 20px;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
+}
+
+.score-number {
+  font-size: 64px;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.score-label {
+  font-size: 24px;
+  color: #999;
+}
+
+.optimized-output {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.suggestions-list {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  list-style-position: inside;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.suggestions-list li {
+  margin-bottom: 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+.download-button {
+  padding: 12px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.download-button:hover {
+  background: #218838;
+}
+
+.empty-state {
+  background: white;
+  border-radius: 12px;
+  padding: 60px;
+  text-align: center;
+  color: #999;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.error-message {
+  background: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+@media (max-width: 968px) {
+  .optimizer-grid {
+    grid-template-columns: 1fr;
+  }
+}
