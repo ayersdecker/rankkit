@@ -6,7 +6,8 @@ import {
   getUserDocuments,
   saveOptimizationVersion,
   getDocumentVersions,
-  incrementUsageCount
+  canUserOptimize,
+  decrementFreeOptimization
 } from '../../services/firestore';
 import { optimizeContent } from '../../services/openai';
 import { Document, OptimizationVersion, OptimizationType } from '../../types';
@@ -24,13 +25,18 @@ export default function OptimizationWorkspace() {
   const [error, setError] = useState('');
   const [showVersions, setShowVersions] = useState(false);
 
-  const { currentUser } = useAuth();
+  const { currentUser, refreshUser } = useAuth();
   const navigate = useNavigate();
 
   const loadDocuments = useCallback(async () => {
     if (!currentUser) return;
-    const docs = await getUserDocuments(currentUser.uid);
-    setDocuments(docs);
+    try {
+      const docs = await getUserDocuments(currentUser.uid);
+      setDocuments(docs);
+    } catch (err) {
+      console.error('Error loading documents:', err);
+      setDocuments([]);
+    }
   }, [currentUser]);
 
   useEffect(() => {
@@ -38,29 +44,40 @@ export default function OptimizationWorkspace() {
   }, [loadDocuments]);
 
   async function loadDocument(id: string) {
-    const doc = await getDocument(id);
-    if (doc) {
-      setSelectedDoc(doc);
-      // Auto-set optimization type based on document type
-      if (doc.type === 'resume') {
-        setOptimizationType('ats');
-      } else if (doc.type === 'post') {
-        setOptimizationType('engagement');
+    try {
+      const doc = await getDocument(id);
+      if (doc) {
+        setSelectedDoc(doc);
+        // Auto-set optimization type based on document type
+        if (doc.type === 'resume') {
+          setOptimizationType('ats');
+        } else if (doc.type === 'post') {
+          setOptimizationType('engagement');
+        }
       }
+    } catch (err) {
+      console.error('Error loading document:', err);
+      setError('Failed to load document');
     }
   }
 
   async function loadVersions(id: string) {
-    const vers = await getDocumentVersions(id);
-    setVersions(vers);
+    try {
+      const vers = await getDocumentVersions(id);
+      setVersions(vers);
+    } catch (err) {
+      console.error('Error loading versions:', err);
+      setVersions([]);
+    }
   }
 
   async function handleOptimize() {
     if (!selectedDoc || !currentUser) return;
 
-    // Check usage limit
-    if (!currentUser.isPremium && (currentUser.usageCount || 0) >= 3) {
-      setError('Free tier limit reached. Upgrade to continue.');
+    // Check if user can optimize
+    const eligibility = await canUserOptimize(currentUser.uid);
+    if (!eligibility.canOptimize) {
+      setError(eligibility.reason || 'Unable to optimize. Please subscribe to continue.');
       return;
     }
 
@@ -93,8 +110,11 @@ export default function OptimizationWorkspace() {
         optimizationResult.metadata
       );
 
-      // Increment usage count
-      await incrementUsageCount(currentUser.uid);
+      // Decrement free optimization count
+      await decrementFreeOptimization(currentUser.uid);
+      
+      // Refresh user data to update UI
+      await refreshUser();
 
       // Reload versions
       await loadVersions(selectedDoc.id);

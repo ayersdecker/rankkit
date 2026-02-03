@@ -21,11 +21,19 @@
   font-size: 24px;
   cursor: pointer;
   font-weight: 700;
+  flex: 1;
 }
 
 .nav-links {
   display: flex;
   gap: 10px;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-right {
+  flex: 1;
+  justify-content: flex-end;
 }
 
 .nav-link {
@@ -49,6 +57,8 @@
   display: flex;
   align-items: center;
   gap: 20px;
+  flex: 1;
+  justify-content: flex-end;
 }
 
 .nav-right span {
@@ -147,6 +157,51 @@
   color: #666;
   font-size: 14px;
   line-height: 1.6;
+}
+
+.main-dashboards {
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 30px;
+}
+
+.action-card.featured {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 40px;
+  min-height: 200px;
+}
+
+.action-card.featured .action-icon {
+  font-size: 56px;
+  margin-bottom: 15px;
+}
+
+.action-card.featured h4 {
+  color: white;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.action-card.featured p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+}
+
+.action-card.featured:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.3);
+  border-color: transparent;
+}
+
+.tools-count {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: white;
 }
 
 .features-overview {

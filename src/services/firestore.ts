@@ -14,6 +14,7 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { Document, OptimizationVersion } from '../types';
+import { isWhitelistedEmail } from '../config';
 
 export class FirestoreError extends Error {
   constructor(
@@ -35,15 +36,16 @@ function validateDocumentData(name: string, content: string): void {
   }
 
   if (name.length > 200) {
-    throw new FirestoreError('Document name too long (max 200 chars)', 'NAME_TOO_LONG');
+    throw new FirestoreError(`Document name too long (${name.length} chars, max 200)`, 'NAME_TOO_LONG');
   }
 
   if (!content || content.trim().length === 0) {
     throw new FirestoreError('Document content cannot be empty', 'INVALID_CONTENT');
   }
 
-  if (content.length > 100000) {
-    throw new FirestoreError('Document content too large (max 100KB)', 'CONTENT_TOO_LARGE');
+  // Firestore document size limit is 1MB, but we'll use a conservative limit
+  if (content.length > 1000000) {
+    throw new FirestoreError(`Document content too large (${content.length} chars, max 1MB)`, 'CONTENT_TOO_LARGE');
   }
 }
 
@@ -56,37 +58,84 @@ export async function createDocument(
   content: string,
   type: 'resume' | 'post' | 'other',
   originalFileName?: string,
-  fileType?: string
+  fileType?: string,
+  aiGenerated?: boolean
 ): Promise<string> {
   try {
+    console.log('[Firestore] Validating document data:', {
+      userId,
+      nameLength: name.length,
+      contentLength: content.length,
+      type
+    });
+    
     validateDocumentData(name, content);
 
     if (!userId) {
       throw new FirestoreError('User ID is required', 'INVALID_USER_ID');
     }
 
-    const docData = {
+    const docData: any = {
       userId,
       name: name.trim(),
       content: content.trim(),
       type,
-      originalFileName,
-      fileType,
       tags: [],
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now()
     };
+    
+    // Only add optional fields if they have values (Firestore doesn't accept undefined)
+    if (originalFileName) {
+      docData.originalFileName = originalFileName;
+    }
+    if (fileType) {
+      docData.fileType = fileType;
+    }
+    if (aiGenerated) {
+      docData.aiGenerated = true;
+    }
+
+    console.log('[Firestore] Creating document with data:', {
+      userId,
+      name: docData.name,
+      contentLength: docData.content.length,
+      type,
+      hasOriginalFileName: !!originalFileName,
+      hasFileType: !!fileType
+    });
 
     const docRef = await addDoc(collection(db, 'documents'), docData);
     console.log(`[Firestore] Document created: ${docRef.id}`);
     return docRef.id;
   } catch (error: any) {
+    console.error('[Firestore] Create document error:', {
+      error,
+      message: error.message,
+      code: error.code,
+      name: error.name
+    });
+    
     if (error instanceof FirestoreError) {
       throw error;
     }
+    
+    // Extract more details from Firebase error
+    const errorMessage = error.message || 'Unknown error';
+    const errorCode = error.code || 'CREATE_FAILED';
+    
+    // Check for permission errors
+    if (errorCode === 'permission-denied' || errorMessage.includes('permission') || errorMessage.includes('Missing or insufficient permissions')) {
+      throw new FirestoreError(
+        'Permission denied: Please check your Firebase Firestore security rules. Documents collection may not allow writes.',
+        'PERMISSION_DENIED',
+        error
+      );
+    }
+    
     throw new FirestoreError(
-      'Failed to create document',
-      'CREATE_FAILED',
+      `Failed to create document: ${errorMessage} (code: ${errorCode})`,
+      errorCode,
       error
     );
   }
@@ -105,31 +154,50 @@ export async function getUserDocuments(
       throw new FirestoreError('User ID is required', 'INVALID_USER_ID');
     }
 
+    // Simple query without orderBy to avoid index requirement
     let q = query(
       collection(db, 'documents'),
-      where('userId', '==', userId),
-      orderBy('updatedAt', 'desc')
+      where('userId', '==', userId)
     );
 
     if (type) {
       q = query(q, where('type', '==', type));
     }
 
-    if (limitCount) {
-      q = query(q, firestoreLimit(limitCount));
-    }
-
     const snapshot = await getDocs(q);
-    const documents = snapshot.docs.map(doc => ({
+    
+    // Handle empty collection
+    if (snapshot.empty) {
+      console.log(`[Firestore] No documents found for user ${userId}`);
+      return [];
+    }
+    
+    let documents = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
       createdAt: doc.data().createdAt.toDate(),
       updatedAt: doc.data().updatedAt.toDate()
     } as Document));
 
+    // Sort in memory by updatedAt (descending)
+    documents.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+
+    // Apply limit after sorting if needed
+    if (limitCount) {
+      documents = documents.slice(0, limitCount);
+    }
+
     console.log(`[Firestore] Retrieved ${documents.length} documents for user ${userId}`);
     return documents;
   } catch (error: any) {
+    console.error('[Firestore] Error getting user documents:', error);
+    
+    // If it's an index error, return empty array instead of throwing
+    if (error.code === 'failed-precondition' || error.message?.includes('index')) {
+      console.warn('[Firestore] Index may need to be created. Returning empty array.');
+      return [];
+    }
+    
     if (error instanceof FirestoreError) {
       throw error;
     }
@@ -323,22 +391,40 @@ export async function getDocumentVersions(documentId: string): Promise<Optimizat
       throw new FirestoreError('Document ID is required', 'INVALID_DOCUMENT_ID');
     }
 
+    // Simple query without orderBy to avoid index requirement
     const q = query(
       collection(db, 'optimizationVersions'),
-      where('documentId', '==', documentId),
-      orderBy('version', 'desc')
+      where('documentId', '==', documentId)
     );
 
     const snapshot = await getDocs(q);
-    const versions = snapshot.docs.map(doc => ({
+    
+    // Handle empty collection
+    if (snapshot.empty) {
+      console.log(`[Firestore] No versions found for document ${documentId}`);
+      return [];
+    }
+    
+    let versions = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
       createdAt: doc.data().createdAt.toDate()
     } as OptimizationVersion));
 
+    // Sort in memory by version (descending)
+    versions.sort((a, b) => b.version - a.version);
+
     console.log(`[Firestore] Retrieved ${versions.length} versions for document ${documentId}`);
     return versions;
   } catch (error: any) {
+    console.error('[Firestore] Error getting document versions:', error);
+    
+    // If it's an index error, return empty array instead of throwing
+    if (error.code === 'failed-precondition' || error.message?.includes('index')) {
+      console.warn('[Firestore] Index may need to be created. Returning empty array.');
+      return [];
+    }
+    
     if (error instanceof FirestoreError) {
       throw error;
     }
@@ -416,6 +502,110 @@ export async function incrementUsageCount(userId: string): Promise<number> {
     throw new FirestoreError(
       'Failed to increment usage count',
       'INCREMENT_FAILED',
+      error
+    );
+  }
+}
+
+/**
+ * Checks if user can optimize (has premium or free optimizations remaining)
+ */
+export async function canUserOptimize(userId: string): Promise<{ canOptimize: boolean; reason?: string }> {
+  try {
+    if (!userId) {
+      throw new FirestoreError('User ID is required', 'INVALID_USER_ID');
+    }
+
+    const userRef = doc(db, 'users', userId);
+    const userSnap = await getDoc(userRef);
+    
+    if (!userSnap.exists()) {
+      throw new FirestoreError('User not found', 'USER_NOT_FOUND');
+    }
+
+    const userData = userSnap.data();
+    
+    // Whitelisted users can always optimize
+    if (isWhitelistedEmail(userData.email)) {
+      return { canOptimize: true };
+    }
+    
+    // Premium users can always optimize
+    if (userData.isPremium) {
+      return { canOptimize: true };
+    }
+
+    // Non-premium users need free optimizations remaining
+    const freeOptimizations = userData.freeOptimizationsRemaining || 0;
+    if (freeOptimizations > 0) {
+      return { canOptimize: true };
+    }
+
+    return { 
+      canOptimize: false, 
+      reason: 'No free optimizations remaining. Please subscribe to continue.' 
+    };
+  } catch (error: any) {
+    if (error instanceof FirestoreError) {
+      throw error;
+    }
+    throw new FirestoreError(
+      'Failed to check user optimization eligibility',
+      'CHECK_FAILED',
+      error
+    );
+  }
+}
+
+/**
+ * Decrements free optimizations remaining for non-premium users
+ */
+export async function decrementFreeOptimization(userId: string): Promise<number> {
+  try {
+    if (!userId) {
+      throw new FirestoreError('User ID is required', 'INVALID_USER_ID');
+    }
+
+    const userRef = doc(db, 'users', userId);
+    const userSnap = await getDoc(userRef);
+    
+    if (!userSnap.exists()) {
+      throw new FirestoreError('User not found', 'USER_NOT_FOUND');
+    }
+
+    const userData = userSnap.data();
+    
+    // Don't decrement for whitelisted users
+    if (isWhitelistedEmail(userData.email)) {
+      return -1; // -1 indicates unlimited
+    }
+    
+    // Don't decrement for premium users
+    if (userData.isPremium) {
+      return -1; // -1 indicates unlimited
+    }
+
+    const currentFree = userData.freeOptimizationsRemaining || 0;
+    if (currentFree <= 0) {
+      throw new FirestoreError('No free optimizations remaining', 'NO_FREE_OPTIMIZATIONS');
+    }
+
+    const newFree = currentFree - 1;
+
+    await updateDoc(userRef, {
+      freeOptimizationsRemaining: newFree,
+      usageCount: (userData.usageCount || 0) + 1
+    });
+
+    console.log(`[Firestore] Free optimization used for user ${userId}. Remaining: ${newFree}`);
+    return newFree;
+  } catch (error: any) {
+    if (error instanceof FirestoreError) {
+      throw error;
+    }
+    throw new FirestoreError(
+      'Failed to decrement free optimization',
+      'DECREMENT_FAILED',
       error
     );
   }

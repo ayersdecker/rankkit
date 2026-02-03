@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users collection - authenticated users can do anything
+    match /users/{userId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Documents collection - authenticated users can do anything
+    match /documents/{documentId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Optimization versions collection - authenticated users can do anything
+    match /optimizationVersions/{versionId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow all other collections for authenticated users
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

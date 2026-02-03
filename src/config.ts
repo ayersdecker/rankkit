@@ -12,3 +12,14 @@ export const firebaseConfig = {
 };
 
 export const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API_KEY || '';
+
+// Whitelist for testing - these emails have unlimited access
+export const WHITELISTED_EMAILS = [
+  'eclipse12895@gmail.com',
+  'ayersdecker@gmail.com'
+];
+
+export function isWhitelistedEmail(email?: string): boolean {
+  if (!email) return false;
+  return WHITELISTED_EMAILS.includes(email.toLowerCase());
+}

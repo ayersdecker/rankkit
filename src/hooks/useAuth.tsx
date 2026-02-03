@@ -19,6 +19,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -71,6 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email: firebaseUser.email!,
         isPremium: false,
         usageCount: 0,
+        freeOptimizationsRemaining: 1,
         createdAt: new Date()
       };
       
@@ -109,13 +111,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await firebaseSignOut(auth);
   }
 
+  async function refreshUser() {
+    if (auth.currentUser) {
+      const user = await loadUserData(auth.currentUser);
+      setCurrentUser(user);
+    }
+  }
+
   const value = {
     currentUser,
     loading,
     signIn,
     signUp,
     signInWithGoogle,
-    signOut
+    signOut,
+    refreshUser
   };
 
   return (

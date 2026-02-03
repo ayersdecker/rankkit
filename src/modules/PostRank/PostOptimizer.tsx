@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { optimizeContent } from '../../services/openai';
+import { canUserOptimize, decrementFreeOptimization } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
+import { PaywallModal } from '../../components/Shared/PaywallModal';
+import { shouldShowPaywall } from '../../utils/premiumUtils';
 import '../ResumeRank/ResumeOptimizer.css';
 
 type Platform = 'instagram' | 'tiktok' | 'youtube' | 'twitter';
@@ -15,9 +18,17 @@ export default function PostOptimizer() {
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPaywall, setShowPaywall] = useState(false);
 
-  const { currentUser } = useAuth();
+  const { currentUser, refreshUser } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user has premium access
+    if (shouldShowPaywall(currentUser)) {
+      setShowPaywall(true);
+    }
+  }, [currentUser, navigate]);
 
   async function handleOptimize() {
     if (!originalPost) {
@@ -25,13 +36,19 @@ export default function PostOptimizer() {
       return;
     }
 
-    // Check usage limit
-    if (!currentUser?.isPremium && (currentUser?.usageCount || 0) >= 3) {
-      setError('Free tier limit reached. Upgrade to continue.');
+    if (!currentUser) {
+      setError('You must be logged in to optimize');
       return;
     }
 
     try {
+      // Check if user can optimize
+      const eligibility = await canUserOptimize(currentUser.uid);
+      if (!eligibility.canOptimize) {
+        setError(eligibility.reason || 'Unable to optimize. Please subscribe to continue.');
+        return;
+      }
+
       setError('');
       setLoading(true);
 
@@ -40,6 +57,12 @@ export default function PostOptimizer() {
         content: originalPost,
         context: platform
       });
+
+      // Decrement free optimization count
+      await decrementFreeOptimization(currentUser.uid);
+      
+      // Refresh user data to update UI
+      await refreshUser();
 
       setOptimizedPost(result.optimized);
       setEngagementScore(result.score);
@@ -147,6 +170,13 @@ export default function PostOptimizer() {
           </div>
         </div>
       </div>
+
+      {showPaywall && (
+        <PaywallModal
+          toolName="Post Optimizer"
+          onClose={() => navigate('/dashboard')}
+        />
+      )}
     </div>
   );
 }

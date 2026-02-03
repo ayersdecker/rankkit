@@ -1,4 +1,5 @@
 // File upload and text extraction utilities
+import mammoth from 'mammoth';
 
 export async function extractTextFromFile(file: File): Promise<string> {
   const fileType = file.type;
@@ -8,14 +9,23 @@ export async function extractTextFromFile(file: File): Promise<string> {
     return await file.text();
   }
   
-  // For PDF and DOCX, we'd need additional libraries
-  // For now, return placeholder - we'll add proper extraction later
-  if (fileType === 'application/pdf') {
-    return '[PDF content - install pdf-parse for extraction]';
+  // DOCX files
+  if (fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+      fileType === 'application/msword' ||
+      file.name.endsWith('.docx')) {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer });
+      return result.value;
+    } catch (error) {
+      console.error('Error extracting DOCX:', error);
+      throw new Error('Failed to extract text from Word document');
+    }
   }
   
-  if (fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-    return '[DOCX content - install mammoth for extraction]';
+  // For PDF, we'd need additional libraries
+  if (fileType === 'application/pdf') {
+    throw new Error('PDF support coming soon. Please convert to .docx or .txt for now.');
   }
   
   // Fallback to text extraction
@@ -57,4 +67,25 @@ export function getFileIcon(fileType: string): string {
   if (fileType.includes('word') || fileType.includes('document')) return '📝';
   if (fileType.includes('text')) return '📃';
   return '📎';
+}
+
+export function estimatePageCount(text: string): number {
+  // Rough estimate: ~500 words per page, ~5 chars per word
+  const charsPerPage = 2500;
+  const pageCount = Math.ceil(text.length / charsPerPage);
+  return pageCount;
+}
+
+export function validateDocumentPages(text: string, maxPages: number = 3): { valid: boolean; error?: string; pageCount: number } {
+  const pageCount = estimatePageCount(text);
+  
+  if (pageCount > maxPages) {
+    return { 
+      valid: false, 
+      error: `Document is too long (approximately ${pageCount} pages). Maximum allowed is ${maxPages} pages.`,
+      pageCount 
+    };
+  }
+  
+  return { valid: true, pageCount };
 }

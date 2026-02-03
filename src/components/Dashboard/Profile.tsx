@@ -21,12 +21,15 @@ export default function Profile() {
         <h1 onClick={() => navigate('/dashboard')}>RankKit</h1>
         <div className="nav-links">
           <button onClick={() => navigate('/dashboard')} className="nav-link">Home</button>
+          <button onClick={() => navigate('/career-tools')} className="nav-link">Career</button>
+          <button onClick={() => navigate('/workplace-tools')} className="nav-link">Workplace</button>
+          <button onClick={() => navigate('/social-media-tools')} className="nav-link">Social</button>
           <button onClick={() => navigate('/documents')} className="nav-link">Documents</button>
-          <button onClick={() => navigate('/optimize')} className="nav-link">Optimize</button>
           <button onClick={() => navigate('/profile')} className="nav-link active">Profile</button>
         </div>
         <div className="nav-right">
           <span>{currentUser?.email}</span>
+          <button onClick={handleSignOut}>Sign Out</button>
         </div>
       </nav>
 
@@ -206,31 +209,32 @@ function BillingPlans() {
         <h3>Current Plan</h3>
         <div className="plan-current">
           <div className="plan-badge">{currentUser?.isPremium ? 'Premium' : 'Free'}</div>
-          <p>{currentUser?.isPremium ? 'Unlimited optimizations' : '3 optimizations per month'}</p>
+          <p>{currentUser?.isPremium ? 'Unlimited optimizations' : '1 free optimization on signup'}</p>
         </div>
       </div>
 
       {!currentUser?.isPremium && (
         <div className="plans-grid">
           <div className="plan-card">
-            <h3>ResumeRank</h3>
-            <div className="plan-price">$25<span>/month</span></div>
+            <h3>Career Starter</h3>
+            <div className="plan-price">$29<span>/month</span></div>
             <ul className="plan-features">
               <li>Unlimited resume optimizations</li>
+              <li>Unlimited cover letter generation</li>
+              <li>Interview preparation guides</li>
+              <li>Job search strategies</li>
               <li>ATS score checking</li>
-              <li>Keyword optimization</li>
-              <li>Version history</li>
             </ul>
             <button className="primary-button">Subscribe</button>
           </div>
 
           <div className="plan-card">
-            <h3>PostRank</h3>
-            <div className="plan-price">$20<span>/month</span></div>
+            <h3>Content Creator</h3>
+            <div className="plan-price">$24<span>/month</span></div>
             <ul className="plan-features">
               <li>Unlimited post optimizations</li>
               <li>Multi-platform support</li>
-              <li>Hashtag suggestions</li>
+              <li>Hashtag recommendations</li>
               <li>Engagement analytics</li>
             </ul>
             <button className="primary-button">Subscribe</button>
@@ -238,14 +242,15 @@ function BillingPlans() {
 
           <div className="plan-card featured">
             <div className="plan-badge-top">Best Value</div>
-            <h3>RankKit Bundle</h3>
-            <div className="plan-price">$35<span>/month</span></div>
-            <div className="plan-savings">Save $10/month</div>
+            <h3>RankKit Pro</h3>
+            <div className="plan-price">$39<span>/month</span></div>
+            <div className="plan-savings">Save $14/month</div>
             <ul className="plan-features">
-              <li>Everything in ResumeRank</li>
-              <li>Everything in PostRank</li>
+              <li>All Career Starter features</li>
+              <li>All Content Creator features</li>
               <li>Priority support</li>
-              <li>Early access to features</li>
+              <li>Early access to new tools</li>
+              <li>Unlimited everything</li>
             </ul>
             <button className="primary-button featured">Subscribe</button>
           </div>
@@ -265,16 +270,24 @@ function UsageStats() {
       <div className="setting-card">
         <h3>This Month</h3>
         <div className="usage-stat">
-          <div className="stat-label">Optimizations Used</div>
-          <div className="stat-value">{currentUser?.usageCount || 0} / {currentUser?.isPremium ? '∞' : '3'}</div>
-          <div className="stat-bar">
-            <div
-              className="stat-bar-fill"
-              style={{
-                width: currentUser?.isPremium ? '100%' : `${((currentUser?.usageCount || 0) / 3) * 100}%`
-              }}
-            />
+          <div className="stat-label">Total Optimizations Used</div>
+          <div className="stat-value">{currentUser?.usageCount || 0}</div>
+        </div>
+        <div className="usage-stat">
+          <div className="stat-label">Free Optimizations Remaining</div>
+          <div className="stat-value">
+            {currentUser?.isPremium ? '∞' : (currentUser?.freeOptimizationsRemaining || 0)}
           </div>
+          {!currentUser?.isPremium && (
+            <div className="stat-bar">
+              <div
+                className="stat-bar-fill"
+                style={{
+                  width: `${((currentUser?.freeOptimizationsRemaining || 0) / 1) * 100}%`
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
 

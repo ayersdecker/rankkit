@@ -18,8 +18,10 @@ export default function Dashboard() {
         <h1 onClick={() => navigate('/dashboard')}>RankKit</h1>
         <div className="nav-links">
           <button onClick={() => navigate('/dashboard')} className="nav-link">Home</button>
+          <button onClick={() => navigate('/career-tools')} className="nav-link">Career</button>
+          <button onClick={() => navigate('/workplace-tools')} className="nav-link">Workplace</button>
+          <button onClick={() => navigate('/social-media-tools')} className="nav-link">Social</button>
           <button onClick={() => navigate('/documents')} className="nav-link">Documents</button>
-          <button onClick={() => navigate('/optimize')} className="nav-link">Optimize</button>
           <button onClick={() => navigate('/profile')} className="nav-link">Profile</button>
         </div>
         <div className="nav-right">
@@ -35,18 +37,69 @@ export default function Dashboard() {
         </div>
 
         <div className="quick-actions">
-          <h3>Quick Actions</h3>
-          <div className="actions-grid">
-            <div className="action-card" onClick={() => navigate('/documents?action=upload')}>
-              <div className="action-icon">📤</div>
-              <h4>Upload Document</h4>
-              <p>Add a new resume or post to your library</p>
+          <h3>Tool Dashboards</h3>
+          <div className="actions-grid main-dashboards">
+            <div className="action-card featured" onClick={() => navigate('/career-tools')}>
+              <div className="action-icon">💼</div>
+              <h4>Career Tools</h4>
+              <p>Resume optimization, cover letters, interview prep, and job search</p>
+              <span className="tools-count">4 Tools Available</span>
             </div>
 
-            <div className="action-card" onClick={() => navigate('/optimize')}>
-              <div className="action-icon">⚡</div>
-              <h4>Optimize</h4>
-              <p>Run AI optimization on your documents</p>
+            <div className="action-card featured" onClick={() => navigate('/workplace-tools')}>
+              <div className="action-icon">🎯</div>
+              <h4>Workplace Tools</h4>
+              <p>Cold emails, sales scripts, selling points, and persuasion tactics</p>
+              <span className="tools-count">6 Tools Available</span>
+            </div>
+
+            <div className="action-card featured" onClick={() => navigate('/social-media-tools')}>
+              <div className="action-icon">📱</div>
+              <h4>Social Media Tools</h4>
+              <p>Optimize content for Instagram, TikTok, YouTube, and Twitter</p>
+              <span className="tools-count">6 Tools Available</span>
+            </div>
+
+            <div className="action-card featured" onClick={() => navigate('/documents')}>
+              <div className="action-icon">📁</div>
+              <h4>Documents</h4>
+              <p>Manage all your uploaded documents and optimization history</p>
+              <span className="tools-count">Library & Versions</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="quick-actions">
+          <h3>Quick Access</h3>
+          <div className="actions-grid">
+            <div className="action-card" onClick={() => navigate('/resume-optimizer')}>
+              <div className="action-icon">📝</div>
+              <h4>Resume Optimizer</h4>
+              <p>Optimize your resume for ATS systems</p>
+            </div>
+
+            <div className="action-card" onClick={() => navigate('/cover-letter')}>
+              <div className="action-icon">✉️</div>
+              <h4>Cover Letter Writer</h4>
+              <p>Generate tailored cover letters</p>
+            </div>
+
+            <div className="action-card" onClick={() => navigate('/interview-prep')}>
+              <div className="action-icon">💼</div>
+              <h4>Interview Prep</h4>
+              <p>Get ready for your next interview</p>
+            </div>
+
+            <div className="action-card" onClick={() => navigate('/post-optimizer')}>
+              <div className="action-icon">📱</div>
+              <h4>Post Optimizer</h4>
+              <p>Maximize social media engagement</p>
+            </div>
+
+            <div className="action-card" onClick={() => navigate('/job-search')}>
+              <div className="action-icon">🔍</div>
+              <h4>Job Search Assistant</h4>
+              <p>Find the best places to apply</p>
             </div>
 
             <div className="action-card" onClick={() => navigate('/documents')}>
@@ -61,33 +114,33 @@ export default function Dashboard() {
           <h3>What You Can Do</h3>
           <div className="features-grid">
             <div className="feature">
-              <h4>📄 Document Management</h4>
-              <p>Upload, organize, and manage all your documents in one place</p>
+              <h4>📄 Resume Optimization</h4>
+              <p>Optimize resumes to pass ATS systems and match job descriptions</p>
             </div>
             
             <div className="feature">
-              <h4>🎯 ATS Optimization</h4>
-              <p>Optimize resumes to pass Applicant Tracking Systems</p>
+              <h4>✉️ Cover Letters</h4>
+              <p>Generate personalized cover letters using your resume and bio</p>
             </div>
             
             <div className="feature">
-              <h4>📱 Social SEO</h4>
+              <h4>💼 Interview Preparation</h4>
+              <p>Get common questions, answers, and tips for your interviews</p>
+            </div>
+            
+            <div className="feature">
+              <h4>� Cold Emails</h4>
+              <p>Create personalized outreach emails that get responses</p>
+            </div>
+            
+            <div className="feature">
+              <h4>💡 Selling Points Analysis</h4>
+              <p>Extract key selling points from any product or service</p>
+            </div>
+            
+            <div className="feature">
+              <h4>📱 Social Media SEO</h4>
               <p>Maximize engagement on Instagram, TikTok, YouTube, Twitter</p>
-            </div>
-            
-            <div className="feature">
-              <h4>📊 Version Control</h4>
-              <p>Track all optimization versions and improvements</p>
-            </div>
-            
-            <div className="feature">
-              <h4>💾 Export Anywhere</h4>
-              <p>Download optimized documents in multiple formats</p>
-            </div>
-            
-            <div className="feature">
-              <h4>📈 Analytics</h4>
-              <p>See scores and suggestions for every optimization</p>
             </div>
           </div>
         </div>
@@ -97,7 +150,13 @@ export default function Dashboard() {
           <div className="usage-card">
             <div className="usage-stat">
               <span className="stat-label">Optimizations Used</span>
-              <span className="stat-value">{currentUser?.usageCount || 0} / {currentUser?.isPremium ? '∞' : '3'}</span>
+              <span className="stat-value">{currentUser?.usageCount || 0}</span>
+            </div>
+            <div className="usage-stat">
+              <span className="stat-label">Free Optimizations Remaining</span>
+              <span className="stat-value">
+                {currentUser?.isPremium ? '∞' : (currentUser?.freeOptimizationsRemaining || 0)}
+              </span>
             </div>
             <div className="usage-stat">
               <span className="stat-label">Plan</span>

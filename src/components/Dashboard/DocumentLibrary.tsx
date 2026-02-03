@@ -6,8 +6,9 @@ import {
   createDocument,
   deleteDocument
 } from '../../services/firestore';
-import { extractTextFromFile, validateFile, formatFileSize, getFileIcon } from '../../utils/fileUtils';
+import { extractTextFromFile, validateFile, formatFileSize, getFileIcon, validateDocumentPages } from '../../utils/fileUtils';
 import { Document } from '../../types';
+import { hasPremiumAccess } from '../../utils/premiumUtils';
 import './DocumentLibrary.css';
 
 export default function DocumentLibrary() {
@@ -66,8 +67,10 @@ export default function DocumentLibrary() {
         <h1 onClick={() => navigate('/dashboard')}>RankKit</h1>
         <div className="nav-links">
           <button onClick={() => navigate('/dashboard')} className="nav-link">Home</button>
+          <button onClick={() => navigate('/career-tools')} className="nav-link">Career</button>
+          <button onClick={() => navigate('/workplace-tools')} className="nav-link">Workplace</button>
+          <button onClick={() => navigate('/social-media-tools')} className="nav-link">Social</button>
           <button onClick={() => navigate('/documents')} className="nav-link active">Documents</button>
-          <button onClick={() => navigate('/optimize')} className="nav-link">Optimize</button>
           <button onClick={() => navigate('/profile')} className="nav-link">Profile</button>
         </div>
         <div className="nav-right">
@@ -123,6 +126,9 @@ export default function DocumentLibrary() {
                 <h3>{doc.name}</h3>
                 <div className="doc-meta">
                   <span className="doc-type">{doc.type}</span>
+                  {doc.aiGenerated && (
+                    <span className="doc-badge">✨ AI Generated</span>
+                  )}
                   <span className="doc-date">
                     {new Date(doc.updatedAt).toLocaleDateString()}
                   </span>
@@ -207,6 +213,26 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
     try {
       setUploading(true);
       setError('');
+      
+      // Check document count limit
+      const existingDocs = await getUserDocuments(currentUser.uid);
+      const maxDocs = hasPremiumAccess(currentUser) ? 30 : 1;
+      
+      if (existingDocs.length >= maxDocs) {
+        setError(`Document limit reached (${maxDocs} documents). ${!hasPremiumAccess(currentUser) ? 'Upgrade to Premium for up to 30 documents.' : ''}`);
+        setUploading(false);
+        return;
+      }
+      
+      // Validate resume page count (only for resumes)
+      if (type === 'resume') {
+        const pageValidation = validateDocumentPages(content, 3);
+        if (!pageValidation.valid) {
+          setError(pageValidation.error!);
+          setUploading(false);
+          return;
+        }
+      }
       
       await createDocument(
         currentUser.uid,

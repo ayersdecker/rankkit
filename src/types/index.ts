@@ -4,6 +4,7 @@ export interface User {
   displayName?: string;
   isPremium: boolean;
   usageCount: number;
+  freeOptimizationsRemaining: number;
   createdAt: Date;
 }
 
@@ -16,6 +17,7 @@ export interface Document {
   originalFileName?: string;
   fileType?: string;
   tags?: string[];
+  aiGenerated?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -55,6 +57,41 @@ export interface PostOptimization {
   suggestions: string[];
   hashtags: string[];
   alternatives: string[];
+  createdAt: Date;
+}
+
+export interface CoverLetter {
+  id: string;
+  userId: string;
+  resumeContent: string;
+  jobDescription: string;
+  bio?: string;
+  generatedLetter: string;
+  createdAt: Date;
+}
+
+export interface InterviewPrep {
+  id: string;
+  userId: string;
+  jobDescription: string;
+  resumeContent?: string;
+  commonQuestions: string[];
+  suggestedAnswers: { question: string; answer: string }[];
+  questionsToAsk: string[];
+  tips: string[];
+  createdAt: Date;
+}
+
+export interface JobSearchSuggestion {
+  id: string;
+  userId: string;
+  jobTitle: string;
+  skills: string[];
+  experience: string;
+  location?: string;
+  platforms: string[];
+  searchStrategies: string[];
+  keywords: string[];
   createdAt: Date;
 }
 
