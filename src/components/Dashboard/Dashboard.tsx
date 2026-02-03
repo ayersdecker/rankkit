@@ -15,7 +15,13 @@ export default function Dashboard() {
   return (
     <div className="dashboard-container">
       <nav className="dashboard-nav">
-        <h1>RankKit</h1>
+        <h1 onClick={() => navigate('/dashboard')}>RankKit</h1>
+        <div className="nav-links">
+          <button onClick={() => navigate('/dashboard')} className="nav-link">Home</button>
+          <button onClick={() => navigate('/documents')} className="nav-link">Documents</button>
+          <button onClick={() => navigate('/optimize')} className="nav-link">Optimize</button>
+          <button onClick={() => navigate('/profile')} className="nav-link">Profile</button>
+        </div>
         <div className="nav-right">
           <span>{currentUser?.email}</span>
           <button onClick={handleSignOut}>Sign Out</button>
@@ -23,42 +29,86 @@ export default function Dashboard() {
       </nav>
 
       <div className="dashboard-content">
-        <h2>Welcome to RankKit</h2>
-        <p>Choose a tool to get started:</p>
+        <div className="hero-section">
+          <h2>Welcome to RankKit</h2>
+          <p>AI-powered document optimization for resumes and social content</p>
+        </div>
 
-        <div className="tools-grid">
-          <div className="tool-card" onClick={() => navigate('/resume')}>
-            <div className="tool-icon">📄</div>
-            <h3>ResumeRank</h3>
-            <p>Optimize your resume for ATS and job postings</p>
-            <span className="tool-price">$25/month</span>
-          </div>
+        <div className="quick-actions">
+          <h3>Quick Actions</h3>
+          <div className="actions-grid">
+            <div className="action-card" onClick={() => navigate('/documents?action=upload')}>
+              <div className="action-icon">📤</div>
+              <h4>Upload Document</h4>
+              <p>Add a new resume or post to your library</p>
+            </div>
 
-          <div className="tool-card" onClick={() => navigate('/post')}>
-            <div className="tool-icon">📱</div>
-            <h3>PostRank</h3>
-            <p>Optimize social media posts for engagement</p>
-            <span className="tool-price">$20/month</span>
-          </div>
+            <div className="action-card" onClick={() => navigate('/optimize')}>
+              <div className="action-icon">⚡</div>
+              <h4>Optimize</h4>
+              <p>Run AI optimization on your documents</p>
+            </div>
 
-          <div className="tool-card bundle">
-            <div className="tool-icon">🎁</div>
-            <h3>RankKit Bundle</h3>
-            <p>Both tools + save $10/month</p>
-            <span className="tool-price">
-              <strike>$45</strike> $35/month
-            </span>
+            <div className="action-card" onClick={() => navigate('/documents')}>
+              <div className="action-icon">📁</div>
+              <h4>View Documents</h4>
+              <p>Browse your document library</p>
+            </div>
           </div>
         </div>
 
-        <div className="usage-info">
+        <div className="features-overview">
+          <h3>What You Can Do</h3>
+          <div className="features-grid">
+            <div className="feature">
+              <h4>📄 Document Management</h4>
+              <p>Upload, organize, and manage all your documents in one place</p>
+            </div>
+            
+            <div className="feature">
+              <h4>🎯 ATS Optimization</h4>
+              <p>Optimize resumes to pass Applicant Tracking Systems</p>
+            </div>
+            
+            <div className="feature">
+              <h4>📱 Social SEO</h4>
+              <p>Maximize engagement on Instagram, TikTok, YouTube, Twitter</p>
+            </div>
+            
+            <div className="feature">
+              <h4>📊 Version Control</h4>
+              <p>Track all optimization versions and improvements</p>
+            </div>
+            
+            <div className="feature">
+              <h4>💾 Export Anywhere</h4>
+              <p>Download optimized documents in multiple formats</p>
+            </div>
+            
+            <div className="feature">
+              <h4>📈 Analytics</h4>
+              <p>See scores and suggestions for every optimization</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="usage-summary">
           <h3>Your Usage</h3>
-          <p>Free tier: {currentUser?.usageCount || 0} / 3 optimizations used</p>
-          {currentUser?.isPremium ? (
-            <span className="premium-badge">Premium Member</span>
-          ) : (
-            <button className="upgrade-button">Upgrade to Premium</button>
-          )}
+          <div className="usage-card">
+            <div className="usage-stat">
+              <span className="stat-label">Optimizations Used</span>
+              <span className="stat-value">{currentUser?.usageCount || 0} / {currentUser?.isPremium ? '∞' : '3'}</span>
+            </div>
+            <div className="usage-stat">
+              <span className="stat-label">Plan</span>
+              <span className="stat-value">{currentUser?.isPremium ? 'Premium' : 'Free'}</span>
+            </div>
+            {!currentUser?.isPremium && (
+              <button className="upgrade-button" onClick={() => navigate('/profile?tab=billing')}>
+                Upgrade to Premium
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

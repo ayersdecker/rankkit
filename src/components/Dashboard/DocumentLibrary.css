@@ -1,0 +1,402 @@
+.library-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.library-header h2 {
+  margin: 0;
+  color: #1a1a1a;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.primary-button {
+  padding: 12px 24px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.primary-button:hover:not(:disabled) {
+  background: #5568d3;
+  transform: translateY(-1px);
+}
+
+.primary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.filter-button {
+  padding: 10px 20px;
+  background: transparent;
+  color: #666;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.filter-button:hover {
+  background: #f5f5f5;
+}
+
+.filter-button.active {
+  background: #667eea;
+  color: white;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 60px;
+  color: #666;
+  font-size: 16px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 40px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.empty-icon {
+  font-size: 72px;
+  margin-bottom: 20px;
+}
+
+.empty-state h3 {
+  margin: 0 0 10px 0;
+  color: #1a1a1a;
+  font-size: 24px;
+}
+
+.empty-state p {
+  margin: 0 0 30px 0;
+  color: #666;
+  font-size: 16px;
+}
+
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
+}
+
+.document-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.document-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.doc-icon {
+  font-size: 40px;
+  margin-bottom: 15px;
+}
+
+.document-card h3 {
+  margin: 0 0 12px 0;
+  color: #1a1a1a;
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-meta {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.doc-type {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #f0f0f0;
+  color: #667eea;
+  border-radius: 4px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.doc-date {
+  color: #999;
+}
+
+.doc-preview {
+  margin: 0 0 20px 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  max-height: 60px;
+  overflow: hidden;
+}
+
+.doc-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.doc-actions button {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.doc-actions button:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.doc-actions button.danger {
+  color: #e53e3e;
+  border-color: #e53e3e;
+}
+
+.doc-actions button.danger:hover {
+  background: #fee;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content.large {
+  max-width: 900px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 30px 30px 20px 30px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #1a1a1a;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.close-button {
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  color: #333;
+  transform: rotate(90deg);
+}
+
+.mode-selector {
+  display: flex;
+  gap: 10px;
+  padding: 20px 30px 0 30px;
+}
+
+.mode-button {
+  flex: 1;
+  padding: 10px;
+  background: #f5f5f5;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.mode-button.active {
+  background: white;
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.modal-content form {
+  padding: 30px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.form-group input[type="text"],
+.form-group input[type="file"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.file-info {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #666;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 20px 30px 30px 30px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.modal-actions button {
+  padding: 10px 20px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.modal-actions button:hover:not(:disabled) {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.document-content {
+  padding: 30px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.document-content pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.error-message {
+  background: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.nav-link.active {
+  color: #667eea;
+  background: #f0f0ff;
+}
+
+@media (max-width: 768px) {
+  .documents-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .library-header {
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  
+  .library-header .primary-button {
+    width: 100%;
+  }
+  
+  .modal-content {
+    max-width: 100%;
+    border-radius: 0;
+  }
+}

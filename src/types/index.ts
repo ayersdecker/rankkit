@@ -7,12 +7,38 @@ export interface User {
   createdAt: Date;
 }
 
+export interface Document {
+  id: string;
+  userId: string;
+  name: string;
+  type: 'resume' | 'post' | 'other';
+  content: string;
+  originalFileName?: string;
+  fileType?: string;
+  tags?: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OptimizationVersion {
+  id: string;
+  documentId: string;
+  userId: string;
+  version: number;
+  optimizationType: 'ats' | 'seo' | 'engagement' | 'readability';
+  optimizedContent: string;
+  score: number;
+  suggestions: string[];
+  metadata?: any;
+  createdAt: Date;
+}
+
 export interface ResumeOptimization {
   id: string;
   userId: string;
-  originalResume: string;
+  documentId: string;
   jobPosting: string;
-  optimizedResume: string;
+  optimizedContent: string;
   matchScore: number;
   suggestions: string[];
   missingKeywords: string[];
@@ -22,9 +48,9 @@ export interface ResumeOptimization {
 export interface PostOptimization {
   id: string;
   userId: string;
+  documentId: string;
   platform: 'instagram' | 'tiktok' | 'youtube' | 'twitter';
-  originalPost: string;
-  optimizedPost: string;
+  optimizedContent: string;
   engagementScore: number;
   suggestions: string[];
   hashtags: string[];
@@ -40,3 +66,7 @@ export interface Subscription {
   endDate?: Date;
   stripeSubscriptionId?: string;
 }
+
+export type OptimizationType = 'ats' | 'seo' | 'engagement' | 'readability';
+export type DocumentType = 'resume' | 'post' | 'other';
+export type Platform = 'instagram' | 'tiktok' | 'youtube' | 'twitter';

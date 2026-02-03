@@ -4,8 +4,9 @@ import { AuthProvider, useAuth } from './hooks/useAuth';
 import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import Dashboard from './components/Dashboard/Dashboard';
-import ResumeOptimizer from './modules/ResumeRank/ResumeOptimizer';
-import PostOptimizer from './modules/PostRank/PostOptimizer';
+import DocumentLibrary from './components/Dashboard/DocumentLibrary';
+import OptimizationWorkspace from './components/Dashboard/OptimizationWorkspace';
+import Profile from './components/Dashboard/Profile';
 import './App.css';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -29,18 +30,26 @@ function App() {
             }
           />
           <Route
-            path="/resume"
+            path="/documents"
             element={
               <PrivateRoute>
-                <ResumeOptimizer />
+                <DocumentLibrary />
               </PrivateRoute>
             }
           />
           <Route
-            path="/post"
+            path="/optimize/:documentId?"
             element={
               <PrivateRoute>
-                <PostOptimizer />
+                <OptimizationWorkspace />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Profile />
               </PrivateRoute>
             }
           />
