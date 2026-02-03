@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   getUserDocuments,
   createDocument,
-  updateDocument,
   deleteDocument
 } from '../../services/firestore';
 import { extractTextFromFile, validateFile, formatFileSize, getFileIcon } from '../../utils/fileUtils';
@@ -22,17 +21,7 @@ export default function DocumentLibrary() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  useEffect(() => {
-    if (searchParams.get('action') === 'upload') {
-      setUploadModalOpen(true);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    loadDocuments();
-  }, [currentUser]);
-
-  async function loadDocuments() {
+  const loadDocuments = useCallback(async () => {
     if (!currentUser) return;
     
     try {
@@ -44,7 +33,17 @@ export default function DocumentLibrary() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (searchParams.get('action') === 'upload') {
+      setUploadModalOpen(true);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    loadDocuments();
+  }, [loadDocuments]);
 
   async function handleDelete(docId: string) {
     if (!window.confirm('Are you sure you want to delete this document?')) return;

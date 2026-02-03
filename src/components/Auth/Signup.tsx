@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import './Auth.css';
@@ -10,8 +10,15 @@ export default function Signup() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { signUp, signInWithGoogle } = useAuth();
+  const { signUp, signInWithGoogle, currentUser } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect to dashboard if user is already logged in
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/dashboard');
+    }
+  }, [currentUser, navigate]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -41,10 +48,10 @@ export default function Signup() {
       setError('');
       setLoading(true);
       await signInWithGoogle();
+      // Popup will complete and auth state will update
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to sign in with Google');
-    } finally {
       setLoading(false);
     }
   }

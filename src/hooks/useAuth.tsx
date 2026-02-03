@@ -36,17 +36,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('[Auth] Setting up auth state listener...');
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log('[Auth] Auth state changed. User:', firebaseUser?.email || 'null');
       if (firebaseUser) {
-        const user = await loadUserData(firebaseUser);
-        setCurrentUser(user);
+        try {
+          console.log('[Auth] Loading user data...');
+          const user = await loadUserData(firebaseUser);
+          console.log('[Auth] ✓ User data loaded:', user.email);
+          setCurrentUser(user);
+        } catch (error) {
+          console.error('[Auth] ✗ Error loading user data:', error);
+          setCurrentUser(null);
+        }
       } else {
+        console.log('[Auth] No user logged in');
         setCurrentUser(null);
       }
       setLoading(false);
     });
 
-    return unsubscribe;
+    return () => unsubscribe();
   }, []);
 
   async function loadUserData(firebaseUser: FirebaseUser): Promise<User> {
@@ -56,17 +66,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return userDoc.data() as User;
     } else {
       // Create new user document
-      const newUser: User = {
+      const newUser: Partial<User> = {
         uid: firebaseUser.uid,
         email: firebaseUser.email!,
-        displayName: firebaseUser.displayName || undefined,
         isPremium: false,
         usageCount: 0,
         createdAt: new Date()
       };
       
+      // Only add displayName if it exists (not undefined)
+      if (firebaseUser.displayName) {
+        newUser.displayName = firebaseUser.displayName;
+      }
+      
       await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
-      return newUser;
+      return newUser as User;
     }
   }
 
@@ -79,8 +93,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function signInWithGoogle() {
+    console.log('[Auth] signInWithGoogle called');
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    console.log('[Auth] Opening Google Sign-In popup...');
+    try {
+      await signInWithPopup(auth, provider);
+      console.log('[Auth] Popup sign-in successful');
+    } catch (error) {
+      console.error('[Auth] Error during signInWithPopup:', error);
+      throw error;
+    }
   }
 
   async function signOut() {

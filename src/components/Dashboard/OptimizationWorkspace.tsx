@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -27,22 +27,15 @@ export default function OptimizationWorkspace() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    loadDocuments();
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (documentId) {
-      loadDocument(documentId);
-      loadVersions(documentId);
-    }
-  }, [documentId]);
-
-  async function loadDocuments() {
+  const loadDocuments = useCallback(async () => {
     if (!currentUser) return;
     const docs = await getUserDocuments(currentUser.uid);
     setDocuments(docs);
-  }
+  }, [currentUser]);
+
+  useEffect(() => {
+    loadDocuments();
+  }, [loadDocuments]);
 
   async function loadDocument(id: string) {
     const doc = await getDocument(id);

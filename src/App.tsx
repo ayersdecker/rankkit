@@ -11,7 +11,12 @@ import Profile from './components/Dashboard/Profile';
 import './App.css';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { currentUser } = useAuth();
+  const { currentUser, loading } = useAuth();
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  
   return currentUser ? <>{children}</> : <Navigate to="/login" />;
 }
 

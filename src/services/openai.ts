@@ -185,8 +185,9 @@ async function makeOpenAIRequest(
     }
 
     // Generic error
+    const errorData = axiosError.response?.data as { error?: { message?: string } } | undefined;
     throw new OptimizationError(
-      axiosError.response?.data?.error?.message || 'Failed to optimize content',
+      errorData?.error?.message || 'Failed to optimize content',
       'API_ERROR',
       axiosError.response?.status
     );
