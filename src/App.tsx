@@ -50,15 +50,10 @@ function NotificationWrapper() {
 }
 
 function App() {
-  // Use /rankkit basename only for GitHub Pages deployment
-  const basename = process.env.NODE_ENV === 'production' && window.location.hostname.includes('github.io') 
-    ? '/rankkit' 
-    : '/';
-    
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <Router basename={basename}>
+        <Router>
           <NotificationWrapper />
           <Routes>
             <Route path="/login" element={<Login />} />
