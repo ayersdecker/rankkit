@@ -172,7 +172,7 @@ async function makeOpenAIRequestInternal(
             role: 'user',
             content: prompt
           }
-        ],
+        ], 
         temperature: 0.7,
         max_tokens: 1500 // Reduced from 2000 to help with TPM limits
       },
