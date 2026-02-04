@@ -7,12 +7,13 @@ import {
   updateDoc,
   query,
   where,
-  orderBy,
+  // orderBy, // Reserved for future use
   Timestamp,
   writeBatch,
-  limit as firestoreLimit
+  // limit as firestoreLimit // Reserved for future use
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { db, storage } from './firebase';
 import { Document, OptimizationVersion } from '../types';
 import { isWhitelistedEmail } from '../config';
 
@@ -50,16 +51,72 @@ function validateDocumentData(name: string, content: string): void {
 }
 
 /**
+ * Uploads a file to Firebase Storage
+ */
+export async function uploadDocumentFile(
+  userId: string,
+  file: File,
+  documentId?: string
+): Promise<string> {
+  try {
+    // Create a unique file path
+    const timestamp = Date.now();
+    const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const storagePath = `users/${userId}/documents/${documentId || timestamp}_${sanitizedFileName}`;
+    
+    const storageRef = ref(storage, storagePath);
+    
+    console.log('[Storage] Uploading file:', {
+      path: storagePath,
+      size: file.size,
+      type: file.type
+    });
+    
+    // Upload the file
+    await uploadBytes(storageRef, file, {
+      contentType: file.type
+    });
+    
+    // Get the download URL
+    const downloadURL = await getDownloadURL(storageRef);
+    
+    console.log('[Storage] File uploaded successfully:', downloadURL);
+    return downloadURL;
+  } catch (error: any) {
+    console.error('[Storage] Upload error:', error);
+    throw new FirestoreError('Failed to upload file', 'UPLOAD_ERROR', error);
+  }
+}
+
+/**
+ * Deletes a file from Firebase Storage
+ */
+export async function deleteDocumentFile(fileUrl: string): Promise<void> {
+  try {
+    const storageRef = ref(storage, fileUrl);
+    await deleteObject(storageRef);
+    console.log('[Storage] File deleted successfully');
+  } catch (error: any) {
+    console.error('[Storage] Delete error:', error);
+    // Don't throw error if file doesn't exist
+    if (error.code !== 'storage/object-not-found') {
+      throw new FirestoreError('Failed to delete file', 'DELETE_ERROR', error);
+    }
+  }
+}
+
+/**
  * Creates a new document
  */
 export async function createDocument(
   userId: string,
   name: string,
   content: string,
-  type: 'resume' | 'post' | 'other',
+  type: 'resume' | 'cover-letter' | 'post' | 'cold-email' | 'sales-script' | 'interview-prep' | 'job-search' | 'hashtags' | 'other',
   originalFileName?: string,
   fileType?: string,
-  aiGenerated?: boolean
+  aiGenerated?: boolean,
+  fileUrl?: string
 ): Promise<string> {
   try {
     console.log('[Firestore] Validating document data:', {
@@ -95,6 +152,9 @@ export async function createDocument(
     if (aiGenerated) {
       docData.aiGenerated = true;
     }
+    if (fileUrl) {
+      docData.fileUrl = fileUrl;
+    }
 
     console.log('[Firestore] Creating document with data:', {
       userId,
@@ -102,10 +162,11 @@ export async function createDocument(
       contentLength: docData.content.length,
       type,
       hasOriginalFileName: !!originalFileName,
-      hasFileType: !!fileType
+      hasFileType: !!fileType,
+      hasFileUrl: !!fileUrl
     });
 
-    const docRef = await addDoc(collection(db, 'documents'), docData);
+    const docRef = await addDoc(collection(db, 'users', userId, 'documents'), docData);
     console.log(`[Firestore] Document created: ${docRef.id}`);
     return docRef.id;
   } catch (error: any) {
@@ -156,8 +217,7 @@ export async function getUserDocuments(
 
     // Simple query without orderBy to avoid index requirement
     let q = query(
-      collection(db, 'documents'),
-      where('userId', '==', userId)
+      collection(db, 'users', userId, 'documents')
     );
 
     if (type) {
@@ -212,13 +272,16 @@ export async function getUserDocuments(
 /**
  * Gets a single document by ID
  */
-export async function getDocument(documentId: string): Promise<Document | null> {
+export async function getDocument(userId: string, documentId: string): Promise<Document | null> {
   try {
     if (!documentId) {
       throw new FirestoreError('Document ID is required', 'INVALID_DOCUMENT_ID');
     }
+    if (!userId) {
+      throw new FirestoreError('User ID is required', 'INVALID_USER_ID');
+    }
 
-    const docRef = doc(db, 'documents', documentId);
+    const docRef = doc(db, 'users', userId, 'documents', documentId);
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {
@@ -248,12 +311,16 @@ export async function getDocument(documentId: string): Promise<Document | null> 
  * Updates a document
  */
 export async function updateDocument(
+  userId: string,
   documentId: string,
   updates: Partial<Document>
 ): Promise<void> {
   try {
     if (!documentId) {
       throw new FirestoreError('Document ID is required', 'INVALID_DOCUMENT_ID');
+    }
+    if (!userId) {
+      throw new FirestoreError('User ID is required', 'INVALID_USER_ID');
     }
 
     if (updates.name) {
@@ -264,7 +331,7 @@ export async function updateDocument(
       validateDocumentData('placeholder', updates.content);
     }
 
-    const docRef = doc(db, 'documents', documentId);
+    const docRef = doc(db, 'users', userId, 'documents', documentId);
     
     // Remove undefined fields and add updatedAt
     const cleanUpdates = Object.fromEntries(
@@ -292,27 +359,51 @@ export async function updateDocument(
 /**
  * Deletes a document and all its optimization versions
  */
-export async function deleteDocument(documentId: string): Promise<void> {
+export async function deleteDocument(userId: string, documentId: string): Promise<void> {
   try {
     if (!documentId) {
       throw new FirestoreError('Document ID is required', 'INVALID_DOCUMENT_ID');
     }
+    if (!userId) {
+      throw new FirestoreError('User ID is required', 'INVALID_USER_ID');
+    }
+
+    // First get the document to check if it has a file URL
+    const documentRef = doc(db, 'users', userId, 'documents', documentId);
+    const docSnapshot = await getDoc(documentRef);
+    
+    let fileUrlToDelete: string | undefined;
+    if (docSnapshot.exists()) {
+      const docData = docSnapshot.data();
+      fileUrlToDelete = docData.fileUrl;
+    }
 
     // Get all versions for this document
-    const versions = await getDocumentVersions(documentId);
+    const versions = await getDocumentVersions(userId, documentId);
     
     // Use batch delete for better performance
     const batch = writeBatch(db);
     
     // Delete document
-    batch.delete(doc(db, 'documents', documentId));
+    batch.delete(documentRef);
     
     // Delete all versions
     versions.forEach(version => {
-      batch.delete(doc(db, 'optimizationVersions', version.id));
+      batch.delete(doc(db, 'users', userId, 'optimizationVersions', version.id));
     });
 
     await batch.commit();
+    
+    // Delete the file from storage if it exists (after Firestore deletion)
+    if (fileUrlToDelete) {
+      try {
+        await deleteDocumentFile(fileUrlToDelete);
+      } catch (error) {
+        console.error('[Firestore] Failed to delete file from storage:', error);
+        // Don't throw error since document is already deleted
+      }
+    }
+    
     console.log(`[Firestore] Document deleted: ${documentId} (${versions.length} versions)`);
   } catch (error: any) {
     if (error instanceof FirestoreError) {
@@ -352,7 +443,7 @@ export async function saveOptimizationVersion(
     }
 
     // Get current version count
-    const versions = await getDocumentVersions(documentId);
+    const versions = await getDocumentVersions(userId, documentId);
     const version = versions.length + 1;
 
     const versionData = {
@@ -367,7 +458,7 @@ export async function saveOptimizationVersion(
       createdAt: Timestamp.now()
     };
 
-    const docRef = await addDoc(collection(db, 'optimizationVersions'), versionData);
+    const docRef = await addDoc(collection(db, 'users', userId, 'optimizationVersions'), versionData);
     console.log(`[Firestore] Version saved: ${docRef.id} (v${version})`);
     return docRef.id;
   } catch (error: any) {
@@ -385,15 +476,18 @@ export async function saveOptimizationVersion(
 /**
  * Gets all optimization versions for a document
  */
-export async function getDocumentVersions(documentId: string): Promise<OptimizationVersion[]> {
+export async function getDocumentVersions(userId: string, documentId: string): Promise<OptimizationVersion[]> {
   try {
     if (!documentId) {
       throw new FirestoreError('Document ID is required', 'INVALID_DOCUMENT_ID');
     }
+    if (!userId) {
+      throw new FirestoreError('User ID is required', 'INVALID_USER_ID');
+    }
 
     // Simple query without orderBy to avoid index requirement
     const q = query(
-      collection(db, 'optimizationVersions'),
+      collection(db, 'users', userId, 'optimizationVersions'),
       where('documentId', '==', documentId)
     );
 
@@ -626,16 +720,14 @@ export async function getUserStats(userId: string): Promise<{
 
     // Get document count
     const docsQuery = query(
-      collection(db, 'documents'),
-      where('userId', '==', userId)
+      collection(db, 'users', userId, 'documents')
     );
     const docsSnapshot = await getDocs(docsQuery);
     const documentCount = docsSnapshot.size;
 
     // Get optimization count and average score
     const versionsQuery = query(
-      collection(db, 'optimizationVersions'),
-      where('userId', '==', userId)
+      collection(db, 'users', userId, 'optimizationVersions')
     );
     const versionsSnapshot = await getDocs(versionsQuery);
     const optimizationCount = versionsSnapshot.size;

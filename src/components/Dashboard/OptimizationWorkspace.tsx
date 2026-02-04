@@ -11,10 +11,11 @@ import {
 } from '../../services/firestore';
 import { optimizeContent } from '../../services/openai';
 import { Document, OptimizationVersion, OptimizationType } from '../../types';
+import { SignOutConfirmation } from '../Shared/SignOutConfirmation';
 import './OptimizationWorkspace.css';
 
 export default function OptimizationWorkspace() {
-  const { documentId } = useParams();
+  // const { documentId } = useParams();
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [versions, setVersions] = useState<OptimizationVersion[]>([]);
@@ -24,9 +25,16 @@ export default function OptimizationWorkspace() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showVersions, setShowVersions] = useState(false);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
 
-  const { currentUser, refreshUser } = useAuth();
+  const { currentUser, refreshUser, signOut } = useAuth();
   const navigate = useNavigate();
+
+  async function handleSignOut() {
+    await signOut();
+    navigate('/login');
+    setShowSignOutModal(false);
+  }
 
   const loadDocuments = useCallback(async () => {
     if (!currentUser) return;
@@ -43,9 +51,12 @@ export default function OptimizationWorkspace() {
     loadDocuments();
   }, [loadDocuments]);
 
+  // Function for loading specific document - can be used with URL params
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function loadDocument(id: string) {
+    if (!currentUser) return;
     try {
-      const doc = await getDocument(id);
+      const doc = await getDocument(currentUser.uid, id);
       if (doc) {
         setSelectedDoc(doc);
         // Auto-set optimization type based on document type
@@ -62,8 +73,9 @@ export default function OptimizationWorkspace() {
   }
 
   async function loadVersions(id: string) {
+    if (!currentUser) return;
     try {
-      const vers = await getDocumentVersions(id);
+      const vers = await getDocumentVersions(currentUser.uid, id);
       setVersions(vers);
     } catch (err) {
       console.error('Error loading versions:', err);
@@ -149,12 +161,24 @@ export default function OptimizationWorkspace() {
         <h1 onClick={() => navigate('/dashboard')}>RankKit</h1>
         <div className="nav-links">
           <button onClick={() => navigate('/dashboard')} className="nav-link">Home</button>
-          <button onClick={() => navigate('/documents')} className="nav-link">Documents</button>
-          <button onClick={() => navigate('/optimize')} className="nav-link active">Optimize</button>
+          <button onClick={() => navigate('/career-tools')} className="nav-link">Career</button>
+          <button onClick={() => navigate('/workplace-tools')} className="nav-link">Workplace</button>
+          <button onClick={() => navigate('/social-media-tools')} className="nav-link">Social</button>
+          <button onClick={() => navigate('/documents')} className="nav-link active">Documents</button>
           <button onClick={() => navigate('/profile')} className="nav-link">Profile</button>
         </div>
         <div className="nav-right">
-          <span>{currentUser?.email}</span>
+          <div className="user-info">
+            <div className="user-avatar-small">
+              {currentUser?.photoURL ? (
+                <img src={currentUser.photoURL} alt="Profile" />
+              ) : (
+                <span>{currentUser?.displayName?.[0] || currentUser?.email?.[0].toUpperCase()}</span>
+              )}
+            </div>
+            <span>{currentUser?.displayName || currentUser?.email}</span>
+          </div>
+          <button onClick={() => setShowSignOutModal(true)}>Sign Out</button>
         </div>
       </nav>
 
@@ -337,6 +361,13 @@ export default function OptimizationWorkspace() {
           )}
         </div>
       </div>
+
+      {showSignOutModal && (
+        <SignOutConfirmation
+          onConfirm={handleSignOut}
+          onCancel={() => setShowSignOutModal(false)}
+        />
+      )}
     </div>
   );
 }

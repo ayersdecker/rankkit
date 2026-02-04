@@ -6,9 +6,10 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  updateProfile as firebaseUpdateProfile
 } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../services/firebase';
 import { User } from '../types';
 
@@ -19,6 +20,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
+  updateProfile: (displayName: string) => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -64,7 +66,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
     
     if (userDoc.exists()) {
-      return userDoc.data() as User;
+      const userData = userDoc.data() as User;
+      // Merge photoURL from Firebase Auth if it exists and isn't in Firestore
+      if (firebaseUser.photoURL && !userData.photoURL) {
+        const updatedUser = { ...userData, photoURL: firebaseUser.photoURL };
+        await updateDoc(doc(db, 'users', firebaseUser.uid), { photoURL: firebaseUser.photoURL });
+        return updatedUser;
+      }
+      return userData;
     } else {
       // Create new user document
       const newUser: Partial<User> = {
@@ -79,6 +88,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Only add displayName if it exists (not undefined)
       if (firebaseUser.displayName) {
         newUser.displayName = firebaseUser.displayName;
+      }
+      
+      // Only add photoURL if it exists (not undefined)
+      if (firebaseUser.photoURL) {
+        newUser.photoURL = firebaseUser.photoURL;
       }
       
       await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
@@ -111,6 +125,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await firebaseSignOut(auth);
   }
 
+  async function updateProfile(displayName: string) {
+    if (!auth.currentUser) {
+      throw new Error('No user logged in');
+    }
+
+    // Update Firebase Auth profile
+    await firebaseUpdateProfile(auth.currentUser, { displayName });
+
+    // Update Firestore user document
+    await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+      displayName
+    });
+
+    // Refresh the user data in context
+    await refreshUser();
+  }
+
   async function refreshUser() {
     if (auth.currentUser) {
       const user = await loadUserData(auth.currentUser);
@@ -125,6 +156,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signInWithGoogle,
     signOut,
+    updateProfile,
     refreshUser
   };
 

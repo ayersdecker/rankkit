@@ -2,6 +2,7 @@ export interface User {
   uid: string;
   email: string;
   displayName?: string;
+  photoURL?: string;
   isPremium: boolean;
   usageCount: number;
   freeOptimizationsRemaining: number;
@@ -12,10 +13,11 @@ export interface Document {
   id: string;
   userId: string;
   name: string;
-  type: 'resume' | 'post' | 'other';
+  type: 'resume' | 'cover-letter' | 'post' | 'cold-email' | 'sales-script' | 'interview-prep' | 'job-search' | 'hashtags' | 'other';
   content: string;
   originalFileName?: string;
   fileType?: string;
+  fileUrl?: string;
   tags?: string[];
   aiGenerated?: boolean;
   createdAt: Date;
@@ -105,5 +107,5 @@ export interface Subscription {
 }
 
 export type OptimizationType = 'ats' | 'seo' | 'engagement' | 'readability';
-export type DocumentType = 'resume' | 'post' | 'other';
+export type DocumentType = 'resume' | 'cover-letter' | 'post' | 'cold-email' | 'sales-script' | 'interview-prep' | 'job-search' | 'hashtags' | 'other';
 export type Platform = 'instagram' | 'tiktok' | 'youtube' | 'twitter';

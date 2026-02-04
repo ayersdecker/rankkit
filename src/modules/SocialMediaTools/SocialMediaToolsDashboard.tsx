@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { SignOutConfirmation } from '../../components/Shared/SignOutConfirmation';
 import './SocialMediaToolsDashboard.css';
 
 export default function SocialMediaToolsDashboard() {
-  const { currentUser } = useAuth();
+  const { currentUser, signOut } = useAuth();
   const navigate = useNavigate();
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
+
+  async function handleSignOut() {
+    await signOut();
+    navigate('/login');
+    setShowSignOutModal(false);
+  }
 
   const tools = [
     {
@@ -60,17 +68,28 @@ export default function SocialMediaToolsDashboard() {
 
   return (
     <div className="social-media-tools-container">
-      <nav className="social-media-tools-nav">
-        <h1 onClick={() => navigate('/dashboard')}>← Social Media Tools</h1>
+      <nav className="dashboard-nav">
+        <h1 onClick={() => navigate('/dashboard')}>RankKit</h1>
+        <div className="nav-links">
+          <button onClick={() => navigate('/dashboard')} className="nav-link">Home</button>
+          <button onClick={() => navigate('/career-tools')} className="nav-link">Career</button>
+          <button onClick={() => navigate('/workplace-tools')} className="nav-link">Workplace</button>
+          <button onClick={() => navigate('/social-media-tools')} className="nav-link active">Social</button>
+          <button onClick={() => navigate('/documents')} className="nav-link">Documents</button>
+          <button onClick={() => navigate('/profile')} className="nav-link">Profile</button>
+        </div>
         <div className="nav-right">
-          <span className="user-badge">
-            {currentUser?.isPremium ? '⭐ Premium' : '🆓 Free'}
-          </span>
-          <span className="optimizations-badge">
-            {currentUser?.isPremium 
-              ? '∞ optimizations' 
-              : `${currentUser?.freeOptimizationsRemaining || 0} free left`}
-          </span>
+          <div className="user-info">
+            <div className="user-avatar-small">
+              {currentUser?.photoURL ? (
+                <img src={currentUser.photoURL} alt="Profile" />
+              ) : (
+                <span>{currentUser?.displayName?.[0] || currentUser?.email?.[0].toUpperCase()}</span>
+              )}
+            </div>
+            <span>{currentUser?.displayName || currentUser?.email}</span>
+          </div>
+          <button onClick={() => setShowSignOutModal(true)}>Sign Out</button>
         </div>
       </nav>
 
@@ -140,6 +159,13 @@ export default function SocialMediaToolsDashboard() {
           )}
         </div>
       </div>
+
+      {showSignOutModal && (
+        <SignOutConfirmation
+          onConfirm={handleSignOut}
+          onCancel={() => setShowSignOutModal(false)}
+        />
+      )}
     </div>
   );
 }

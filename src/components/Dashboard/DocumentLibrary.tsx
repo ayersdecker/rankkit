@@ -4,23 +4,63 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   getUserDocuments,
   createDocument,
-  deleteDocument
+  deleteDocument,
+  uploadDocumentFile
 } from '../../services/firestore';
 import { extractTextFromFile, validateFile, formatFileSize, getFileIcon, validateDocumentPages } from '../../utils/fileUtils';
 import { Document } from '../../types';
 import { hasPremiumAccess } from '../../utils/premiumUtils';
+import { SignOutConfirmation } from '../Shared/SignOutConfirmation';
 import './DocumentLibrary.css';
+
+// Helper functions for document type display
+const getDocTypeLabel = (type: string) => {
+  const labels: Record<string, string> = {
+    'resume': 'Resume',
+    'cover-letter': 'Cover Letter',
+    'post': 'Social Post',
+    'cold-email': 'Cold Email',
+    'sales-script': 'Sales Script',
+    'interview-prep': 'Interview Prep',
+    'job-search': 'Job Search',
+    'hashtags': 'Hashtags',
+    'other': 'Other'
+  };
+  return labels[type] || type;
+};
+
+const getDocTypeEmoji = (type: string) => {
+  const emojis: Record<string, string> = {
+    'resume': '📝',
+    'cover-letter': '✉️',
+    'post': '📱',
+    'cold-email': '📧',
+    'sales-script': '📞',
+    'interview-prep': '💼',
+    'job-search': '🔍',
+    'hashtags': '#️⃣',
+    'other': '📄'
+  };
+  return emojis[type] || '📄';
+};
 
 export default function DocumentLibrary() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'resume' | 'post'>('all');
+  const [filter, setFilter] = useState<'all' | 'career' | 'workplace' | 'social' | 'other'>('all');
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
   
-  const { currentUser } = useAuth();
+  const { currentUser, signOut } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
+  async function handleSignOut() {
+    await signOut();
+    navigate('/login');
+    setShowSignOutModal(false);
+  }
 
   const loadDocuments = useCallback(async () => {
     if (!currentUser) return;
@@ -48,18 +88,47 @@ export default function DocumentLibrary() {
 
   async function handleDelete(docId: string) {
     if (!window.confirm('Are you sure you want to delete this document?')) return;
+    if (!currentUser) return;
     
     try {
-      await deleteDocument(docId);
+      await deleteDocument(currentUser.uid, docId);
       await loadDocuments();
     } catch (error) {
       console.error('Failed to delete document:', error);
     }
   }
 
-  const filteredDocs = documents.filter(doc => 
-    filter === 'all' || doc.type === filter
-  );
+  const filteredDocs = documents.filter(doc => {
+    if (filter === 'all') return true;
+    if (filter === 'career') return ['resume', 'cover-letter', 'interview-prep', 'job-search'].includes(doc.type);
+    if (filter === 'workplace') return ['cold-email', 'sales-script'].includes(doc.type);
+    if (filter === 'social') return ['post', 'hashtags'].includes(doc.type);
+    if (filter === 'other') return doc.type === 'other';
+    return false;
+  });
+
+  // Calculate document type statistics
+  const getDocTypeStats = () => {
+    const stats = {
+      'resume': 0,
+      'cover-letter': 0,
+      'post': 0,
+      'cold-email': 0,
+      'sales-script': 0,
+      'interview-prep': 0,
+      'job-search': 0,
+      'hashtags': 0,
+      'other': 0
+    };
+    documents.forEach(doc => {
+      if (stats.hasOwnProperty(doc.type)) {
+        stats[doc.type as keyof typeof stats]++;
+      }
+    });
+    return stats;
+  };
+
+  const docTypeStats = getDocTypeStats();
 
   return (
     <div className="dashboard-container">
@@ -74,7 +143,17 @@ export default function DocumentLibrary() {
           <button onClick={() => navigate('/profile')} className="nav-link">Profile</button>
         </div>
         <div className="nav-right">
-          <span>{currentUser?.email}</span>
+          <div className="user-info">
+            <div className="user-avatar-small">
+              {currentUser?.photoURL ? (
+                <img src={currentUser.photoURL} alt="Profile" />
+              ) : (
+                <span>{currentUser?.displayName?.[0] || currentUser?.email?.[0].toUpperCase()}</span>
+              )}
+            </div>
+            <span>{currentUser?.displayName || currentUser?.email}</span>
+          </div>
+          <button onClick={() => setShowSignOutModal(true)}>Sign Out</button>
         </div>
       </nav>
 
@@ -86,6 +165,49 @@ export default function DocumentLibrary() {
           </button>
         </div>
 
+        <div className="storage-stats">
+          <div className="stat-card">
+            <div className="stat-icon">📄</div>
+            <div className="stat-info">
+              <div className="stat-value">{documents.length}</div>
+              <div className="stat-label">Total Documents</div>
+            </div>
+          </div>
+          <div className="stat-card breakdown-card">
+            <div className="stat-info">
+              <div className="stat-label">Document Types</div>
+              <div className="doc-type-chart">
+                {Object.entries(docTypeStats).map(([type, count]) => {
+                  if (count === 0) return null;
+                  const percentage = (count / documents.length) * 100;
+                  return (
+                    <div key={type} className="doc-type-row">
+                      <div className="doc-type-info">
+                        <span className="doc-type-emoji">{getDocTypeEmoji(type)}</span>
+                        <span className="doc-type-name">{getDocTypeLabel(type)}</span>
+                      </div>
+                      <div className="doc-type-bar-container">
+                        <div 
+                          className="doc-type-bar" 
+                          style={{ width: `${percentage}%` }}
+                        ></div>
+                      </div>
+                      <span className="doc-type-count">{count}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-icon">{currentUser?.isPremium ? '⭐' : '📦'}</div>
+            <div className="stat-info">
+              <div className="stat-value">{currentUser?.isPremium ? 'Premium' : 'Free'}</div>
+              <div className="stat-label">Account Type</div>
+            </div>
+          </div>
+        </div>
+
         <div className="filter-bar">
           <button
             className={`filter-button ${filter === 'all' ? 'active' : ''}`}
@@ -94,16 +216,28 @@ export default function DocumentLibrary() {
             All ({documents.length})
           </button>
           <button
-            className={`filter-button ${filter === 'resume' ? 'active' : ''}`}
-            onClick={() => setFilter('resume')}
+            className={`filter-button ${filter === 'career' ? 'active' : ''}`}
+            onClick={() => setFilter('career')}
           >
-            Resumes ({documents.filter(d => d.type === 'resume').length})
+            Career ({['resume', 'cover-letter', 'interview-prep', 'job-search'].reduce((acc, type) => acc + (docTypeStats[type as keyof typeof docTypeStats] || 0), 0)})
           </button>
           <button
-            className={`filter-button ${filter === 'post' ? 'active' : ''}`}
-            onClick={() => setFilter('post')}
+            className={`filter-button ${filter === 'workplace' ? 'active' : ''}`}
+            onClick={() => setFilter('workplace')}
           >
-            Posts ({documents.filter(d => d.type === 'post').length})
+            Workplace ({['cold-email', 'sales-script'].reduce((acc, type) => acc + (docTypeStats[type as keyof typeof docTypeStats] || 0), 0)})
+          </button>
+          <button
+            className={`filter-button ${filter === 'social' ? 'active' : ''}`}
+            onClick={() => setFilter('social')}
+          >
+            Social ({['post', 'hashtags'].reduce((acc, type) => acc + (docTypeStats[type as keyof typeof docTypeStats] || 0), 0)})
+          </button>
+          <button
+            className={`filter-button ${filter === 'other' ? 'active' : ''}`}
+            onClick={() => setFilter('other')}
+          >
+            Other ({docTypeStats.other || 0})
           </button>
         </div>
 
@@ -122,10 +256,10 @@ export default function DocumentLibrary() {
           <div className="documents-grid">
             {filteredDocs.map(doc => (
               <div key={doc.id} className="document-card">
-                <div className="doc-icon">{getFileIcon(doc.fileType || '')}</div>
+                <div className="doc-icon">{getDocTypeEmoji(doc.type)}</div>
                 <h3>{doc.name}</h3>
                 <div className="doc-meta">
-                  <span className="doc-type">{doc.type}</span>
+                  <span className="doc-type">{getDocTypeLabel(doc.type)}</span>
                   {doc.aiGenerated && (
                     <span className="doc-badge">✨ AI Generated</span>
                   )}
@@ -136,7 +270,6 @@ export default function DocumentLibrary() {
                 <p className="doc-preview">{doc.content.substring(0, 120)}...</p>
                 <div className="doc-actions">
                   <button onClick={() => setSelectedDoc(doc)}>View</button>
-                  <button onClick={() => navigate(`/optimize/${doc.id}`)}>Optimize</button>
                   <button onClick={() => handleDelete(doc.id)} className="danger">Delete</button>
                 </div>
               </div>
@@ -159,7 +292,13 @@ export default function DocumentLibrary() {
         <DocumentViewModal
           document={selectedDoc}
           onClose={() => setSelectedDoc(null)}
-          onOptimize={() => navigate(`/optimize/${selectedDoc.id}`)}
+        />
+      )}
+
+      {showSignOutModal && (
+        <SignOutConfirmation
+          onConfirm={handleSignOut}
+          onCancel={() => setShowSignOutModal(false)}
         />
       )}
     </div>
@@ -170,9 +309,10 @@ export default function DocumentLibrary() {
 function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) {
   const [file, setFile] = useState<File | null>(null);
   const [name, setName] = useState('');
-  const [type, setType] = useState<'resume' | 'post' | 'other'>('resume');
+  const [type, setType] = useState<'resume' | 'cover-letter' | 'post' | 'cold-email' | 'sales-script' | 'interview-prep' | 'job-search' | 'hashtags' | 'other'>('resume');
   const [content, setContent] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [extracting, setExtracting] = useState(false);
   const [error, setError] = useState('');
   const [mode, setMode] = useState<'file' | 'paste'>('file');
 
@@ -191,20 +331,24 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
     setFile(selectedFile);
     setName(selectedFile.name.replace(/\.[^/.]+$/, ''));
     setError('');
+    setExtracting(true);
 
     try {
       const text = await extractTextFromFile(selectedFile);
       setContent(text);
-    } catch (err) {
-      setError('Failed to extract text from file');
+    } catch (err: any) {
+      setError(err.message || 'Failed to extract text from file');
+      setContent('');
+    } finally {
+      setExtracting(false);
     }
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     
-    if (!name || !content) {
-      setError('Please provide a name and content');
+    if (!content || content.trim().length === 0) {
+      setError('Please provide document content');
       return;
     }
 
@@ -233,14 +377,32 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
           return;
         }
       }
+
+      // Auto-generate name if not provided
+      const documentName = name.trim() || generateDocumentName(type);
+      
+      // Upload file to storage if a file was selected
+      let fileUrl: string | undefined;
+      if (file) {
+        try {
+          fileUrl = await uploadDocumentFile(currentUser.uid, file);
+          console.log('[Upload] File uploaded to storage:', fileUrl);
+        } catch (uploadErr: any) {
+          console.error('[Upload] File upload failed:', uploadErr);
+          setError('Failed to upload file. Saving text content only.');
+          // Continue with document creation even if file upload fails
+        }
+      }
       
       await createDocument(
         currentUser.uid,
-        name,
+        documentName,
         content,
         type,
         file?.name,
-        file?.type
+        file?.type,
+        false, // aiGenerated
+        fileUrl
       );
       
       onSuccess();
@@ -249,6 +411,26 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
     } finally {
       setUploading(false);
     }
+  }
+
+  function generateDocumentName(docType: string): string {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    
+    const typeNames: Record<string, string> = {
+      'resume': 'Resume',
+      'cover-letter': 'Cover Letter',
+      'post': 'Social Post',
+      'cold-email': 'Cold Email',
+      'sales-script': 'Sales Script',
+      'interview-prep': 'Interview Prep',
+      'job-search': 'Job Search',
+      'hashtags': 'Hashtags',
+      'other': 'Document'
+    };
+    
+    return `${typeNames[docType] || 'Document'} - ${dateStr} ${timeStr}`;
   }
 
   return (
@@ -282,8 +464,14 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
                 type="file"
                 accept=".txt,.pdf,.doc,.docx"
                 onChange={handleFileChange}
+                disabled={extracting}
               />
-              {file && (
+              {extracting && (
+                <div className="file-info extracting">
+                  ⏳ Extracting text from file...
+                </div>
+              )}
+              {file && !extracting && (
                 <div className="file-info">
                   {getFileIcon(file.type)} {file.name} ({formatFileSize(file.size)})
                 </div>
@@ -295,7 +483,7 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
               <textarea
                 value={content}
                 onChange={e => setContent(e.target.value)}
-                placeholder="Paste your resume or post content here..."
+                placeholder="Paste your document content here..."
                 rows={10}
                 required
               />
@@ -303,21 +491,32 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
           )}
 
           <div className="form-group">
-            <label>Document Name</label>
+            <label>Document Name <span className="optional-label">(Optional)</span></label>
             <input
               type="text"
               value={name}
               onChange={e => setName(e.target.value)}
-              placeholder="e.g., Software Engineer Resume"
-              required
+              placeholder="Leave blank to auto-generate"
             />
           </div>
 
           <div className="form-group">
             <label>Document Type</label>
             <select value={type} onChange={e => setType(e.target.value as any)}>
-              <option value="resume">Resume</option>
-              <option value="post">Social Post</option>
+              <optgroup label="Career Tools">
+                <option value="resume">Resume</option>
+                <option value="cover-letter">Cover Letter</option>
+                <option value="interview-prep">Interview Prep</option>
+                <option value="job-search">Job Search</option>
+              </optgroup>
+              <optgroup label="Workplace Tools">
+                <option value="cold-email">Cold Email</option>
+                <option value="sales-script">Sales Script</option>
+              </optgroup>
+              <optgroup label="Social Media Tools">
+                <option value="post">Social Post</option>
+                <option value="hashtags">Hashtags</option>
+              </optgroup>
               <option value="other">Other</option>
             </select>
           </div>
@@ -325,11 +524,11 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
           {error && <div className="error-message">{error}</div>}
 
           <div className="modal-actions">
-            <button type="button" onClick={onClose} disabled={uploading}>
+            <button type="button" onClick={onClose} disabled={uploading || extracting}>
               Cancel
             </button>
-            <button type="submit" className="primary-button" disabled={uploading}>
-              {uploading ? 'Uploading...' : 'Upload'}
+            <button type="submit" className="primary-button" disabled={uploading || extracting || !content}>
+              {uploading ? 'Uploading...' : extracting ? 'Extracting...' : 'Upload'}
             </button>
           </div>
         </form>
@@ -341,13 +540,13 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
 // Document View Modal Component
 function DocumentViewModal({
   document,
-  onClose,
-  onOptimize
+  onClose
 }: {
   document: Document;
   onClose: () => void;
-  onOptimize: () => void;
 }) {
+  const [viewMode, setViewMode] = useState<'original' | 'text'>(document.fileUrl ? 'original' : 'text');
+  
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content large" onClick={e => e.stopPropagation()}>
@@ -355,22 +554,76 @@ function DocumentViewModal({
           <div>
             <h2>{document.name}</h2>
             <div className="doc-meta">
-              <span className="doc-type">{document.type}</span>
+              <span className="doc-type">{getDocTypeLabel(document.type)}</span>
               <span>Updated {new Date(document.updatedAt).toLocaleDateString()}</span>
+              {document.originalFileName && (
+                <span>📎 {document.originalFileName}</span>
+              )}
             </div>
           </div>
           <button className="close-button" onClick={onClose}>×</button>
         </div>
 
+        {document.fileUrl && (
+          <div className="view-mode-selector">
+            <button
+              className={`mode-button ${viewMode === 'original' ? 'active' : ''}`}
+              onClick={() => setViewMode('original')}
+            >
+              📄 Original File
+            </button>
+            <button
+              className={`mode-button ${viewMode === 'text' ? 'active' : ''}`}
+              onClick={() => setViewMode('text')}
+            >
+              📝 Text Content
+            </button>
+          </div>
+        )}
+
         <div className="document-content">
-          <pre>{document.content}</pre>
+          {viewMode === 'original' && document.fileUrl ? (
+            <div className="file-viewer">
+              {document.fileType?.includes('pdf') ? (
+                <iframe
+                  src={document.fileUrl}
+                  title={document.name}
+                  className="pdf-viewer"
+                />
+              ) : (
+                <div className="file-download">
+                  <div className="file-icon-large">{getDocTypeEmoji(document.type)}</div>
+                  <p>Cannot preview this file type in browser</p>
+                  <a 
+                    href={document.fileUrl} 
+                    download={document.originalFileName || document.name}
+                    className="download-button"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    📥 Download {document.originalFileName || 'File'}
+                  </a>
+                </div>
+              )}
+            </div>
+          ) : (
+            <pre>{document.content}</pre>
+          )}
         </div>
 
         <div className="modal-actions">
+          {document.fileUrl && (
+            <a 
+              href={document.fileUrl} 
+              download={document.originalFileName || document.name}
+              className="download-link-button"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              📥 Download
+            </a>
+          )}
           <button onClick={onClose}>Close</button>
-          <button className="primary-button" onClick={onOptimize}>
-            Optimize This Document
-          </button>
         </div>
       </div>
     </div>

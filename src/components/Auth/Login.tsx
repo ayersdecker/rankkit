@@ -52,7 +52,7 @@ export default function Login() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1>Welcome to RankKit</h1>
+        <h1>Welcome to <span className="brand-name">RankKit</span></h1>
         <p>Optimize your resumes and social posts with AI</p>
         
         {error && <div className="error-message">{error}</div>}

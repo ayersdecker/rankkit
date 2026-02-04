@@ -11,13 +11,19 @@
 
 .optimizer-nav h1 {
   margin: 0;
-  color: #667eea;
-  font-size: 20px;
+  font-size: 1.75rem;
   cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .optimizer-nav h1:hover {
-  color: #5568d3;
+  opacity: 0.8;
 }
 
 .optimizer-content {

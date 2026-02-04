@@ -1,5 +1,9 @@
 // File upload and text extraction utilities
 import mammoth from 'mammoth';
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Configure PDF.js worker - use local worker file from public directory
+pdfjsLib.GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.min.mjs`;
 
 export async function extractTextFromFile(file: File): Promise<string> {
   const fileType = file.type;
@@ -23,9 +27,32 @@ export async function extractTextFromFile(file: File): Promise<string> {
     }
   }
   
-  // For PDF, we'd need additional libraries
-  if (fileType === 'application/pdf') {
-    throw new Error('PDF support coming soon. Please convert to .docx or .txt for now.');
+  // PDF files
+  if (fileType === 'application/pdf' || file.name.endsWith('.pdf')) {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = '';
+      
+      // Extract text from each page
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str)
+          .join(' ');
+        fullText += pageText + '\n\n';
+      }
+      
+      if (!fullText.trim()) {
+        throw new Error('No text found in PDF. The PDF may be image-based or empty.');
+      }
+      
+      return fullText.trim();
+    } catch (error) {
+      console.error('Error extracting PDF:', error);
+      throw new Error('Failed to extract text from PDF. Please ensure the PDF contains selectable text.');
+    }
   }
   
   // Fallback to text extraction

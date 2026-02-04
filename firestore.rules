@@ -2,24 +2,24 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Users collection - authenticated users can do anything
+    // Users collection - users can only access their own profile
     match /users/{userId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Documents collection - authenticated users can do anything
-    match /documents/{documentId} {
-      allow read, write: if request.auth != null;
+    // Documents collection - users can only access their own documents
+    match /users/{userId}/documents/{documentId} {
+      allow read, write, delete: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Optimization versions collection - authenticated users can do anything
-    match /optimizationVersions/{versionId} {
-      allow read, write: if request.auth != null;
+    // Optimization versions - users can only access their own versions
+    match /users/{userId}/optimizationVersions/{versionId} {
+      allow read, write, delete: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Allow all other collections for authenticated users
+    // Deny all other access by default
     match /{document=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if false;
     }
   }
 }

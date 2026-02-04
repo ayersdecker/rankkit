@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { ErrorBoundary } from './components/Shared/ErrorBoundary';
+import { PromotionalNotification } from './components/Shared/PromotionalNotification';
 import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import Dashboard from './components/Dashboard/Dashboard';
@@ -19,6 +20,7 @@ import ColdEmailGenerator from './modules/WorkplaceTools/ColdEmailGenerator';
 import SellingPointsFinder from './modules/WorkplaceTools/SellingPointsFinder';
 import SocialMediaToolsDashboard from './modules/SocialMediaTools/SocialMediaToolsDashboard';
 import HashtagGenerator from './modules/SocialMediaTools/HashtagGenerator';
+import { promotionalNotifications } from './config/notifications';
 import './App.css';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -31,11 +33,33 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
   return currentUser ? <>{children}</> : <Navigate to="/login" />;
 }
 
+function NotificationWrapper() {
+  const { currentUser } = useAuth();
+  
+  // Only show notifications to authenticated users
+  if (!currentUser) {
+    return null;
+  }
+  
+  return (
+    <PromotionalNotification 
+      notifications={promotionalNotifications}
+      intervalMinutes={60}
+    />
+  );
+}
+
 function App() {
+  // Use /rankkit basename only for GitHub Pages deployment
+  const basename = process.env.NODE_ENV === 'production' && window.location.hostname.includes('github.io') 
+    ? '/rankkit' 
+    : '/';
+    
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <Router basename="/rankkit">
+        <Router basename={basename}>
+          <NotificationWrapper />
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />

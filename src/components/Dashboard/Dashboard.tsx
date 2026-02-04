@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { SignOutConfirmation } from '../Shared/SignOutConfirmation';
 import './Dashboard.css';
 
 export default function Dashboard() {
   const { currentUser, signOut } = useAuth();
   const navigate = useNavigate();
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   async function handleSignOut() {
     await signOut();
     navigate('/login');
+    setShowSignOutModal(false);
   }
 
   return (
@@ -25,14 +28,23 @@ export default function Dashboard() {
           <button onClick={() => navigate('/profile')} className="nav-link">Profile</button>
         </div>
         <div className="nav-right">
-          <span>{currentUser?.email}</span>
-          <button onClick={handleSignOut}>Sign Out</button>
+          <div className="user-info">
+            <div className="user-avatar-small">
+              {currentUser?.photoURL ? (
+                <img src={currentUser.photoURL} alt="Profile" />
+              ) : (
+                <span>{currentUser?.displayName?.[0] || currentUser?.email?.[0].toUpperCase()}</span>
+              )}
+            </div>
+            <span>{currentUser?.displayName || currentUser?.email}</span>
+          </div>
+          <button onClick={() => setShowSignOutModal(true)}>Sign Out</button>
         </div>
       </nav>
 
       <div className="dashboard-content">
         <div className="hero-section">
-          <h2>Welcome to RankKit</h2>
+          <h2>Welcome to <span className="brand-name">RankKit</span></h2>
           <p>AI-powered document optimization for resumes and social content</p>
         </div>
 
@@ -58,13 +70,6 @@ export default function Dashboard() {
               <h4>Social Media Tools</h4>
               <p>Optimize content for Instagram, TikTok, YouTube, and Twitter</p>
               <span className="tools-count">6 Tools Available</span>
-            </div>
-
-            <div className="action-card featured" onClick={() => navigate('/documents')}>
-              <div className="action-icon">📁</div>
-              <h4>Documents</h4>
-              <p>Manage all your uploaded documents and optimization history</p>
-              <span className="tools-count">Library & Versions</span>
             </div>
           </div>
         </div>
@@ -170,6 +175,13 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {showSignOutModal && (
+        <SignOutConfirmation
+          onConfirm={handleSignOut}
+          onCancel={() => setShowSignOutModal(false)}
+        />
+      )}
     </div>
   );
 }
