@@ -22,7 +22,8 @@ export default function SocialMediaToolsDashboard() {
       icon: '📱',
       description: 'Optimize content for Instagram, TikTok, YouTube, and Twitter',
       path: '/post-optimizer',
-      color: '#E91E63'
+      color: '#E91E63',
+      comingSoon: false
     },
     {
       id: 'hashtag-generator',
@@ -30,7 +31,8 @@ export default function SocialMediaToolsDashboard() {
       icon: '#️⃣',
       description: 'Generate trending and relevant hashtags for your content',
       path: '/hashtag-generator',
-      color: '#9C27B0'
+      color: '#9C27B0',
+      comingSoon: false
     },
     {
       id: 'caption-analyzer',
@@ -38,7 +40,8 @@ export default function SocialMediaToolsDashboard() {
       icon: '🔍',
       description: 'Analyze caption performance and get improvement suggestions',
       path: '/caption-analyzer',
-      color: '#3F51B5'
+      color: '#3F51B5',
+      comingSoon: true
     },
     {
       id: 'content-calendar',
@@ -46,7 +49,8 @@ export default function SocialMediaToolsDashboard() {
       icon: '📅',
       description: 'Plan and schedule your social media content strategy',
       path: '/content-calendar',
-      color: '#00BCD4'
+      color: '#00BCD4',
+      comingSoon: true
     },
     {
       id: 'trend-finder',
@@ -54,7 +58,8 @@ export default function SocialMediaToolsDashboard() {
       icon: '🔥',
       description: 'Discover trending topics and viral content ideas',
       path: '/trend-finder',
-      color: '#FF5722'
+      color: '#FF5722',
+      comingSoon: true
     },
     {
       id: 'competitor-analysis',
@@ -62,7 +67,8 @@ export default function SocialMediaToolsDashboard() {
       icon: '📊',
       description: 'Analyze competitors and learn from their best content',
       path: '/competitor-analysis',
-      color: '#4CAF50'
+      color: '#4CAF50',
+      comingSoon: true
     }
   ];
 
@@ -103,17 +109,26 @@ export default function SocialMediaToolsDashboard() {
           {tools.map((tool) => (
             <div 
               key={tool.id}
-              className="tool-card"
-              onClick={() => navigate(tool.path)}
-              style={{ borderTopColor: tool.color }}
+              className={`tool-card ${tool.comingSoon ? 'coming-soon' : ''}`}
+              onClick={() => !tool.comingSoon && navigate(tool.path)}
+              style={{ borderTopColor: tool.color, cursor: tool.comingSoon ? 'not-allowed' : 'pointer' }}
             >
-              <div className="tool-icon" style={{ background: `${tool.color}15` }}>
+              {tool.comingSoon && (
+                <div className="construction-badge">
+                  🚧 Under Construction
+                </div>
+              )}
+              <div className="tool-icon" style={{ background: `${tool.color}15`, opacity: tool.comingSoon ? 0.5 : 1 }}>
                 <span style={{ fontSize: '2.5rem' }}>{tool.icon}</span>
               </div>
               <h3>{tool.title}</h3>
               <p>{tool.description}</p>
-              <button className="tool-button" style={{ background: tool.color }}>
-                Open Tool →
+              <button 
+                className="tool-button" 
+                style={{ background: tool.comingSoon ? '#999' : tool.color }}
+                disabled={tool.comingSoon}
+              >
+                {tool.comingSoon ? 'Coming Soon' : 'Open Tool →'}
               </button>
             </div>
           ))}

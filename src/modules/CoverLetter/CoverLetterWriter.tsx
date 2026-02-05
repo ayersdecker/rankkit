@@ -5,6 +5,7 @@ import { canUserOptimize, decrementFreeOptimization, getUserDocuments } from '..
 import { useNavigate } from 'react-router-dom';
 import { Document } from '../../types';
 import { PaywallModal } from '../../components/Shared/PaywallModal';
+import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
 import './CoverLetterWriter.css';
 
@@ -73,7 +74,8 @@ export default function CoverLetterWriter() {
       const result = await generateCoverLetter({
         resumeContent: selectedDoc.content,
         jobDescription: jobDescription,
-        bio: bio || undefined
+        bio: bio || undefined,
+        userId: currentUser.uid
       });
 
       // Decrement free optimization count
@@ -201,6 +203,8 @@ export default function CoverLetterWriter() {
           </div>
         </div>
       </div>
+
+      {loading && <LoadingSpinner overlay size="small" message="Generating your cover letter..." />}
 
       {showPaywall && (
         <PaywallModal

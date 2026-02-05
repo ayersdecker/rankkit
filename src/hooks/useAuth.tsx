@@ -7,10 +7,15 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
-  updateProfile as firebaseUpdateProfile
+  updateProfile as firebaseUpdateProfile,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword as firebaseUpdatePassword,
+  deleteUser as firebaseDeleteUser
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../services/firebase';
+import { deleteUserData } from '../services/firestore';
 import { User } from '../types';
 
 interface AuthContextType {
@@ -21,6 +26,9 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (displayName: string) => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
+  canChangePassword: boolean;
+  deleteAccount: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -142,6 +150,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await refreshUser();
   }
 
+  async function changePassword(currentPassword: string, newPassword: string) {
+    if (!auth.currentUser || !auth.currentUser.email) {
+      throw new Error('No user logged in');
+    }
+
+    const credential = EmailAuthProvider.credential(
+      auth.currentUser.email,
+      currentPassword
+    );
+
+    await reauthenticateWithCredential(auth.currentUser, credential);
+    await firebaseUpdatePassword(auth.currentUser, newPassword);
+  }
+
+  async function deleteAccount() {
+    if (!auth.currentUser) {
+      throw new Error('No user logged in');
+    }
+
+    const userId = auth.currentUser.uid;
+    try {
+      await deleteUserData(userId);
+      await firebaseDeleteUser(auth.currentUser);
+    } catch (error) {
+      console.error('[Auth] Delete account failed:', error);
+      throw error;
+    }
+  }
+
+  const canChangePassword = !!auth.currentUser?.providerData.some(
+    (provider) => provider.providerId === 'password'
+  );
+
   async function refreshUser() {
     if (auth.currentUser) {
       const user = await loadUserData(auth.currentUser);
@@ -157,6 +198,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signInWithGoogle,
     signOut,
     updateProfile,
+    changePassword,
+    canChangePassword,
+    deleteAccount,
     refreshUser
   };
 

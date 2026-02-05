@@ -4,6 +4,7 @@ import { optimizeContent } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization, getUserDocuments, createDocument } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
 import { Document } from '../../types';
+import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import './ResumeOptimizer.css';
 
 export default function ResumeOptimizer() {
@@ -65,7 +66,7 @@ export default function ResumeOptimizer() {
         type: 'resume',
         content: selectedDoc.content,
         context: jobPosting || 'General resume optimization without specific job posting'
-      });
+      }, currentUser.uid);
 
       // Decrement free optimization count
       await decrementFreeOptimization(currentUser.uid);
@@ -85,7 +86,7 @@ export default function ResumeOptimizer() {
 
   async function handleSaveToDocuments() {
     if (!optimizedResume || !currentUser) {
-      alert('❌ Cannot save: ' + (!currentUser ? 'Not logged in' : 'No optimized resume'));
+      setError(!currentUser ? 'You must be logged in to save.' : 'No optimized resume to save.');
       return;
     }
     
@@ -114,7 +115,6 @@ export default function ResumeOptimizer() {
       );
       
       console.log('Document saved successfully:', docId);
-      alert('✅ Optimized resume saved to your documents!');
       
       // Reload documents list
       const docs = await getUserDocuments(currentUser.uid, 'resume');
@@ -131,7 +131,6 @@ export default function ResumeOptimizer() {
       });
       const errorMsg = err.message || err.code || 'Unknown error';
       setError('Save failed: ' + errorMsg);
-      alert('❌ Failed to save: ' + errorMsg);
     } finally {
       setLoading(false);
     }
@@ -274,6 +273,18 @@ export default function ResumeOptimizer() {
             </button>
 
             {error && <div className="error-message">{error}</div>}
+
+            {optimizedResume && (
+              <>
+                <h3>Key Improvements</h3>
+                <ul className="suggestions-list">
+                  {suggestions.map((suggestion, index) => (
+                    <li key={index}>{suggestion}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+
           </div>
 
           <div className="output-section">
@@ -307,13 +318,6 @@ export default function ResumeOptimizer() {
                   }).join('')
                 }}></div>
 
-                <h3>Key Improvements</h3>
-                <ul className="suggestions-list">
-                  {suggestions.map((suggestion, index) => (
-                    <li key={index}>{suggestion}</li>
-                  ))}
-                </ul>
-
                 <div style={{ display: 'flex', gap: '10px', marginTop: '20px', flexWrap: 'wrap' }}>
                   <button className="download-button" onClick={handleSaveToDocuments}>
                     💾 Save to Documents
@@ -322,6 +326,7 @@ export default function ResumeOptimizer() {
                     🖨️ Print / Save as PDF
                   </button>
                 </div>
+
               </>
             ) : (
               <div className="empty-state">
@@ -331,6 +336,8 @@ export default function ResumeOptimizer() {
           </div>
         </div>
       </div>
+
+      {loading && <LoadingSpinner overlay size="small" message="Working on your request..." />}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { generateJobSearchStrategy } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
 import { PaywallModal } from '../../components/Shared/PaywallModal';
+import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
 import './JobSearchAssistant.css';
 
@@ -60,7 +61,8 @@ export default function JobSearchAssistant() {
         jobTitle: jobTitle,
         skills: skillsArray,
         experience: experience,
-        location: location || undefined
+        location: location || undefined,
+        userId: currentUser.uid
       });
 
       // Decrement free optimization count
@@ -193,6 +195,8 @@ export default function JobSearchAssistant() {
           </div>
         </div>
       </div>
+
+      {loading && <LoadingSpinner overlay size="small" message="Building your job search strategy..." />}
 
       {showPaywall && (
         <PaywallModal

@@ -4,6 +4,7 @@ import { generateHashtags } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
 import { PaywallModal } from '../../components/Shared/PaywallModal';
+import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall, hasPremiumAccess } from '../../utils/premiumUtils';
 import './HashtagGenerator.css';
 
@@ -57,7 +58,8 @@ export default function HashtagGenerator() {
       const result = await generateHashtags({
         platform,
         contentDescription,
-        niche
+        niche,
+        userId: currentUser.uid
       });
 
       setHashtags(result.hashtags);
@@ -242,6 +244,8 @@ export default function HashtagGenerator() {
           </div>
         </div>
       </div>
+
+      {loading && <LoadingSpinner overlay size="small" message="Generating hashtags..." />}
 
       {showPaywall && (
         <PaywallModal

@@ -4,6 +4,7 @@ import { analyzeSellingPoints } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
 import { PaywallModal } from '../../components/Shared/PaywallModal';
+import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
 import './SellingPointsFinder.css';
 
@@ -56,7 +57,8 @@ export default function SellingPointsFinder() {
       const result = await analyzeSellingPoints({
         productUrl: productUrl || undefined,
         productDescription: productDescription,
-        targetAudience: targetAudience || undefined
+        targetAudience: targetAudience || undefined,
+        userId: currentUser.uid
       });
 
       await decrementFreeOptimization(currentUser.uid);
@@ -176,6 +178,8 @@ export default function SellingPointsFinder() {
           </div>
         </div>
       </div>
+
+      {loading && <LoadingSpinner overlay size="small" message="Analyzing selling points..." />}
 
       {showPaywall && (
         <PaywallModal

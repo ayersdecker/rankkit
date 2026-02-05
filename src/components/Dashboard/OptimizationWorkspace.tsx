@@ -12,6 +12,7 @@ import {
 import { optimizeContent } from '../../services/openai';
 import { Document, OptimizationVersion, OptimizationType } from '../../types';
 import { SignOutConfirmation } from '../Shared/SignOutConfirmation';
+import { LoadingSpinner } from '../Shared/LoadingSpinner';
 import './OptimizationWorkspace.css';
 
 export default function OptimizationWorkspace() {
@@ -368,6 +369,8 @@ export default function OptimizationWorkspace() {
           onCancel={() => setShowSignOutModal(false)}
         />
       )}
+
+      {loading && <LoadingSpinner overlay size="small" message="Optimizing your document..." />}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { OPENAI_API_KEY } from '../config';
+import { trackUsage } from './usageTracking';
 
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 const MAX_RETRIES = 3;
@@ -449,7 +450,8 @@ function parseOptimizationResult(
  * Main optimization function with validation, caching, and error handling
  */
 export async function optimizeContent(
-  request: OptimizationRequest
+  request: OptimizationRequest,
+  userId?: string
 ): Promise<OptimizationResponse> {
   // Validate input
   validateRequest(request);
@@ -474,6 +476,12 @@ export async function optimizeContent(
   // Cache result
   setCachedResult(request, result);
   
+  // Track usage
+  if (userId) {
+    const toolType = request.type === 'resume' ? 'resume' : request.type === 'post' ? 'post' : 'resume';
+    await trackUsage(userId, toolType, true);
+  }
+  
   console.log(`[OpenAI] Optimization complete (score: ${result.score})`);
   
   return result;
@@ -494,6 +502,7 @@ export async function generateCoverLetter(params: {
   resumeContent: string;
   jobDescription: string;
   bio?: string;
+  userId?: string;
 }): Promise<{ letter: string; suggestions: string[] }> {
   if (!params.resumeContent || params.resumeContent.trim().length === 0) {
     throw new OptimizationError('Resume content cannot be empty', 'INVALID_INPUT');
@@ -539,12 +548,20 @@ OUTPUT (Valid JSON only):
     const jsonStr = jsonMatch[1] || jsonMatch[0];
     const parsed = JSON.parse(jsonStr);
 
+    // Track usage
+    if (params.userId) {
+      await trackUsage(params.userId, 'cover-letter', true);
+    }
+
     return {
       letter: parsed.cover_letter,
       suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions : []
     };
   } catch (error) {
     console.error('[OpenAI] Cover letter generation error:', error);
+    if (params.userId) {
+      await trackUsage(params.userId, 'cover-letter', false);
+    }
     throw new OptimizationError(
       'Failed to generate cover letter',
       'GENERATION_FAILED'
@@ -558,6 +575,7 @@ OUTPUT (Valid JSON only):
 export async function generateInterviewPrep(params: {
   jobDescription: string;
   resumeContent?: string;
+  userId?: string;
 }): Promise<{
   commonQuestions: string[];
   suggestedAnswers: { question: string; answer: string }[];
@@ -606,6 +624,11 @@ OUTPUT (Valid JSON only):
     const jsonStr = jsonMatch[1] || jsonMatch[0];
     const parsed = JSON.parse(jsonStr);
 
+    // Track usage
+    if (params.userId) {
+      await trackUsage(params.userId, 'interview', true);
+    }
+
     return {
       commonQuestions: Array.isArray(parsed.common_questions) ? parsed.common_questions : [],
       suggestedAnswers: Array.isArray(parsed.suggested_answers) ? parsed.suggested_answers : [],
@@ -614,6 +637,9 @@ OUTPUT (Valid JSON only):
     };
   } catch (error) {
     console.error('[OpenAI] Interview prep generation error:', error);
+    if (params.userId) {
+      await trackUsage(params.userId, 'interview', false);
+    }
     throw new OptimizationError(
       'Failed to generate interview prep',
       'GENERATION_FAILED'
@@ -629,6 +655,7 @@ export async function generateJobSearchStrategy(params: {
   skills: string[];
   experience: string;
   location?: string;
+  userId?: string;
 }): Promise<{
   platforms: string[];
   searchStrategies: string[];
@@ -671,6 +698,11 @@ OUTPUT (Valid JSON only):
     const jsonStr = jsonMatch[1] || jsonMatch[0];
     const parsed = JSON.parse(jsonStr);
 
+    // Track usage
+    if (params.userId) {
+      await trackUsage(params.userId, 'job-search', true);
+    }
+
     return {
       platforms: Array.isArray(parsed.platforms) ? parsed.platforms : [],
       searchStrategies: Array.isArray(parsed.search_strategies) ? parsed.search_strategies : [],
@@ -678,6 +710,9 @@ OUTPUT (Valid JSON only):
     };
   } catch (error) {
     console.error('[OpenAI] Job search strategy generation error:', error);
+    if (params.userId) {
+      await trackUsage(params.userId, 'job-search', false);
+    }
     throw new OptimizationError(
       'Failed to generate job search strategy',
       'GENERATION_FAILED'
@@ -692,6 +727,7 @@ export async function analyzeSellingPoints(params: {
   productUrl?: string;
   productDescription: string;
   targetAudience?: string;
+  userId?: string;
 }): Promise<{
   sellingPoints: string[];
   uniqueValueProps: string[];
@@ -740,6 +776,11 @@ OUTPUT (Valid JSON only):
     const jsonStr = jsonMatch[1] || jsonMatch[0];
     const parsed = JSON.parse(jsonStr);
 
+    // Track usage
+    if (params.userId) {
+      await trackUsage(params.userId, 'selling-points', true);
+    }
+
     return {
       sellingPoints: Array.isArray(parsed.selling_points) ? parsed.selling_points : [],
       uniqueValueProps: Array.isArray(parsed.unique_value_props) ? parsed.unique_value_props : [],
@@ -749,6 +790,9 @@ OUTPUT (Valid JSON only):
     };
   } catch (error) {
     console.error('[OpenAI] Selling points analysis error:', error);
+    if (params.userId) {
+      await trackUsage(params.userId, 'selling-points', false);
+    }
     throw new OptimizationError(
       'Failed to analyze selling points',
       'GENERATION_FAILED'
@@ -764,6 +808,7 @@ export async function generateColdEmail(params: {
   yourCompany: string;
   yourValue: string;
   callToAction: string;
+  userId?: string;
 }): Promise<{
   subject: string;
   email: string;
@@ -812,6 +857,11 @@ OUTPUT (Valid JSON only):
     const jsonStr = jsonMatch[1] || jsonMatch[0];
     const parsed = JSON.parse(jsonStr);
 
+    // Track usage
+    if (params.userId) {
+      await trackUsage(params.userId, 'cold-email', true);
+    }
+
     return {
       subject: parsed.subject || '',
       email: parsed.email || '',
@@ -820,6 +870,9 @@ OUTPUT (Valid JSON only):
     };
   } catch (error) {
     console.error('[OpenAI] Cold email generation error:', error);
+    if (params.userId) {
+      await trackUsage(params.userId, 'cold-email', false);
+    }
     throw new OptimizationError(
       'Failed to generate cold email',
       'GENERATION_FAILED'
@@ -835,6 +888,7 @@ export async function generateSalesScript(params: {
   productService: string;
   targetAudience: string;
   goals: string;
+  userId?: string;
 }): Promise<{
   script: string;
   keyPoints: string[];
@@ -880,6 +934,11 @@ OUTPUT (Valid JSON only):
     const jsonStr = jsonMatch[1] || jsonMatch[0];
     const parsed = JSON.parse(jsonStr);
 
+    // Track usage
+    if (params.userId) {
+      await trackUsage(params.userId, 'sales-script', true);
+    }
+
     return {
       script: parsed.script || '',
       keyPoints: Array.isArray(parsed.key_points) ? parsed.key_points : [],
@@ -888,6 +947,9 @@ OUTPUT (Valid JSON only):
     };
   } catch (error) {
     console.error('[OpenAI] Sales script generation error:', error);
+    if (params.userId) {
+      await trackUsage(params.userId, 'sales-script', false);
+    }
     throw new OptimizationError(
       'Failed to generate sales script',
       'GENERATION_FAILED'
@@ -902,6 +964,7 @@ export async function generateHashtags(params: {
   platform: string;
   contentDescription: string;
   niche?: string;
+  userId?: string;
 }): Promise<{
   hashtags: string[];
   categories: {
@@ -949,6 +1012,11 @@ OUTPUT (Valid JSON only):
     const jsonStr = jsonMatch[1] || jsonMatch[0];
     const parsed = JSON.parse(jsonStr);
 
+    // Track usage
+    if (params.userId) {
+      await trackUsage(params.userId, 'hashtag', true);
+    }
+
     return {
       hashtags: Array.isArray(parsed.hashtags) ? parsed.hashtags : [],
       categories: {
@@ -959,6 +1027,9 @@ OUTPUT (Valid JSON only):
     };
   } catch (error) {
     console.error('[OpenAI] Hashtag generation error:', error);
+    if (params.userId) {
+      await trackUsage(params.userId, 'hashtag', false);
+    }
     throw new OptimizationError(
       'Failed to generate hashtags',
       'GENERATION_FAILED'

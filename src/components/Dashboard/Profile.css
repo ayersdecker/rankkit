@@ -150,7 +150,7 @@
 .setting-card {
   background: white;
   border-radius: 16px;
-  padding: 30px;
+  padding: 35px;
   margin-bottom: 25px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
@@ -160,6 +160,7 @@
   color: #1a1a1a;
   font-size: 20px;
   font-weight: 600;
+  padding: 0 5px;
 }
 
 .setting-card p {
@@ -167,6 +168,7 @@
   color: #666;
   font-size: 14px;
   line-height: 1.6;
+  padding: 0 5px;
 }
 
 .setting-field {
@@ -179,14 +181,16 @@
   color: #333;
   font-size: 14px;
   font-weight: 600;
+  padding: 0 5px;
 }
 
 .setting-field input {
   width: 100%;
-  padding: 12px;
+  padding: 14px 16px;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 14px;
+  box-sizing: border-box;
 }
 
 .setting-field input:focus {
@@ -200,10 +204,10 @@
 }
 
 .update-message {
-  padding: 10px 12px;
-  border-radius: 6px;
+  padding: 12px 16px;
+  border-radius: 8px;
   font-size: 14px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   font-weight: 500;
 }
 
@@ -272,7 +276,7 @@
 }
 
 .quick-action-grid button {
-  padding: 20px;
+  padding: 24px;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -303,13 +307,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
+  padding: 16px 8px;
   border-bottom: 1px solid #f0f0f0;
   font-size: 14px;
 }
 
 .stat-row:last-child {
   border-bottom: none;
+  padding-bottom: 0;
+}
+
+.stat-row:first-child {
+  padding-top: 0;
 }
 
 .stat-row span {
@@ -321,13 +330,26 @@
   font-weight: 600;
 }
 
+.no-usage {
+  color: #999;
+  text-align: center;
+  font-style: italic;
+  margin: 0;
+  padding: 1rem 0;
+}
+
 .setting-toggle {
-  padding: 15px 0;
+  padding: 16px 8px;
   border-bottom: 1px solid #f0f0f0;
 }
 
 .setting-toggle:last-child {
   border-bottom: none;
+  padding-bottom: 0;
+}
+
+.setting-toggle:first-child {
+  padding-top: 0;
 }
 
 .setting-toggle label {
@@ -349,6 +371,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
+  padding: 5px;
 }
 
 .plan-badge {
@@ -452,7 +475,7 @@
 }
 
 .usage-stat {
-  padding: 20px;
+  padding: 24px;
   background: #f9fafb;
   border-radius: 12px;
 }
@@ -463,6 +486,7 @@
   color: #666;
   font-size: 14px;
   font-weight: 500;
+  padding: 0 4px;
 }
 
 .stat-value {
@@ -471,6 +495,7 @@
   color: #1a1a1a;
   font-size: 32px;
   font-weight: 700;
+  padding: 0 4px;
 }
 
 .stat-bar {
@@ -491,6 +516,7 @@
 @media (max-width: 968px) {
   .profile-container {
     flex-direction: column;
+    padding: 20px;
   }
   
   .profile-sidebar {
@@ -504,6 +530,18 @@
   .plans-grid-profile {
     grid-template-columns: 1fr;
   }
+
+  .setting-card {
+    padding: 25px 20px;
+  }
+
+  .billing-faq {
+    padding: 2rem 1.5rem;
+  }
+
+  .beta-banner {
+    padding: 2rem 1.5rem;
+  }
 }
 
 /* New Billing & Plans Styles */
@@ -511,7 +549,7 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   text-align: center;
-  padding: 2rem;
+  padding: 2.5rem;
   border: none !important;
 }
 
@@ -527,14 +565,16 @@
 
 .beta-banner h3 {
   color: white;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.75rem 0;
+  padding: 0;
 }
 
 .beta-banner p {
   color: rgba(255, 255, 255, 0.95);
   margin: 0;
+  padding: 0 1rem;
   font-size: 0.95rem;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .plans-grid-profile {
@@ -661,7 +701,7 @@
 
 .billing-faq {
   margin-top: 3rem;
-  padding: 2rem;
+  padding: 2.5rem;
   background: #f9fafb;
   border-radius: 16px;
 }
@@ -671,11 +711,12 @@
   color: #333;
   font-size: 1.4rem;
   font-weight: 600;
+  padding: 0 5px;
 }
 
 .faq-item {
   margin-bottom: 1.5rem;
-  padding-bottom: 1.5rem;
+  padding: 0 10px 1.5rem 10px;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -686,7 +727,7 @@
 }
 
 .faq-item h4 {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.75rem 0;
   color: #333;
   font-size: 1.1rem;
   font-weight: 600;
@@ -696,6 +737,6 @@
   margin: 0;
   color: #666;
   font-size: 0.95rem;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 

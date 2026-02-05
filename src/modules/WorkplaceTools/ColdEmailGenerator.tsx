@@ -4,6 +4,7 @@ import { generateColdEmail } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
 import { PaywallModal } from '../../components/Shared/PaywallModal';
+import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
 import '../CoverLetter/CoverLetterWriter.css';
 
@@ -57,7 +58,8 @@ export default function ColdEmailGenerator() {
         recipientInfo,
         yourCompany,
         yourValue,
-        callToAction: callToAction || 'Schedule a quick call'
+        callToAction: callToAction || 'Schedule a quick call',
+        userId: currentUser.uid
       });
 
       await decrementFreeOptimization(currentUser.uid);
@@ -182,6 +184,8 @@ export default function ColdEmailGenerator() {
           </div>
         </div>
       </div>
+
+      {loading && <LoadingSpinner overlay size="small" message="Generating your cold email..." />}
 
       {showPaywall && (
         <PaywallModal

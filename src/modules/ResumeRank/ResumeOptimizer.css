@@ -36,6 +36,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 30px;
+  align-items: start;
 }
 
 .input-section,
@@ -43,6 +44,8 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  align-self: start;
+  background: transparent;
 }
 
 .input-section h3,
@@ -171,8 +174,9 @@ textarea:focus {
   line-height: 1.5;
   font-family: 'Calibri', 'Arial', sans-serif;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  max-height: none;
-  overflow-x: auto;
+  max-height: 360px;
+  overflow-y: auto;
+  overflow-x: hidden;
   word-wrap: break-word;
   color: #1a1a1a;
 }

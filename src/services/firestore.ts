@@ -5,6 +5,7 @@ import {
   getDoc,
   doc,
   updateDoc,
+  deleteDoc,
   query,
   where,
   // orderBy, // Reserved for future use
@@ -12,6 +13,7 @@ import {
   writeBatch,
   // limit as firestoreLimit // Reserved for future use
 } from 'firebase/firestore';
+import type { DocumentReference } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from './firebase';
 import { Document, OptimizationVersion } from '../types';
@@ -753,6 +755,70 @@ export async function getUserStats(userId: string): Promise<{
     throw new FirestoreError(
       'Failed to get user stats',
       'GET_STATS_FAILED',
+      error
+    );
+  }
+}
+
+async function batchDeleteDocs(docs: DocumentReference[]): Promise<void> {
+  const batchSize = 400;
+  for (let i = 0; i < docs.length; i += batchSize) {
+    const batch = writeBatch(db);
+    const chunk = docs.slice(i, i + batchSize);
+    chunk.forEach((docRef) => batch.delete(docRef));
+    await batch.commit();
+  }
+}
+
+/**
+ * Deletes all user data in Firestore and related storage files
+ */
+export async function deleteUserData(userId: string): Promise<void> {
+  try {
+    if (!userId) {
+      throw new FirestoreError('User ID is required', 'INVALID_USER_ID');
+    }
+
+    const documentsRef = collection(db, 'users', userId, 'documents');
+    const optimizationsRef = collection(db, 'users', userId, 'optimizationVersions');
+    const usageStatsQuery = query(
+      collection(db, 'usage_stats'),
+      where('userId', '==', userId)
+    );
+
+    const [documentsSnap, optimizationsSnap, usageStatsSnap] = await Promise.all([
+      getDocs(documentsRef),
+      getDocs(optimizationsRef),
+      getDocs(usageStatsQuery)
+    ]);
+
+    const fileUrls: string[] = [];
+    documentsSnap.forEach((docSnap) => {
+      const data = docSnap.data();
+      if (data?.fileUrl) {
+        fileUrls.push(data.fileUrl as string);
+      }
+    });
+
+    const documentRefs = documentsSnap.docs.map((docSnap) => docSnap.ref);
+    const optimizationRefs = optimizationsSnap.docs.map((docSnap) => docSnap.ref);
+    const usageRefs = usageStatsSnap.docs.map((docSnap) => docSnap.ref);
+
+    await batchDeleteDocs([...documentRefs, ...optimizationRefs, ...usageRefs]);
+
+    await deleteDoc(doc(db, 'users', userId));
+
+    await Promise.all(
+      fileUrls.map((fileUrl) => deleteDocumentFile(fileUrl).catch(() => undefined))
+    );
+  } catch (error: any) {
+    console.error('[Firestore] Failed to delete user data:', error);
+    if (error instanceof FirestoreError) {
+      throw error;
+    }
+    throw new FirestoreError(
+      'Failed to delete user data',
+      'DELETE_USER_DATA_FAILED',
       error
     );
   }

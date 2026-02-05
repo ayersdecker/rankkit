@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { SignOutConfirmation } from '../Shared/SignOutConfirmation';
+import { DeleteAccountConfirmation } from '../Shared/DeleteAccountConfirmation';
 import { getUserDocuments } from '../../services/firestore';
+import { getMonthlyUsageStats, UsageStats } from '../../services/usageTracking';
 import { Document } from '../../types';
 import './Profile.css';
 
@@ -97,7 +99,7 @@ export default function Profile() {
           {activeTab === 'account' && <AccountSettings />}
           {activeTab === 'documents' && <DocumentManagement />}
           {activeTab === 'billing' && <BillingPlans />}
-          {activeTab === 'usage' && <UsageStats />}
+          {activeTab === 'usage' && <UsageStatsSection />}
         </div>
       </div>
 
@@ -112,10 +114,19 @@ export default function Profile() {
 }
 
 function AccountSettings() {
-  const { currentUser, updateProfile } = useAuth();
+  const { currentUser, updateProfile, changePassword, canChangePassword, deleteAccount, signOut } = useAuth();
+  const navigate = useNavigate();
   const [displayName, setDisplayName] = useState(currentUser?.displayName || '');
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateMessage, setUpdateMessage] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [passwordMessage, setPasswordMessage] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteMessage, setDeleteMessage] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Sync local state with currentUser when it changes
   useEffect(() => {
@@ -140,6 +151,85 @@ function AccountSettings() {
       setUpdateMessage('✗ Failed to update profile');
     } finally {
       setIsUpdating(false);
+    }
+  }
+
+  async function handleChangePassword(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!canChangePassword) {
+      setPasswordMessage('Password changes are not available for this sign-in method.');
+      return;
+    }
+
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      setPasswordMessage('Please fill in all password fields.');
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setPasswordMessage('New passwords do not match.');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordMessage('New password must be at least 6 characters.');
+      return;
+    }
+
+    setIsChangingPassword(true);
+    setPasswordMessage('');
+
+    try {
+      await changePassword(currentPassword, newPassword);
+      setPasswordMessage('✓ Password updated successfully!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+    } catch (error: any) {
+      const errorCode = error?.code || '';
+      if (errorCode === 'auth/wrong-password') {
+        setPasswordMessage('✗ Current password is incorrect.');
+      } else if (errorCode === 'auth/weak-password') {
+        setPasswordMessage('✗ New password is too weak.');
+      } else if (errorCode === 'auth/requires-recent-login') {
+        setPasswordMessage('✗ Please sign in again to change your password.');
+      } else {
+        setPasswordMessage('✗ Failed to update password.');
+      }
+    } finally {
+      setIsChangingPassword(false);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    if (!currentUser) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeleteMessage('');
+
+    try {
+      await deleteAccount();
+      await signOut().catch(() => undefined);
+      setShowDeleteModal(false);
+      navigate('/login');
+    } catch (error: any) {
+      console.error('Delete account error:', error);
+      const errorCode = error?.code || '';
+      const errorMessage = error?.message || '';
+      if (errorCode === 'auth/requires-recent-login') {
+        setDeleteMessage('Please sign in again to delete your account.');
+      } else if (errorCode) {
+        setDeleteMessage(`Failed to delete account (${errorCode}).`);
+      } else if (errorMessage) {
+        setDeleteMessage(`Failed to delete account: ${errorMessage}`);
+      } else {
+        setDeleteMessage('Failed to delete account. Please try again.');
+      }
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -176,28 +266,74 @@ function AccountSettings() {
         </button>
       </div>
 
-      <div className="setting-card">
-        <h3>Password</h3>
-        <div className="setting-field">
-          <label>Current Password</label>
-          <input type="password" placeholder="••••••••" />
+      {canChangePassword ? (
+        <form className="setting-card" onSubmit={handleChangePassword}>
+          <h3>Password</h3>
+          <div className="setting-field">
+            <label>Current Password</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+            />
+          </div>
+          <div className="setting-field">
+            <label>New Password</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+          </div>
+          <div className="setting-field">
+            <label>Confirm New Password</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={confirmNewPassword}
+              onChange={(e) => setConfirmNewPassword(e.target.value)}
+            />
+          </div>
+          {passwordMessage && (
+            <div className={`update-message ${passwordMessage.includes('✓') ? 'success' : 'error'}`}>
+              {passwordMessage}
+            </div>
+          )}
+          <button className="primary-button" type="submit" disabled={isChangingPassword}>
+            {isChangingPassword ? 'Updating...' : 'Change Password'}
+          </button>
+        </form>
+      ) : (
+        <div className="setting-card">
+          <h3>Password</h3>
+          <p>Your account is managed by Google. Change your password in your Google account settings.</p>
         </div>
-        <div className="setting-field">
-          <label>New Password</label>
-          <input type="password" placeholder="••••••••" />
-        </div>
-        <div className="setting-field">
-          <label>Confirm New Password</label>
-          <input type="password" placeholder="••••••••" />
-        </div>
-        <button className="primary-button">Change Password</button>
-      </div>
+      )}
 
       <div className="setting-card danger">
         <h3>Danger Zone</h3>
         <p>Delete your account and all associated data permanently.</p>
-        <button className="danger-button">Delete Account</button>
+        <button className="danger-button" onClick={() => setShowDeleteModal(true)}>
+          Delete Account
+        </button>
       </div>
+
+      {showDeleteModal && currentUser?.email && (
+        <DeleteAccountConfirmation
+          email={currentUser.email}
+          onConfirm={handleDeleteAccount}
+          onCancel={() => {
+            if (!isDeleting) {
+              setShowDeleteModal(false);
+              setDeleteMessage('');
+            }
+          }}
+          isDeleting={isDeleting}
+          errorMessage={deleteMessage}
+        />
+      )}
     </div>
   );
 }
@@ -239,7 +375,6 @@ function DocumentManagement() {
   };
 
   const totalStorageBytes = calculateStorageBytes();
-  const storageLimit = currentUser?.isPremium ? 100 : 10; // MB
   const storageLimitText = currentUser?.isPremium ? '100 MB' : '10 MB';
 
   return (
@@ -477,8 +612,57 @@ function BillingPlans() {
   );
 }
 
-function UsageStats() {
+function UsageStatsSection() {
   const { currentUser } = useAuth();
+  const [usageStats, setUsageStats] = useState<UsageStats | null>(null);
+  const [totalDocuments, setTotalDocuments] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchStats() {
+      if (!currentUser) return;
+      
+      try {
+        setLoading(true);
+        // Fetch usage stats
+        const stats = await getMonthlyUsageStats(currentUser.uid);
+        setUsageStats(stats);
+        
+        // Fetch document count
+        const docs = await getUserDocuments(currentUser.uid);
+        setTotalDocuments(docs.length);
+      } catch (error) {
+        console.error('Failed to fetch usage stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchStats();
+  }, [currentUser]);
+
+  if (loading) {
+    return (
+      <div className="settings-section">
+        <h2>Usage Statistics</h2>
+        <div className="setting-card">
+          <p>Loading statistics...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const toolNames: Record<string, string> = {
+    'resume': 'Resume Optimizer',
+    'cover-letter': 'Cover Letter Writer',
+    'post': 'Post Optimizer',
+    'hashtag': 'Hashtag Generator',
+    'cold-email': 'Cold Email Generator',
+    'selling-points': 'Selling Points Finder',
+    'interview': 'Interview Prep',
+    'job-search': 'Job Search Assistant',
+    'sales-script': 'Sales Script Builder'
+  };
 
   return (
     <div className="settings-section">
@@ -487,41 +671,47 @@ function UsageStats() {
       <div className="setting-card">
         <h3>This Month</h3>
         <div className="usage-stat">
-          <div className="stat-label">Total Optimizations Used</div>
-          <div className="stat-value">{currentUser?.usageCount || 0}</div>
+          <div className="stat-label">Total AI Requests</div>
+          <div className="stat-value">{usageStats?.monthlyUsage || 0}</div>
         </div>
         <div className="usage-stat">
-          <div className="stat-label">Free Optimizations Remaining</div>
-          <div className="stat-value">
-            {currentUser?.isPremium ? '∞' : (currentUser?.freeOptimizationsRemaining || 0)}
-          </div>
-          {!currentUser?.isPremium && (
-            <div className="stat-bar">
-              <div
-                className="stat-bar-fill"
-                style={{
-                  width: `${((currentUser?.freeOptimizationsRemaining || 0) / 1) * 100}%`
-                }}
-              />
-            </div>
-          )}
+          <div className="stat-label">All-Time Usage</div>
+          <div className="stat-value">{currentUser?.usageCount || 0}</div>
         </div>
       </div>
 
       <div className="setting-card">
-        <h3>Activity</h3>
+        <h3>Activity Breakdown</h3>
         <div className="stat-row">
           <span>Total Documents</span>
-          <strong>12</strong>
+          <strong>{totalDocuments}</strong>
         </div>
         <div className="stat-row">
-          <span>Total Optimizations</span>
-          <strong>45</strong>
+          <span>Monthly AI Requests</span>
+          <strong>{usageStats?.monthlyUsage || 0}</strong>
         </div>
-        <div className="stat-row">
-          <span>Average Score</span>
-          <strong>82/100</strong>
+      </div>
+
+      {usageStats && usageStats.monthlyUsage > 0 && (
+        <div className="setting-card">
+          <h3>Usage by Tool</h3>
+          {Object.entries(usageStats.toolUsage || {})
+            .filter(([_, count]) => count > 0)
+            .sort(([, a], [, b]) => b - a)
+            .map(([tool, count]) => (
+              <div key={tool} className="stat-row">
+                <span>{toolNames[tool as keyof typeof toolNames] || tool}</span>
+                <strong>{count}</strong>
+              </div>
+            ))}
+          {Object.values(usageStats.toolUsage || {}).every(count => count === 0) && (
+            <p className="no-usage">No tool usage this month yet. Start optimizing!</p>
+          )}
         </div>
+      )}
+
+      <div className="setting-card">
+        <h3>Account Info</h3>
         <div className="stat-row">
           <span>Member Since</span>
           <strong>{new Date(currentUser?.createdAt || Date.now()).toLocaleDateString()}</strong>

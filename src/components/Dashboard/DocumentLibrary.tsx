@@ -8,9 +8,11 @@ import {
   uploadDocumentFile
 } from '../../services/firestore';
 import { extractTextFromFile, validateFile, formatFileSize, getFileIcon, validateDocumentPages } from '../../utils/fileUtils';
+import { exportAsPDF, exportAsWord, formatExportFileName, isExportable } from '../../utils/documentExport';
 import { Document } from '../../types';
 import { hasPremiumAccess } from '../../utils/premiumUtils';
 import { SignOutConfirmation } from '../Shared/SignOutConfirmation';
+import { DeleteDocumentConfirmation } from '../Shared/DeleteDocumentConfirmation';
 import './DocumentLibrary.css';
 
 // Helper functions for document type display
@@ -51,6 +53,9 @@ export default function DocumentLibrary() {
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [pendingDeleteDoc, setPendingDeleteDoc] = useState<Document | null>(null);
+  const [deleteError, setDeleteError] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
   
   const { currentUser, signOut } = useAuth();
   const navigate = useNavigate();
@@ -86,15 +91,26 @@ export default function DocumentLibrary() {
     loadDocuments();
   }, [loadDocuments]);
 
-  async function handleDelete(docId: string) {
-    if (!window.confirm('Are you sure you want to delete this document?')) return;
-    if (!currentUser) return;
-    
+  function handleDeleteRequest(doc: Document) {
+    setDeleteError('');
+    setPendingDeleteDoc(doc);
+  }
+
+  async function handleConfirmDelete() {
+    if (!currentUser || !pendingDeleteDoc) return;
+
+    setIsDeleting(true);
+    setDeleteError('');
+
     try {
-      await deleteDocument(currentUser.uid, docId);
+      await deleteDocument(currentUser.uid, pendingDeleteDoc.id);
       await loadDocuments();
+      setPendingDeleteDoc(null);
     } catch (error) {
       console.error('Failed to delete document:', error);
+      setDeleteError('Failed to delete document. Please try again.');
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -270,7 +286,7 @@ export default function DocumentLibrary() {
                 <p className="doc-preview">{doc.content.substring(0, 120)}...</p>
                 <div className="doc-actions">
                   <button onClick={() => setSelectedDoc(doc)}>View</button>
-                  <button onClick={() => handleDelete(doc.id)} className="danger">Delete</button>
+                  <button onClick={() => handleDeleteRequest(doc)} className="danger">Delete</button>
                 </div>
               </div>
             ))}
@@ -299,6 +315,21 @@ export default function DocumentLibrary() {
         <SignOutConfirmation
           onConfirm={handleSignOut}
           onCancel={() => setShowSignOutModal(false)}
+        />
+      )}
+
+      {pendingDeleteDoc && (
+        <DeleteDocumentConfirmation
+          documentName={pendingDeleteDoc.name}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => {
+            if (!isDeleting) {
+              setPendingDeleteDoc(null);
+              setDeleteError('');
+            }
+          }}
+          isDeleting={isDeleting}
+          errorMessage={deleteError}
         />
       )}
     </div>
@@ -537,6 +568,105 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
   );
 }
 
+// Helper function to parse and format markdown-style content
+function formatDocumentContent(content: string) {
+  const lines = content.split('\n');
+  const formattedLines: React.ReactNode[] = [];
+
+  lines.forEach((line, index) => {
+    const trimmed = line.trim();
+    
+    // Empty line
+    if (!trimmed) {
+      formattedLines.push(<div key={index} className="content-spacer" />);
+      return;
+    }
+
+    // Headings
+    const headingMatch = trimmed.match(/^(#{1,6})\s+(.+)$/);
+    if (headingMatch) {
+      const level = headingMatch[1].length;
+      const text = headingMatch[2];
+      
+      switch (level) {
+        case 1:
+          formattedLines.push(<h1 key={index} className="content-heading">{text}</h1>);
+          break;
+        case 2:
+          formattedLines.push(<h2 key={index} className="content-heading">{text}</h2>);
+          break;
+        case 3:
+          formattedLines.push(<h3 key={index} className="content-heading">{text}</h3>);
+          break;
+        case 4:
+          formattedLines.push(<h4 key={index} className="content-heading">{text}</h4>);
+          break;
+        case 5:
+          formattedLines.push(<h5 key={index} className="content-heading">{text}</h5>);
+          break;
+        default:
+          formattedLines.push(<h6 key={index} className="content-heading">{text}</h6>);
+      }
+      return;
+    }
+
+    // Bullet points (-, *, •)
+    const bulletMatch = trimmed.match(/^[-*•]\s+(.+)$/);
+    if (bulletMatch) {
+      const text = bulletMatch[1];
+      formattedLines.push(
+        <div key={index} className="content-bullet">
+          <span className="bullet-point">•</span>
+          <span className="bullet-text">{processBoldItalic(text)}</span>
+        </div>
+      );
+      return;
+    }
+
+    // Regular text with possible bold/italic
+    formattedLines.push(
+      <p key={index} className="content-paragraph">
+        {processBoldItalic(trimmed)}
+      </p>
+    );
+  });
+
+  return formattedLines;
+}
+
+// Helper to process bold and italic markdown
+function processBoldItalic(text: string): React.ReactNode {
+  const parts: React.ReactNode[] = [];
+  let remaining = text;
+  let key = 0;
+
+  while (remaining) {
+    // Bold with ** or __
+    const boldMatch = remaining.match(/^(.*?)(\*\*|__)(.+?)(\*\*|__)/);
+    if (boldMatch) {
+      if (boldMatch[1]) parts.push(<span key={`text-${key++}`}>{boldMatch[1]}</span>);
+      parts.push(<strong key={`bold-${key++}`}>{boldMatch[3]}</strong>);
+      remaining = remaining.slice(boldMatch[0].length);
+      continue;
+    }
+
+    // Italic with single * or _
+    const italicMatch = remaining.match(/^(.*?)([*_])(.+?)\2/);
+    if (italicMatch) {
+      if (italicMatch[1]) parts.push(<span key={`text-${key++}`}>{italicMatch[1]}</span>);
+      parts.push(<em key={`italic-${key++}`}>{italicMatch[3]}</em>);
+      remaining = remaining.slice(italicMatch[0].length);
+      continue;
+    }
+
+    // No more matches, add remaining text
+    parts.push(<span key={`text-${key++}`}>{remaining}</span>);
+    break;
+  }
+
+  return parts.length > 0 ? parts : text;
+}
+
 // Document View Modal Component
 function DocumentViewModal({
   document,
@@ -546,6 +676,46 @@ function DocumentViewModal({
   onClose: () => void;
 }) {
   const [viewMode, setViewMode] = useState<'original' | 'text'>(document.fileUrl ? 'original' : 'text');
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState('');
+
+  const handleExportPDF = async () => {
+    if (!isExportable(document.content)) {
+      setExportError('Document content is empty or invalid');
+      return;
+    }
+
+    try {
+      setExporting(true);
+      setExportError('');
+      const fileName = formatExportFileName(document.name);
+      await exportAsPDF(document.content, fileName);
+    } catch (error) {
+      console.error('PDF export failed:', error);
+      setExportError('Failed to export as PDF');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleExportWord = async () => {
+    if (!isExportable(document.content)) {
+      setExportError('Document content is empty or invalid');
+      return;
+    }
+
+    try {
+      setExporting(true);
+      setExportError('');
+      const fileName = formatExportFileName(document.name);
+      await exportAsWord(document.content, fileName);
+    } catch (error) {
+      console.error('Word export failed:', error);
+      setExportError('Failed to export as Word');
+    } finally {
+      setExporting(false);
+    }
+  };
   
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -607,23 +777,51 @@ function DocumentViewModal({
               )}
             </div>
           ) : (
-            <pre>{document.content}</pre>
+            <div className="formatted-content">
+              {formatDocumentContent(document.content)}
+            </div>
           )}
         </div>
 
+        {exportError && (
+          <div className="export-error">
+            {exportError}
+          </div>
+        )}
+
         <div className="modal-actions">
-          {document.fileUrl && (
-            <a 
-              href={document.fileUrl} 
-              download={document.originalFileName || document.name}
-              className="download-link-button"
-              target="_blank"
-              rel="noopener noreferrer"
+          <div className="export-actions">
+            <button 
+              onClick={handleExportPDF}
+              disabled={exporting}
+              className="export-button pdf"
+              title="Export as PDF"
             >
-              📥 Download
-            </a>
-          )}
-          <button onClick={onClose}>Close</button>
+              📄 {exporting ? 'Exporting...' : 'Export PDF'}
+            </button>
+            <button 
+              onClick={handleExportWord}
+              disabled={exporting}
+              className="export-button word"
+              title="Export as Word Document"
+            >
+              📝 {exporting ? 'Exporting...' : 'Export Word'}
+            </button>
+          </div>
+          <div className="action-buttons">
+            {document.fileUrl && (
+              <a 
+                href={document.fileUrl} 
+                download={document.originalFileName || document.name}
+                className="download-link-button"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                📥 Download Original
+              </a>
+            )}
+            <button onClick={onClose}>Close</button>
+          </div>
         </div>
       </div>
     </div>

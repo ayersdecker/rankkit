@@ -5,12 +5,14 @@ interface LoadingSpinnerProps {
   size?: 'small' | 'medium' | 'large';
   message?: string;
   fullPage?: boolean;
+  overlay?: boolean;
 }
 
 export function LoadingSpinner({
   size = 'medium',
   message,
-  fullPage = false
+  fullPage = false,
+  overlay = false
 }: LoadingSpinnerProps) {
   const content = (
     <div className={`loading-spinner ${size}`}>
@@ -18,6 +20,16 @@ export function LoadingSpinner({
       {message && <p className="loading-message">{message}</p>}
     </div>
   );
+
+  if (overlay) {
+    return (
+      <div className="loading-overlay">
+        <div className="loading-popup">
+          {content}
+        </div>
+      </div>
+    );
+  }
 
   if (fullPage) {
     return (

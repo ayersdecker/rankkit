@@ -1,0 +1,100 @@
+.delete-doc-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 11, 27, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.delete-doc-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 420px;
+  width: 92%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  text-align: center;
+}
+
+.delete-doc-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.delete-doc-modal h2 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.5rem;
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.delete-doc-message {
+  margin: 0 0 1.25rem 0;
+  color: #555;
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.delete-doc-error {
+  color: #b00020;
+  background: #fde8eb;
+  border-radius: 8px;
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.delete-doc-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.delete-doc-cancel,
+.delete-doc-confirm {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.delete-doc-cancel {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.delete-doc-cancel:hover {
+  background: #e5e5e5;
+}
+
+.delete-doc-confirm {
+  background: #dc3545;
+  color: #fff;
+}
+
+.delete-doc-confirm:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.delete-doc-confirm:disabled {
+  background: #f0b8bf;
+  cursor: not-allowed;
+}

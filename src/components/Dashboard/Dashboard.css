@@ -163,6 +163,7 @@
   color: #1a1a1a;
   font-size: 24px;
   font-weight: 600;
+  padding: 0 5px;
 }
 
 .actions-grid {
@@ -197,13 +198,15 @@
   color: #1a1a1a;
   font-size: 20px;
   font-weight: 600;
+  padding: 0 4px;
 }
 
 .action-card p {
   margin: 0;
   color: #666;
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.7;
+  padding: 0 4px;
 }
 
 .main-dashboards {
@@ -260,6 +263,7 @@
   color: #1a1a1a;
   font-size: 24px;
   font-weight: 600;
+  padding: 0 5px;
 }
 
 .features-grid {
@@ -271,7 +275,7 @@
 .feature {
   background: white;
   border-radius: 12px;
-  padding: 25px;
+  padding: 28px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
@@ -280,13 +284,15 @@
   color: #1a1a1a;
   font-size: 16px;
   font-weight: 600;
+  padding: 0 4px;
 }
 
 .feature p {
   margin: 0;
   color: #666;
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.7;
+  padding: 0 4px;
 }
 
 .usage-summary {
@@ -298,22 +304,57 @@
   color: #1a1a1a;
   font-size: 24px;
   font-weight: 600;
+  padding: 0 5px;
 }
 
 .usage-card {
   background: white;
   border-radius: 16px;
-  padding: 35px;
+  padding: 38px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   display: flex;
   align-items: center;
   gap: 40px;
 }
 
+.upgrade-card {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+  border: 1px solid rgba(102, 126, 234, 0.25);
+  border-radius: 14px;
+}
+
+.upgrade-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 220px;
+}
+
+.upgrade-eyebrow {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #667eea;
+  font-weight: 700;
+}
+
+.upgrade-card-text p {
+  margin: 0;
+  color: #444;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .usage-stat {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding: 0 4px;
 }
 
 .stat-label {
@@ -329,21 +370,48 @@
 }
 
 .upgrade-button {
-  margin-left: auto;
-  padding: 14px 28px;
+  margin-left: 0;
+  padding: 14px 30px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background-size: 200% 200%;
+  color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
-  transition: all 0.2s;
+  letter-spacing: 0.2px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 10px 24px rgba(102, 126, 234, 0.35);
+  animation: upgrade-glow 6s ease infinite;
 }
 
 .upgrade-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(102, 126, 234, 0.45);
+}
+
+.upgrade-button:active {
+  transform: translateY(0);
+  box-shadow: 0 8px 18px rgba(255, 168, 76, 0.3);
+}
+
+@keyframes upgrade-glow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@media (max-width: 960px) {
+  .upgrade-card {
+    margin-left: 0;
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 
 @media (max-width: 768px) {
@@ -368,10 +436,19 @@
   .usage-card {
     flex-direction: column;
     align-items: flex-start;
+    padding: 28px 24px;
   }
   
   .upgrade-button {
     margin-left: 0;
     width: 100%;
+  }
+
+  .action-card {
+    padding: 28px 24px;
+  }
+
+  .dashboard-content {
+    padding: 30px 20px;
   }
 }

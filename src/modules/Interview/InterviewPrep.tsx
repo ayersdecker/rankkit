@@ -4,6 +4,7 @@ import { generateInterviewPrep } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
 import { PaywallModal } from '../../components/Shared/PaywallModal';
+import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
 import './InterviewPrep.css';
 
@@ -60,7 +61,8 @@ export default function InterviewPrep() {
 
       const result = await generateInterviewPrep({
         jobDescription: jobDescription,
-        resumeContent: includeResume ? resume : undefined
+        resumeContent: includeResume ? resume : undefined,
+        userId: currentUser.uid
       });
 
       // Decrement free optimization count
@@ -190,6 +192,8 @@ export default function InterviewPrep() {
           </div>
         </div>
       </div>
+
+      {loading && <LoadingSpinner overlay size="small" message="Preparing your interview guide..." />}
 
       {showPaywall && (
         <PaywallModal

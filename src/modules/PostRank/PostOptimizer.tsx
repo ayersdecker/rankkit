@@ -4,6 +4,7 @@ import { optimizeContent } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
 import { PaywallModal } from '../../components/Shared/PaywallModal';
+import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
 import '../ResumeRank/ResumeOptimizer.css';
 
@@ -56,7 +57,7 @@ export default function PostOptimizer() {
         type: 'post',
         content: originalPost,
         context: platform
-      });
+      }, currentUser.uid);
 
       // Decrement free optimization count
       await decrementFreeOptimization(currentUser.uid);
@@ -170,6 +171,8 @@ export default function PostOptimizer() {
           </div>
         </div>
       </div>
+
+      {loading && <LoadingSpinner overlay size="small" message="Optimizing your post..." />}
 
       {showPaywall && (
         <PaywallModal

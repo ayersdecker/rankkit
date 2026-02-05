@@ -22,7 +22,8 @@ export default function WorkplaceToolsDashboard() {
       icon: '📧',
       description: 'Create personalized cold outreach emails that get responses',
       path: '/cold-email',
-      color: '#FF6B6B'
+      color: '#FF6B6B',
+      comingSoon: false
     },
     {
       id: 'sales-script',
@@ -30,7 +31,8 @@ export default function WorkplaceToolsDashboard() {
       icon: '📞',
       description: 'Generate effective sales scripts for calls, demos, and pitches',
       path: '/sales-script',
-      color: '#4ECDC4'
+      color: '#4ECDC4',
+      comingSoon: true
     },
     {
       id: 'selling-points',
@@ -38,7 +40,8 @@ export default function WorkplaceToolsDashboard() {
       icon: '💡',
       description: 'Analyze products/services and extract key selling points from links',
       path: '/selling-points',
-      color: '#95E1D3'
+      color: '#95E1D3',
+      comingSoon: false
     },
     {
       id: 'objection-handler',
@@ -46,7 +49,8 @@ export default function WorkplaceToolsDashboard() {
       icon: '🛡️',
       description: 'Get responses to common sales objections and push-backs',
       path: '/objection-handler',
-      color: '#F38181'
+      color: '#F38181',
+      comingSoon: true
     },
     {
       id: 'pitch-perfect',
@@ -54,7 +58,8 @@ export default function WorkplaceToolsDashboard() {
       icon: '🎯',
       description: 'Create compelling elevator pitches and value propositions',
       path: '/pitch-perfect',
-      color: '#AA96DA'
+      color: '#AA96DA',
+      comingSoon: true
     },
     {
       id: 'meeting-prep',
@@ -62,7 +67,8 @@ export default function WorkplaceToolsDashboard() {
       icon: '📋',
       description: 'Prepare for sales meetings with research and talking points',
       path: '/meeting-prep',
-      color: '#FCBAD3'
+      color: '#FCBAD3',
+      comingSoon: true
     }
   ];
 
@@ -103,17 +109,26 @@ export default function WorkplaceToolsDashboard() {
           {tools.map((tool) => (
             <div 
               key={tool.id}
-              className="tool-card"
-              onClick={() => navigate(tool.path)}
-              style={{ borderTopColor: tool.color }}
+              className={`tool-card ${tool.comingSoon ? 'coming-soon' : ''}`}
+              onClick={() => !tool.comingSoon && navigate(tool.path)}
+              style={{ borderTopColor: tool.color, cursor: tool.comingSoon ? 'not-allowed' : 'pointer' }}
             >
-              <div className="tool-icon" style={{ background: `${tool.color}15` }}>
+              {tool.comingSoon && (
+                <div className="construction-badge">
+                  🚧 Under Construction
+                </div>
+              )}
+              <div className="tool-icon" style={{ background: `${tool.color}15`, opacity: tool.comingSoon ? 0.5 : 1 }}>
                 <span style={{ fontSize: '2.5rem' }}>{tool.icon}</span>
               </div>
               <h3>{tool.title}</h3>
               <p>{tool.description}</p>
-              <button className="tool-button" style={{ background: tool.color }}>
-                Open Tool →
+              <button 
+                className="tool-button" 
+                style={{ background: tool.comingSoon ? '#999' : tool.color }}
+                disabled={tool.comingSoon}
+              >
+                {tool.comingSoon ? 'Coming Soon' : 'Open Tool →'}
               </button>
             </div>
           ))}

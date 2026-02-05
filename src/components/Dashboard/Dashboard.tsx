@@ -168,9 +168,15 @@ export default function Dashboard() {
               <span className="stat-value">{currentUser?.isPremium ? 'Premium' : 'Free'}</span>
             </div>
             {!currentUser?.isPremium && (
-              <button className="upgrade-button" onClick={() => navigate('/profile?tab=billing')}>
-                Upgrade to Premium
-              </button>
+              <div className="upgrade-card">
+                <div className="upgrade-card-text">
+                  <span className="upgrade-eyebrow">Unlock more power</span>
+                  <p>Go premium for unlimited optimizations and priority features.</p>
+                </div>
+                <button className="upgrade-button" onClick={() => navigate('/profile?tab=billing')}>
+                  Upgrade to Premium
+                </button>
+              </div>
             )}
           </div>
         </div>
