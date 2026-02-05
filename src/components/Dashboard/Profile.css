@@ -76,16 +76,16 @@
   border-radius: 50%;
 }
 
-.profile-avatar h2 {
+.profile-sidebar .profile-avatar h2 {
   margin: 0 0 8px 0;
-  color: #1a1a1a;
+  color: #1a1a1a !important;
   font-size: 22px;
   font-weight: 700;
 }
 
-.profile-avatar p {
+.profile-sidebar .profile-avatar p {
   margin: 0;
-  color: #666;
+  color: #1a1a1a !important;
   font-size: 14px;
 }
 

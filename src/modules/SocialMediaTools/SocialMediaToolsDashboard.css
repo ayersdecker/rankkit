@@ -195,11 +195,17 @@
 .upgrade-card {
   background: linear-gradient(135deg, #E91E63 0%, #9C27B0 100%);
   color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
 }
 
 .upgrade-card h3,
 .upgrade-card p {
   color: white;
+  text-wrap: balance;
+  line-height: 1.5;
 }
 
 .upgrade-button {
@@ -214,6 +220,7 @@
   cursor: pointer;
   transition: transform 0.2s;
   width: 100%;
+  align-self: stretch;
 }
 
 .upgrade-button:hover {
