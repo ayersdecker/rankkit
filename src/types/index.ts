@@ -4,6 +4,8 @@ export interface User {
   displayName?: string;
   photoURL?: string;
   isPremium: boolean;
+  subscriptionPlan?: 'free' | 'career' | 'work' | 'social' | 'pro-bundle' | 'ultimate-bundle';
+  subscriptionStatus?: 'active' | 'canceled' | 'expired' | 'trial';
   usageCount: number;
   freeOptimizationsRemaining: number;
   createdAt: Date;
@@ -99,11 +101,23 @@ export interface JobSearchSuggestion {
 
 export interface Subscription {
   userId: string;
-  plan: 'free' | 'resume' | 'post' | 'bundle';
-  status: 'active' | 'canceled' | 'expired';
+  plan: 'free' | 'career' | 'work' | 'social' | 'pro-bundle' | 'ultimate-bundle';
+  status: 'active' | 'canceled' | 'expired' | 'trial';
   startDate: Date;
   endDate?: Date;
   stripeSubscriptionId?: string;
+  stripeCustomerId?: string;
+}
+
+export interface SubscriptionPlan {
+  id: 'free' | 'career' | 'work' | 'social' | 'pro-bundle' | 'ultimate-bundle';
+  name: string;
+  price: number;
+  interval: 'month' | 'year';
+  features: string[];
+  toolCategories: ('career' | 'work' | 'social')[];
+  isPopular?: boolean;
+  savings?: string;
 }
 
 export type OptimizationType = 'ats' | 'seo' | 'engagement' | 'readability';

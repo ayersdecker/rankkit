@@ -311,62 +311,168 @@ function DocumentManagement() {
 
 function BillingPlans() {
   const { currentUser } = useAuth();
+  const [searchParams] = useSearchParams();
+  const selectedPlan = searchParams.get('plan');
+
+  const plans = [
+    {
+      id: 'career',
+      name: 'Career Tools',
+      price: 7.99,
+      features: [
+        'Unlimited resume optimizations',
+        'Unlimited cover letter generation',
+        'Interview preparation guides',
+        'Job search strategies',
+        'ATS score checking',
+        'Up to 30 saved documents',
+      ],
+      category: 'career',
+    },
+    {
+      id: 'work',
+      name: 'Workplace Tools',
+      price: 12.99,
+      features: [
+        'Cold email generator',
+        'Sales script builder',
+        'Selling points finder',
+        'Professional writing tools',
+        'Up to 30 saved documents',
+      ],
+      category: 'work',
+    },
+    {
+      id: 'social',
+      name: 'Social Media Tools',
+      price: 12.99,
+      features: [
+        'Unlimited post optimizations',
+        'Multi-platform support',
+        'Hashtag recommendations',
+        'Engagement analytics',
+        'Content scheduling insights',
+        'Up to 30 saved documents',
+      ],
+      category: 'social',
+    },
+    {
+      id: 'pro-bundle',
+      name: 'Pro Bundle',
+      price: 19.99,
+      savings: 'Save $5.99/month',
+      features: [
+        '✨ All Workplace Tools',
+        '✨ All Social Media Tools',
+        'Priority support',
+        'Advanced analytics',
+        'Up to 30 saved documents',
+      ],
+      isPopular: true,
+    },
+    {
+      id: 'ultimate-bundle',
+      name: 'Ultimate Bundle',
+      price: 24.99,
+      savings: 'Save $8.98/month',
+      features: [
+        '🚀 All Career Tools',
+        '🚀 All Workplace Tools', 
+        '🚀 All Social Media Tools',
+        'Priority support',
+        'Early access to new tools',
+        'Advanced analytics',
+        'Unlimited everything',
+        'Up to 30 saved documents',
+      ],
+      isBestValue: true,
+    },
+  ];
 
   return (
     <div className="settings-section">
       <h2>Billing & Plans</h2>
       
+      <div className="setting-card beta-banner">
+        <div className="beta-badge">🎉 Beta Launch Special</div>
+        <h3>All Features Free During Beta!</h3>
+        <p>
+          Thank you for being an early user! While we're in beta, all premium features 
+          are completely free. Choose your plan below to be ready when we officially launch.
+        </p>
+      </div>
+
       <div className="setting-card">
         <h3>Current Plan</h3>
         <div className="plan-current">
-          <div className="plan-badge">{currentUser?.isPremium ? 'Premium' : 'Free'}</div>
-          <p>{currentUser?.isPremium ? 'Unlimited optimizations' : '1 free optimization on signup'}</p>
+          <div className="plan-badge">
+            {currentUser?.subscriptionPlan === 'ultimate-bundle' ? 'Ultimate Bundle' :
+             currentUser?.subscriptionPlan === 'pro-bundle' ? 'Pro Bundle' :
+             currentUser?.subscriptionPlan === 'career' ? 'Career Tools' :
+             currentUser?.subscriptionPlan === 'work' ? 'Workplace Tools' :
+             currentUser?.subscriptionPlan === 'social' ? 'Social Media Tools' :
+             'Free (Beta Access)'}
+          </div>
+          <p>Full access to all features during beta period</p>
         </div>
       </div>
 
-      {!currentUser?.isPremium && (
-        <div className="plans-grid">
-          <div className="plan-card">
-            <h3>Career Starter</h3>
-            <div className="plan-price">$29<span>/month</span></div>
+      <div className="plans-grid-profile">
+        {plans.map((plan) => (
+          <div 
+            key={plan.id} 
+            className={`plan-card-profile ${
+              plan.isBestValue ? 'best-value' : ''
+            } ${plan.isPopular ? 'popular' : ''} ${
+              selectedPlan === plan.id ? 'selected' : ''
+            }`}
+          >
+            {plan.isBestValue && <div className="plan-badge-top">Best Value</div>}
+            {plan.isPopular && !plan.isBestValue && <div className="plan-badge-top">Popular</div>}
+            
+            <h3>{plan.name}</h3>
+            
+            <div className="plan-price">
+              ${plan.price}<span>/month</span>
+            </div>
+            
+            {plan.savings && (
+              <div className="plan-savings">{plan.savings}</div>
+            )}
+            
             <ul className="plan-features">
-              <li>Unlimited resume optimizations</li>
-              <li>Unlimited cover letter generation</li>
-              <li>Interview preparation guides</li>
-              <li>Job search strategies</li>
-              <li>ATS score checking</li>
+              {plan.features.map((feature, idx) => (
+                <li key={idx}>{feature}</li>
+              ))}
             </ul>
-            <button className="primary-button">Subscribe</button>
+            
+            <button 
+              className={`primary-button ${
+                currentUser?.subscriptionPlan === plan.id ? 'active' : ''
+              }`}
+              disabled={currentUser?.subscriptionPlan === plan.id}
+            >
+              {currentUser?.subscriptionPlan === plan.id ? 'Current Plan' : 'Coming Soon'}
+            </button>
           </div>
+        ))}
+      </div>
 
-          <div className="plan-card">
-            <h3>Content Creator</h3>
-            <div className="plan-price">$24<span>/month</span></div>
-            <ul className="plan-features">
-              <li>Unlimited post optimizations</li>
-              <li>Multi-platform support</li>
-              <li>Hashtag recommendations</li>
-              <li>Engagement analytics</li>
-            </ul>
-            <button className="primary-button">Subscribe</button>
-          </div>
-
-          <div className="plan-card featured">
-            <div className="plan-badge-top">Best Value</div>
-            <h3>RankKit Pro</h3>
-            <div className="plan-price">$39<span>/month</span></div>
-            <div className="plan-savings">Save $14/month</div>
-            <ul className="plan-features">
-              <li>All Career Starter features</li>
-              <li>All Content Creator features</li>
-              <li>Priority support</li>
-              <li>Early access to new tools</li>
-              <li>Unlimited everything</li>
-            </ul>
-            <button className="primary-button featured">Subscribe</button>
-          </div>
+      <div className="billing-faq">
+        <h3>Frequently Asked Questions</h3>
+        <div className="faq-item">
+          <h4>When will billing start?</h4>
+          <p>Billing will begin after the beta period ends. We'll notify all users well in advance.</p>
         </div>
-      )}
+        <div className="faq-item">
+          <h4>Can I change my plan later?</h4>
+          <p>Yes! You can upgrade or downgrade your plan at any time.</p>
+        </div>
+        <div className="faq-item">
+          <h4>What payment methods do you accept?</h4>
+          <p>We accept all major credit cards through Stripe's secure payment processing.</p>
+        </div>
+      </div>
     </div>
   );
 }

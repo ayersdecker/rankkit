@@ -1,48 +1,89 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getAvailablePlans, getRecommendedPlan } from '../../config/pricing';
 import './PaywallModal.css';
 
 interface PaywallModalProps {
   toolName: string;
+  toolCategory?: 'career' | 'work' | 'social';
   onClose: () => void;
 }
 
-export function PaywallModal({ toolName, onClose }: PaywallModalProps) {
+export function PaywallModal({ toolName, toolCategory, onClose }: PaywallModalProps) {
   const navigate = useNavigate();
+  const plans = getAvailablePlans();
+  
+  // Determine recommended plan based on tool category
+  const recommendedPlan = toolCategory 
+    ? getRecommendedPlan([toolCategory])
+    : plans.find(p => p.id === 'ultimate-bundle');
 
-  function handleUpgrade() {
-    navigate('/profile?tab=billing');
+  function handleSelectPlan(planId: string) {
+    navigate(`/profile?tab=billing&plan=${planId}`);
+    onClose();
   }
 
   return (
     <div className="paywall-overlay" onClick={onClose}>
-      <div className="paywall-modal" onClick={e => e.stopPropagation()}>
+      <div className="paywall-modal-large" onClick={e => e.stopPropagation()}>
         <button className="paywall-close" onClick={onClose}>×</button>
         
-        <div className="paywall-icon">🔒</div>
-        
-        <h2>Premium Feature</h2>
-        
-        <p className="paywall-message">
-          <strong>{toolName}</strong> requires a Premium subscription to unlock.
-        </p>
-        
-        <div className="paywall-benefits">
-          <h3>Premium Benefits:</h3>
-          <ul>
-            <li>✅ Unlimited AI optimizations</li>
-            <li>✅ Access to all 16+ tools</li>
-            <li>✅ Up to 30 saved documents</li>
-            <li>✅ Advanced features & priority support</li>
-          </ul>
+        <div className="paywall-header">
+          <div className="paywall-icon">🚀</div>
+          <h2>Unlock Premium Features</h2>
+          <p className="paywall-message">
+            <strong>{toolName}</strong> requires a subscription.
+            {toolCategory && <span className="category-badge">{toolCategory}</span>}
+          </p>
+          <p className="beta-notice">
+            ✨ <strong>Beta Access:</strong> All features are currently free! Choose a plan to prepare for launch.
+          </p>
         </div>
         
-        <div className="paywall-actions">
-          <button className="upgrade-button-primary" onClick={handleUpgrade}>
-            ⭐ Upgrade to Premium
-          </button>
-          <button className="cancel-button" onClick={onClose}>
-            Maybe Later
+        <div className="pricing-grid">
+          {plans.map((plan) => (
+            <div 
+              key={plan.id} 
+              className={`pricing-card ${plan.id === recommendedPlan?.id ? 'recommended' : ''}`}
+            >
+              {plan.id === recommendedPlan?.id && (
+                <div className="recommended-badge">Recommended</div>
+              )}
+              {plan.isPopular && (
+                <div className="popular-badge">Best Value</div>
+              )}
+              
+              <h3>{plan.name}</h3>
+              
+              <div className="pricing-price">
+                <span className="price-amount">${plan.price}</span>
+                <span className="price-period">/month</span>
+              </div>
+              
+              {plan.savings && (
+                <div className="pricing-savings">{plan.savings}</div>
+              )}
+              
+              <ul className="pricing-features">
+                {plan.features.map((feature, idx) => (
+                  <li key={idx}>{feature}</li>
+                ))}
+              </ul>
+              
+              <button 
+                className={`pricing-button ${plan.id === recommendedPlan?.id ? 'primary' : 'secondary'}`}
+                onClick={() => handleSelectPlan(plan.id)}
+              >
+                {plan.id === recommendedPlan?.id ? 'Get Started' : 'Select Plan'}
+              </button>
+            </div>
+          ))}
+        </div>
+        
+        <div className="paywall-footer">
+          <p>🔒 All plans include secure storage • Priority support • Cancel anytime</p>
+          <button className="cancel-button-text" onClick={onClose}>
+            I'll stick with the free trial for now
           </button>
         </div>
       </div>
