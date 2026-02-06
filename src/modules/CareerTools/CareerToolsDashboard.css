@@ -124,8 +124,9 @@
 
 .tools-info {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 2rem;
+  width: 100%;
 }
 
 .info-card {
@@ -133,6 +134,10 @@
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .info-card h3 {
@@ -194,15 +199,50 @@
 }
 
 @media (max-width: 768px) {
+  .career-tools-content {
+    padding: 1.25rem 1rem;
+  }
+
   .tools-header h2 {
     font-size: 2rem;
+  }
+
+  .tools-header {
+    margin-bottom: 2rem;
   }
   
   .tools-grid {
     grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
   
   .tools-info {
     grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .tool-card,
+  .info-card {
+    padding: 1.25rem;
+  }
+
+  .tool-icon {
+    width: 64px;
+    height: 64px;
+  }
+
+  .tool-card h3 {
+    font-size: 1.1rem;
+  }
+
+  .tool-card p,
+  .info-card p {
+    font-size: 0.95rem;
+  }
+
+  .tool-button,
+  .upgrade-button {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.95rem;
   }
 }

@@ -1,9 +1,12 @@
 .optimizer-container {
   min-height: 100vh;
   background: #f5f5f5;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .optimizer-nav {
+    width: 100%;
   background: white;
   padding: 20px 40px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -11,6 +14,8 @@
 
 .optimizer-nav h1 {
   margin: 0;
+    width: 100%;
+    min-width: 0;
   font-size: 1.75rem;
   cursor: pointer;
   font-family: 'Poppins', sans-serif;
@@ -20,6 +25,8 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .optimizer-nav h1:hover {
@@ -30,13 +37,17 @@
   max-width: 1400px;
   margin: 40px auto;
   padding: 0 40px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .optimizer-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 30px;
   align-items: start;
+  width: 100%;
+  min-width: 0;
 }
 
 .input-section,
@@ -46,12 +57,16 @@
   gap: 20px;
   align-self: start;
   background: transparent;
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
 }
 
 .input-section h3,
 .output-section h3 {
   margin: 0;
   color: #333;
+    max-width: 100%;
   font-size: 18px;
 }
 
@@ -144,6 +159,8 @@ textarea:focus {
   padding: 30px;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 100%;
 }
 
 .score-circle {
@@ -179,6 +196,8 @@ textarea:focus {
   overflow-x: hidden;
   word-wrap: break-word;
   color: #1a1a1a;
+  width: 100%;
+  max-width: 100%;
 }
 
 .optimized-output h1 {
@@ -230,6 +249,8 @@ textarea:focus {
   padding: 30px;
   list-style-position: inside;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 100%;
 }
 
 .suggestions-list li {
@@ -260,6 +281,8 @@ textarea:focus {
   text-align: center;
   color: #999;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 100%;
 }
 
 .error-message {
@@ -273,6 +296,75 @@ textarea:focus {
 
 @media (max-width: 968px) {
   .optimizer-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .optimizer-nav {
+    padding: 16px 20px;
+  }
+
+  .optimizer-nav h1 {
+    font-size: 1.4rem;
+  }
+
+  .optimizer-content {
+    margin: 24px auto;
+    padding: 0 16px;
+  }
+
+  .optimizer-grid {
+    gap: 20px;
+  }
+
+  .input-section,
+  .output-section {
+    gap: 16px;
+  }
+
+  textarea {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .document-selector {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .optimize-button {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .score-card {
+    padding: 20px;
+  }
+
+  .score-number {
+    font-size: 48px;
+  }
+
+  .score-label {
+    font-size: 18px;
+  }
+
+  .optimized-output {
+    padding: 18px;
+    max-height: none;
+  }
+
+  .suggestions-list {
+    padding: 20px;
+  }
+
+  .download-button {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .empty-state {
+    padding: 32px 20px;
   }
 }

@@ -88,7 +88,7 @@ export default function JobSearchAssistant() {
   return (
     <div className="optimizer-container">
       <nav className="optimizer-nav">
-        <h1 onClick={() => navigate('/dashboard')}>← Job Search Assistant</h1>
+        <h1 onClick={() => navigate('/career-tools')}>← Job Search Assistant</h1>
       </nav>
 
       <div className="optimizer-content">

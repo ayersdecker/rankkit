@@ -116,6 +116,7 @@
     bottom: 10px;
     right: 10px;
     left: 10px;
+    width: min(360px, calc(100vw - 20px));
     max-width: none;
     min-width: auto;
   }

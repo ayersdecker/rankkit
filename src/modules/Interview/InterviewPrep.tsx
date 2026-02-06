@@ -86,7 +86,7 @@ export default function InterviewPrep() {
   return (
     <div className="optimizer-container">
       <nav className="optimizer-nav">
-        <h1 onClick={() => navigate('/dashboard')}>← Interview Preparation</h1>
+        <h1 onClick={() => navigate('/career-tools')}>← Interview Preparation</h1>
       </nav>
 
       <div className="optimizer-content">

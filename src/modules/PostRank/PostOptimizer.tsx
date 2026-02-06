@@ -79,7 +79,7 @@ export default function PostOptimizer() {
   return (
     <div className="optimizer-container">
       <nav className="optimizer-nav">
-        <h1 onClick={() => navigate('/dashboard')}>← PostRank</h1>
+        <h1 onClick={() => navigate('/social-media-tools')}>← PostRank</h1>
       </nav>
 
       <div className="optimizer-content">

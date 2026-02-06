@@ -110,7 +110,7 @@ export default function CoverLetterWriter() {
   return (
     <div className="optimizer-container">
       <nav className="optimizer-nav">
-        <h1 onClick={() => navigate('/dashboard')}>← Cover Letter Writer</h1>
+        <h1 onClick={() => navigate('/career-tools')}>← Cover Letter Writer</h1>
       </nav>
 
       <div className="optimizer-content">

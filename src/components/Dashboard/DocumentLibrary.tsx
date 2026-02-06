@@ -11,8 +11,8 @@ import { extractTextFromFile, validateFile, formatFileSize, getFileIcon, validat
 import { exportAsPDF, exportAsWord, formatExportFileName, isExportable } from '../../utils/documentExport';
 import { Document } from '../../types';
 import { hasPremiumAccess } from '../../utils/premiumUtils';
-import { SignOutConfirmation } from '../Shared/SignOutConfirmation';
 import { DeleteDocumentConfirmation } from '../Shared/DeleteDocumentConfirmation';
+import { SignOutConfirmation } from '../Shared/SignOutConfirmation';
 import './DocumentLibrary.css';
 
 // Helper functions for document type display
@@ -46,13 +46,22 @@ const getDocTypeEmoji = (type: string) => {
   return emojis[type] || '📄';
 };
 
+const getPreviewText = (content: string) => {
+  return content
+    .replace(/\[(.*?)\]\((.*?)\)/g, '$1')
+    .replace(/^\s*#{1,6}\s+/gm, '')
+    .replace(/^\s*[-*•]\s+/gm, '')
+    .replace(/`{1,3}([^`]+)`{1,3}/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
+};
+
 export default function DocumentLibrary() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'career' | 'workplace' | 'social' | 'other'>('all');
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
-  const [showSignOutModal, setShowSignOutModal] = useState(false);
   const [pendingDeleteDoc, setPendingDeleteDoc] = useState<Document | null>(null);
   const [deleteError, setDeleteError] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -60,11 +69,19 @@ export default function DocumentLibrary() {
   const { currentUser, signOut } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
+
+  function handleNavClick(path: string) {
+    navigate(path);
+    setIsMenuOpen(false);
+  }
 
   async function handleSignOut() {
     await signOut();
     navigate('/login');
     setShowSignOutModal(false);
+    setIsMenuOpen(false);
   }
 
   const loadDocuments = useCallback(async () => {
@@ -147,29 +164,57 @@ export default function DocumentLibrary() {
   const docTypeStats = getDocTypeStats();
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container documents-page">
       <nav className="dashboard-nav">
-        <h1 onClick={() => navigate('/dashboard')}>RankKit</h1>
-        <div className="nav-links">
-          <button onClick={() => navigate('/dashboard')} className="nav-link">Home</button>
-          <button onClick={() => navigate('/career-tools')} className="nav-link">Career</button>
-          <button onClick={() => navigate('/workplace-tools')} className="nav-link">Workplace</button>
-          <button onClick={() => navigate('/social-media-tools')} className="nav-link">Social</button>
-          <button onClick={() => navigate('/documents')} className="nav-link active">Documents</button>
-          <button onClick={() => navigate('/profile')} className="nav-link">Profile</button>
-        </div>
-        <div className="nav-right">
-          <div className="user-info">
-            <div className="user-avatar-small">
+        <h1 onClick={() => handleNavClick('/dashboard')}>RankKit</h1>
+        <div id="mobile-navigation" className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
+          <button onClick={() => handleNavClick('/profile')} className="nav-link profile-nav-link">
+            <div className="profile-nav-avatar">
               {currentUser?.photoURL ? (
                 <img src={currentUser.photoURL} alt="Profile" />
               ) : (
                 <span>{currentUser?.displayName?.[0] || currentUser?.email?.[0].toUpperCase()}</span>
               )}
             </div>
+            <div className="profile-nav-text">
+              <span className="profile-nav-label">Account</span>
+              <span className="profile-nav-name">{currentUser?.displayName || 'Profile'}</span>
+              <span className="profile-nav-email">{currentUser?.email}</span>
+            </div>
+          </button>
+          <button onClick={() => handleNavClick('/dashboard')} className="nav-link">Home</button>
+          <button onClick={() => handleNavClick('/career-tools')} className="nav-link">Career</button>
+          <button onClick={() => handleNavClick('/workplace-tools')} className="nav-link">Workplace</button>
+          <button onClick={() => handleNavClick('/social-media-tools')} className="nav-link">Social</button>
+          <button onClick={() => handleNavClick('/documents')} className="nav-link active">Documents</button>
+          <button onClick={() => setShowSignOutModal(true)} className="nav-link signout-link">Sign Out</button>
+        </div>
+        <div className="nav-right">
+          <button
+            className="nav-toggle"
+            onClick={() => setIsMenuOpen((open) => !open)}
+            aria-label="Toggle navigation"
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-navigation"
+          >
+            ☰
+          </button>
+          <div className="user-info">
+            <button
+              className="profile-button"
+              onClick={() => handleNavClick('/profile')}
+              aria-label="Open profile"
+            >
+              <div className="user-avatar-small">
+                {currentUser?.photoURL ? (
+                  <img src={currentUser.photoURL} alt="Profile" />
+                ) : (
+                  <span>{currentUser?.displayName?.[0] || currentUser?.email?.[0].toUpperCase()}</span>
+                )}
+              </div>
+            </button>
             <span>{currentUser?.displayName || currentUser?.email}</span>
           </div>
-          <button onClick={() => setShowSignOutModal(true)}>Sign Out</button>
         </div>
       </nav>
 
@@ -272,6 +317,14 @@ export default function DocumentLibrary() {
           <div className="documents-grid">
             {filteredDocs.map(doc => (
               <div key={doc.id} className="document-card">
+                {(() => {
+                  const previewText = getPreviewText(doc.content);
+                  const previewLimit = 120;
+                  const preview = previewText.length > previewLimit
+                    ? `${previewText.slice(0, previewLimit)}...`
+                    : previewText || 'No preview available yet.';
+                  return (
+                    <>
                 <div className="doc-icon">{getDocTypeEmoji(doc.type)}</div>
                 <h3>{doc.name}</h3>
                 <div className="doc-meta">
@@ -283,11 +336,14 @@ export default function DocumentLibrary() {
                     {new Date(doc.updatedAt).toLocaleDateString()}
                   </span>
                 </div>
-                <p className="doc-preview">{doc.content.substring(0, 120)}...</p>
+                <p className="doc-preview">{preview}</p>
                 <div className="doc-actions">
                   <button onClick={() => setSelectedDoc(doc)}>View</button>
                   <button onClick={() => handleDeleteRequest(doc)} className="danger">Delete</button>
                 </div>
+                    </>
+                  );
+                })()}
               </div>
             ))}
           </div>
@@ -311,13 +367,6 @@ export default function DocumentLibrary() {
         />
       )}
 
-      {showSignOutModal && (
-        <SignOutConfirmation
-          onConfirm={handleSignOut}
-          onCancel={() => setShowSignOutModal(false)}
-        />
-      )}
-
       {pendingDeleteDoc && (
         <DeleteDocumentConfirmation
           documentName={pendingDeleteDoc.name}
@@ -330,6 +379,13 @@ export default function DocumentLibrary() {
           }}
           isDeleting={isDeleting}
           errorMessage={deleteError}
+        />
+      )}
+
+      {showSignOutModal && (
+        <SignOutConfirmation
+          onConfirm={handleSignOut}
+          onCancel={() => setShowSignOutModal(false)}
         />
       )}
     </div>

@@ -5,7 +5,7 @@
 .app-shell {
   position: relative;
   min-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
   background: radial-gradient(circle at top, rgba(42, 58, 120, 0.35), transparent 55%),
     radial-gradient(circle at 20% 80%, rgba(27, 110, 140, 0.3), transparent 50%),
     #070b1b;
@@ -59,6 +59,29 @@
 .app-content .answer-card,
 .app-content .pricing-card {
   color: #1a1a1a;
+}
+
+@media (max-width: 768px) {
+  .app-content .tool-card,
+  .app-content .info-card,
+  .app-content .setting-card,
+  .app-content .action-card,
+  .app-content .usage-card,
+  .app-content .stat-card,
+  .app-content .document-card,
+  .app-content .plan-card,
+  .app-content .plan-card-profile,
+  .app-content .score-card,
+  .app-content .platform-card,
+  .app-content .answer-card,
+  .app-content .pricing-card {
+    padding: 18px;
+    border-radius: 12px;
+  }
+
+  .app-content .stat-card {
+    gap: 12px;
+  }
 }
 
 .app-content .auth-card {

@@ -37,6 +37,25 @@
   justify-content: center;
 }
 
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: white;
+  color: #667eea;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-toggle:hover {
+  background: #f5f5f5;
+}
+
 .nav-right {
   flex: 1;
   justify-content: flex-end;
@@ -92,6 +111,94 @@
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.profile-button {
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.profile-button:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+  border-radius: 999px;
+}
+
+.profile-nav-link {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #f5f7ff;
+  border: 1px solid #e1e7ff;
+  border-radius: 12px;
+  color: #1a1a1a;
+}
+
+.profile-nav-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.profile-nav-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-nav-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.profile-nav-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.profile-nav-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #667eea;
+  font-weight: 700;
+}
+
+.profile-nav-email {
+  font-size: 12px;
+  color: #667eea;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.signout-link {
+  display: none;
+  background: #fee;
+  color: #c33;
+  border: 1px solid #fcc;
+}
+
+.signout-link:hover {
+  background: #fdd;
 }
 
 .user-avatar-small {
@@ -417,20 +524,71 @@
 @media (max-width: 768px) {
   .dashboard-nav {
     flex-direction: column;
-    gap: 15px;
-    padding: 20px;
+    gap: 10px;
+    padding: 16px;
+    position: sticky;
+    top: 0;
+  }
+
+  .dashboard-nav h1 {
+    align-self: flex-start;
+    width: 100%;
+    text-align: left;
   }
   
   .nav-links {
     order: 3;
     width: 100%;
     justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    display: none;
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-link {
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .signout-link {
+    display: block;
+    margin-top: 8px;
+    text-align: center;
   }
   
   .nav-right {
-    order: 2;
-    width: 100%;
-    justify-content: space-between;
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    width: auto;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
+  }
+
+  .profile-button {
+    display: none;
+  }
+
+  .profile-nav-link {
+    display: flex;
+  }
+
+  .user-info span {
+    display: none;
   }
   
   .usage-card {
@@ -449,6 +607,68 @@
   }
 
   .dashboard-content {
-    padding: 30px 20px;
+    padding: 22px 16px;
+  }
+
+  .hero-section {
+    margin-bottom: 40px;
+    padding: 20px 0;
+  }
+
+  .hero-section h2 {
+    font-size: 30px;
+  }
+
+  .hero-section p {
+    font-size: 15px;
+  }
+
+  .quick-actions h3,
+  .features-overview h3,
+  .usage-summary h3 {
+    font-size: 20px;
+  }
+
+  .action-card {
+    padding: 20px 18px;
+  }
+
+  .actions-grid.main-dashboards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .action-card.featured {
+    padding: 18px 16px;
+    min-height: 160px;
+  }
+
+  .action-card.featured .action-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+  }
+
+  .action-card.featured h4 {
+    font-size: 18px;
+  }
+
+  .action-card.featured p {
+    font-size: 13px;
+  }
+
+  .tools-count {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+
+@media (max-width: 480px) {
+  .actions-grid.main-dashboards {
+    grid-template-columns: 1fr;
+  }
+}
+  .usage-card {
+    padding: 22px 18px;
+    gap: 20px;
   }
 }

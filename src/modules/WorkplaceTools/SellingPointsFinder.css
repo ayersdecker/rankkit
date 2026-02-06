@@ -4,6 +4,8 @@
   border-radius: 8px;
   margin-bottom: 1.5rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 100%;
 }
 
 .analysis-section h3 {
@@ -37,4 +39,15 @@
 .text-input:focus {
   outline: none;
   border-color: #4CAF50;
+}
+
+@media (max-width: 768px) {
+  .analysis-section {
+    padding: 1rem;
+  }
+
+  .text-input {
+    padding: 0.65rem;
+    font-size: 0.95rem;
+  }
 }

@@ -12,6 +12,7 @@ export default function Profile() {
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'account');
   const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   const { currentUser, signOut } = useAuth();
   const navigate = useNavigate();
@@ -22,30 +23,68 @@ export default function Profile() {
     setShowSignOutModal(false);
   }
 
+  function handleNavClick(path: string) {
+    navigate(path);
+    setIsMenuOpen(false);
+  }
+
+  function handleMenuSignOut() {
+    setShowSignOutModal(true);
+    setIsMenuOpen(false);
+  }
+
   return (
     <div className="dashboard-container">
       <nav className="dashboard-nav">
-        <h1 onClick={() => navigate('/dashboard')}>RankKit</h1>
-        <div className="nav-links">
-          <button onClick={() => navigate('/dashboard')} className="nav-link">Home</button>
-          <button onClick={() => navigate('/career-tools')} className="nav-link">Career</button>
-          <button onClick={() => navigate('/workplace-tools')} className="nav-link">Workplace</button>
-          <button onClick={() => navigate('/social-media-tools')} className="nav-link">Social</button>
-          <button onClick={() => navigate('/documents')} className="nav-link">Documents</button>
-          <button onClick={() => navigate('/profile')} className="nav-link active">Profile</button>
-        </div>
-        <div className="nav-right">
-          <div className="user-info">
-            <div className="user-avatar-small">
+        <h1 onClick={() => handleNavClick('/dashboard')}>RankKit</h1>
+        <div id="mobile-navigation" className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
+          <button onClick={() => handleNavClick('/profile')} className="nav-link profile-nav-link">
+            <div className="profile-nav-avatar">
               {currentUser?.photoURL ? (
                 <img src={currentUser.photoURL} alt="Profile" />
               ) : (
                 <span>{currentUser?.displayName?.[0] || currentUser?.email?.[0].toUpperCase()}</span>
               )}
             </div>
+            <div className="profile-nav-text">
+              <span className="profile-nav-label">Account</span>
+              <span className="profile-nav-name">{currentUser?.displayName || 'Profile'}</span>
+              <span className="profile-nav-email">{currentUser?.email}</span>
+            </div>
+          </button>
+          <button onClick={() => handleNavClick('/dashboard')} className="nav-link">Home</button>
+          <button onClick={() => handleNavClick('/career-tools')} className="nav-link">Career</button>
+          <button onClick={() => handleNavClick('/workplace-tools')} className="nav-link">Workplace</button>
+          <button onClick={() => handleNavClick('/social-media-tools')} className="nav-link">Social</button>
+          <button onClick={() => handleNavClick('/documents')} className="nav-link">Documents</button>
+          <button onClick={handleMenuSignOut} className="nav-link signout-link">Sign Out</button>
+        </div>
+        <div className="nav-right">
+          <button
+            className="nav-toggle"
+            onClick={() => setIsMenuOpen((open) => !open)}
+            aria-label="Toggle navigation"
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-navigation"
+          >
+            ☰
+          </button>
+          <div className="user-info">
+            <button
+              className="profile-button"
+              onClick={() => handleNavClick('/profile')}
+              aria-label="Open profile"
+            >
+              <div className="user-avatar-small">
+                {currentUser?.photoURL ? (
+                  <img src={currentUser.photoURL} alt="Profile" />
+                ) : (
+                  <span>{currentUser?.displayName?.[0] || currentUser?.email?.[0].toUpperCase()}</span>
+                )}
+              </div>
+            </button>
             <span>{currentUser?.displayName || currentUser?.email}</span>
           </div>
-          <button onClick={() => setShowSignOutModal(true)}>Sign Out</button>
         </div>
       </nav>
 
@@ -308,7 +347,9 @@ function AccountSettings() {
       ) : (
         <div className="setting-card">
           <h3>Password</h3>
-          <p>Your account is managed by Google. Change your password in your Google account settings.</p>
+          <p className="password-managed-note">
+            Your account is managed by Google. Change your password in your Google account settings.
+          </p>
         </div>
       )}
 

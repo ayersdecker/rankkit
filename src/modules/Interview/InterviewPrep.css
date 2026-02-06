@@ -1,13 +1,16 @@
 .interview-prep-layout {
   display: grid;
-  grid-template-columns: 1fr 1.5fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
   gap: 2rem;
   margin-top: 1.5rem;
+  width: 100%;
 }
 
 .interview-output {
   max-height: 80vh;
   overflow-y: auto;
+  min-width: 0;
+  width: 100%;
 }
 
 .prep-section {
@@ -16,6 +19,8 @@
   border-radius: 8px;
   margin-bottom: 1.5rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 100%;
 }
 
 .prep-section h3 {
@@ -102,5 +107,28 @@
 @media (max-width: 1024px) {
   .interview-prep-layout {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .interview-prep-layout {
+    gap: 1.25rem;
+    margin-top: 1rem;
+  }
+
+  .prep-section {
+    padding: 1rem;
+  }
+
+  .prep-section h3 {
+    font-size: 1.1rem;
+  }
+
+  .answer-card {
+    padding: 0.85rem;
+  }
+
+  .interview-output {
+    max-height: none;
   }
 }

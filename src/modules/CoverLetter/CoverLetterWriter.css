@@ -39,3 +39,20 @@
 .secondary-button:hover {
   background: #5a6268;
 }
+
+@media (max-width: 768px) {
+  .feature-description {
+    padding: 0.85rem 1rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .secondary-button,
+  .download-button {
+    width: 100%;
+    font-size: 0.95rem;
+    padding: 0.65rem 1rem;
+  }
+}

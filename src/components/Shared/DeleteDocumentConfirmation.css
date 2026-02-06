@@ -98,3 +98,18 @@
   background: #f0b8bf;
   cursor: not-allowed;
 }
+
+@media (max-width: 480px) {
+  .delete-doc-modal {
+    padding: 1.5rem;
+  }
+
+  .delete-doc-actions {
+    flex-direction: column;
+  }
+
+  .delete-doc-cancel,
+  .delete-doc-confirm {
+    width: 100%;
+  }
+}

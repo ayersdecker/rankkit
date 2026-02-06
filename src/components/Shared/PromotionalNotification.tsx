@@ -18,31 +18,22 @@ interface PromotionalNotificationProps {
   intervalMinutes?: number; // How often to show notifications (default: 60 minutes)
 }
 
-// const STORAGE_KEY = 'promo_notification_last_shown'; // For production use
+const STORAGE_KEY = 'promo_notification_last_shown';
 
 export function PromotionalNotification({ 
-  notifications, 
-  intervalMinutes = 60 
+  notifications,
+  intervalMinutes = 60
 }: PromotionalNotificationProps) {
   const [currentNotification, setCurrentNotification] = useState<NotificationConfig | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // TESTING MODE: Always show notification on page load
-    // TODO: Re-enable time check for production
-    if (notifications.length > 0) {
-      const randomIndex = Math.floor(Math.random() * notifications.length);
-      setCurrentNotification(notifications[randomIndex]);
-      setIsVisible(true);
-    }
-    
-    /* PRODUCTION MODE (currently disabled for testing):
     const lastShown = localStorage.getItem(STORAGE_KEY);
     const now = Date.now();
     const intervalMs = intervalMinutes * 60 * 1000;
 
-    if (!lastShown || now - parseInt(lastShown) > intervalMs) {
+    if (!lastShown || now - parseInt(lastShown, 10) > intervalMs) {
       if (notifications.length > 0) {
         const randomIndex = Math.floor(Math.random() * notifications.length);
         setCurrentNotification(notifications[randomIndex]);
@@ -50,7 +41,6 @@ export function PromotionalNotification({
         localStorage.setItem(STORAGE_KEY, now.toString());
       }
     }
-    */
   }, [notifications, intervalMinutes]);
 
   const handleClose = () => {

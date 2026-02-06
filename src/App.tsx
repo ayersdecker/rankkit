@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { ErrorBoundary } from './components/Shared/ErrorBoundary';
 import { PromotionalNotification } from './components/Shared/PromotionalNotification';
@@ -49,6 +49,16 @@ function NotificationWrapper() {
   );
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   // Use /rankkit basename for GitHub Pages deployment
   const basename = process.env.NODE_ENV === 'production' ? '/rankkit' : '/';
@@ -85,6 +95,7 @@ function App() {
           </div>
           <div className="app-content">
             <Router basename={basename}>
+              <ScrollToTop />
               <NotificationWrapper />
               <Routes>
                 <Route path="/login" element={<Login />} />

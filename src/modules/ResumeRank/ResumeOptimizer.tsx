@@ -230,7 +230,7 @@ export default function ResumeOptimizer() {
   return (
     <div className="optimizer-container">
       <nav className="optimizer-nav">
-        <h1 onClick={() => navigate('/dashboard')}>← ResumeRank</h1>
+        <h1 onClick={() => navigate('/career-tools')}>← ResumeRank</h1>
       </nav>
 
       <div className="optimizer-content">
