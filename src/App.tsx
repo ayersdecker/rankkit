@@ -25,12 +25,13 @@ import './App.css';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { currentUser, loading } = useAuth();
-  
+  const location = useLocation();
+
   if (loading) {
     return <div>Loading...</div>;
   }
-  
-  return currentUser ? <>{children}</> : <Navigate to="/login" />;
+
+  return currentUser ? <>{children}</> : <Navigate to="/login" state={{ from: location }} replace />;
 }
 
 function NotificationWrapper() {
@@ -100,14 +101,7 @@ function App() {
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <PrivateRoute>
-                      <Dashboard />
-                    </PrivateRoute>
-                  }
-                />
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route
                   path="/documents"
                   element={
@@ -132,22 +126,8 @@ function App() {
                     </PrivateRoute>
                   }
                 />
-                <Route
-                  path="/career-tools"
-                  element={
-                    <PrivateRoute>
-                      <CareerToolsDashboard />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/workplace-tools"
-                  element={
-                    <PrivateRoute>
-                      <WorkplaceToolsDashboard />
-                    </PrivateRoute>
-                  }
-                />
+                <Route path="/career-tools" element={<CareerToolsDashboard />} />
+                <Route path="/workplace-tools" element={<WorkplaceToolsDashboard />} />
                 <Route
                   path="/cold-email"
                   element={
@@ -204,14 +184,7 @@ function App() {
                     </PrivateRoute>
                   }
                 />
-                <Route
-                  path="/social-media-tools"
-                  element={
-                    <PrivateRoute>
-                      <SocialMediaToolsDashboard />
-                    </PrivateRoute>
-                  }
-                />
+                <Route path="/social-media-tools" element={<SocialMediaToolsDashboard />} />
                 <Route
                   path="/hashtag-generator"
                   element={

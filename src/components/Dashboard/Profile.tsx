@@ -82,8 +82,8 @@ export default function Profile() {
                   <span>{currentUser?.displayName?.[0] || currentUser?.email?.[0].toUpperCase()}</span>
                 )}
               </div>
+              <span className="profile-button-text">{currentUser?.displayName || currentUser?.email}</span>
             </button>
-            <span>{currentUser?.displayName || currentUser?.email}</span>
           </div>
         </div>
       </nav>

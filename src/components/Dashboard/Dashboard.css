@@ -68,14 +68,18 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  text-shadow: 0 0 8px rgba(102, 126, 234, 0.25);
   transition: all 0.2s;
 }
 
 .nav-link:hover {
   background: #f5f5f5;
   color: #667eea;
+  text-shadow: 0 0 12px rgba(102, 126, 234, 0.4);
 }
 
 .nav-right {
@@ -107,25 +111,104 @@
   background: #5568d3;
 }
 
+.auth-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.nav-auth.secondary {
+  background: transparent;
+  color: #667eea;
+  border: 1px solid #d7dcf5;
+}
+
+.nav-auth.secondary:hover {
+  background: #f5f7ff;
+}
+
 .user-info {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.profile-button {
-  padding: 0;
+.guest-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.12), rgba(118, 75, 162, 0.12));
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-bottom: 32px;
+}
+
+.guest-cta h3 {
+  margin: 0 0 8px 0;
+  font-size: 22px;
+  color: white;
+}
+
+.guest-cta p {
+  margin: 0;
+  color: white;
+}
+
+.guest-cta-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.guest-cta-actions button {
+  padding: 10px 18px;
+  border-radius: 999px;
   border: none;
+  background: #667eea;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.guest-cta-actions button.ghost {
   background: transparent;
+  color: #667eea;
+  border: 1px solid rgba(102, 126, 234, 0.4);
+}
+
+.guest-usage {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-button {
+  padding: 6px 12px;
+  border: none;
+  background: #f5f7ff;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  gap: 8px;
+  border-radius: 9999px;
+  color: white;
+  font-weight: 600;
 }
 
 .profile-button:focus-visible {
   outline: 2px solid #667eea;
   outline-offset: 2px;
   border-radius: 999px;
+}
+
+.profile-button-text {
+  font-size: 13px;
+  color: white;
+}
+
+.nav-right .profile-button-text {
+  color: white;
 }
 
 .profile-nav-link {

@@ -1,30 +1,31 @@
 .app-content .documents-page {
   background: #f5f7fa;
-  color: #1a1a1a;
+  color: white;
 }
 
 .app-content .documents-page .dashboard-content {
-  color: #1a1a1a;
+  color: white;
 }
 
 .app-content .documents-page .library-header h2 {
-  color: #1a1a1a;
+  color: white;
 }
 
 .app-content .documents-page .filter-bar {
-  color: #1a1a1a;
+  color: white;
 }
 
 .app-content .documents-page .filter-button {
-  color: #666;
+  color: white;
 }
 
 .app-content .documents-page .filter-button:hover {
-  background: #f5f5f5;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
 }
 
 .app-content .documents-page .loading-state {
-  color: #666;
+  color: white;
 }
 
 .library-header {
@@ -275,7 +276,7 @@
 
 .documents-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 25px;
 }
 
@@ -289,6 +290,8 @@
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 768px) {
@@ -325,35 +328,50 @@
 
 .doc-meta {
   display: flex;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 8px 10px;
   margin-bottom: 12px;
   font-size: 13px;
 }
 
 .doc-type {
-  display: inline-block;
-  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
   background: #f0f0f0;
   color: #667eea;
-  border-radius: 4px;
-  font-weight: 500;
+  border-radius: 999px;
+  font-weight: 600;
   text-transform: capitalize;
+  max-width: 100%;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .doc-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px;
+  padding: 6px 12px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  border-radius: 4px;
-  font-weight: 500;
+  border-radius: 999px;
+  font-weight: 600;
   font-size: 12px;
+  max-width: 100%;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .doc-date {
   color: #999;
+  max-width: 100%;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .doc-preview {
@@ -369,6 +387,7 @@
 .doc-actions {
   display: flex;
   gap: 8px;
+  margin-top: auto;
 }
 
 .doc-actions button {

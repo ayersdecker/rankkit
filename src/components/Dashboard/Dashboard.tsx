@@ -9,6 +9,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const isAuthed = !!currentUser;
 
   function handleNavClick(path: string) {
     navigate(path);
@@ -27,26 +28,30 @@ export default function Dashboard() {
       <nav className="dashboard-nav">
         <h1 onClick={() => handleNavClick('/dashboard')}>RankKit</h1>
         <div id="mobile-navigation" className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
-          <button onClick={() => handleNavClick('/profile')} className="nav-link profile-nav-link">
-            <div className="profile-nav-avatar">
-              {currentUser?.photoURL ? (
-                <img src={currentUser.photoURL} alt="Profile" />
-              ) : (
-                <span>{currentUser?.displayName?.[0] || currentUser?.email?.[0].toUpperCase()}</span>
-              )}
-            </div>
-            <div className="profile-nav-text">
-              <span className="profile-nav-label">Account</span>
-              <span className="profile-nav-name">{currentUser?.displayName || 'Profile'}</span>
-              <span className="profile-nav-email">{currentUser?.email}</span>
-            </div>
-          </button>
+          {isAuthed && (
+            <button onClick={() => handleNavClick('/profile')} className="nav-link profile-nav-link">
+              <div className="profile-nav-avatar">
+                {currentUser?.photoURL ? (
+                  <img src={currentUser.photoURL} alt="Profile" />
+                ) : (
+                  <span>{currentUser?.displayName?.[0] || currentUser?.email?.[0].toUpperCase()}</span>
+                )}
+              </div>
+              <div className="profile-nav-text">
+                <span className="profile-nav-label">Account</span>
+                <span className="profile-nav-name">{currentUser?.displayName || 'Profile'}</span>
+                <span className="profile-nav-email">{currentUser?.email}</span>
+              </div>
+            </button>
+          )}
           <button onClick={() => handleNavClick('/dashboard')} className="nav-link">Home</button>
           <button onClick={() => handleNavClick('/career-tools')} className="nav-link">Career</button>
           <button onClick={() => handleNavClick('/workplace-tools')} className="nav-link">Workplace</button>
           <button onClick={() => handleNavClick('/social-media-tools')} className="nav-link">Social</button>
           <button onClick={() => handleNavClick('/documents')} className="nav-link">Documents</button>
-          <button onClick={() => setShowSignOutModal(true)} className="nav-link signout-link">Sign Out</button>
+          {isAuthed && (
+            <button onClick={() => setShowSignOutModal(true)} className="nav-link signout-link">Sign Out</button>
+          )}
         </div>
         <div className="nav-right">
           <button
@@ -58,22 +63,29 @@ export default function Dashboard() {
           >
             ☰
           </button>
-          <div className="user-info">
-            <button
-              className="profile-button"
-              onClick={() => handleNavClick('/profile')}
-              aria-label="Open profile"
-            >
-              <div className="user-avatar-small">
-                {currentUser?.photoURL ? (
-                  <img src={currentUser.photoURL} alt="Profile" />
-                ) : (
-                  <span>{currentUser?.displayName?.[0] || currentUser?.email?.[0].toUpperCase()}</span>
-                )}
-              </div>
-            </button>
-            <span>{currentUser?.displayName || currentUser?.email}</span>
-          </div>
+          {isAuthed ? (
+            <div className="user-info">
+              <button
+                className="profile-button"
+                onClick={() => handleNavClick('/profile')}
+                aria-label="Open profile"
+              >
+                <div className="user-avatar-small">
+                  {currentUser?.photoURL ? (
+                    <img src={currentUser.photoURL} alt="Profile" />
+                  ) : (
+                    <span>{currentUser?.displayName?.[0] || currentUser?.email?.[0].toUpperCase()}</span>
+                  )}
+                </div>
+                <span className="profile-button-text">{currentUser?.displayName || currentUser?.email}</span>
+              </button>
+            </div>
+          ) : (
+            <div className="auth-actions">
+              <button className="nav-auth secondary" onClick={() => handleNavClick('/login')}>Sign In</button>
+              <button className="nav-auth" onClick={() => handleNavClick('/signup')}>Get Started</button>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -82,6 +94,19 @@ export default function Dashboard() {
           <h2>Welcome to <span className="brand-name">RankKit</span></h2>
           <p>AI-powered document optimization for resumes and social content</p>
         </div>
+
+        {!isAuthed && (
+          <div className="guest-cta">
+            <div>
+              <h3>Explore RankKit as a guest</h3>
+              <p>Browse the tools and see what is possible. Sign in to save work and run optimizations.</p>
+            </div>
+            <div className="guest-cta-actions">
+              <button onClick={() => navigate('/signup')}>Create free account</button>
+              <button className="ghost" onClick={() => navigate('/login')}>Sign in</button>
+            </div>
+          </div>
+        )}
 
         <div className="quick-actions">
           <h3>Tool Dashboards</h3>
@@ -185,36 +210,46 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="usage-summary">
-          <h3>Your Usage</h3>
-          <div className="usage-card">
-            <div className="usage-stat">
-              <span className="stat-label">Optimizations Used</span>
-              <span className="stat-value">{currentUser?.usageCount || 0}</span>
-            </div>
-            <div className="usage-stat">
-              <span className="stat-label">Free Optimizations Remaining</span>
-              <span className="stat-value">
-                {currentUser?.isPremium ? '∞' : (currentUser?.freeOptimizationsRemaining || 0)}
-              </span>
-            </div>
-            <div className="usage-stat">
-              <span className="stat-label">Plan</span>
-              <span className="stat-value">{currentUser?.isPremium ? 'Premium' : 'Free'}</span>
-            </div>
-            {!currentUser?.isPremium && (
-              <div className="upgrade-card">
-                <div className="upgrade-card-text">
-                  <span className="upgrade-eyebrow">Unlock more power</span>
-                  <p>Go premium for unlimited optimizations and priority features.</p>
-                </div>
-                <button className="upgrade-button" onClick={() => navigate('/profile?tab=billing')}>
-                  Upgrade to Premium
-                </button>
+        {isAuthed ? (
+          <div className="usage-summary">
+            <h3>Your Usage</h3>
+            <div className="usage-card">
+              <div className="usage-stat">
+                <span className="stat-label">Optimizations Used</span>
+                <span className="stat-value">{currentUser?.usageCount || 0}</span>
               </div>
-            )}
+              <div className="usage-stat">
+                <span className="stat-label">Free Optimizations Remaining</span>
+                <span className="stat-value">
+                  {currentUser?.isPremium ? '∞' : (currentUser?.freeOptimizationsRemaining || 0)}
+                </span>
+              </div>
+              <div className="usage-stat">
+                <span className="stat-label">Plan</span>
+                <span className="stat-value">{currentUser?.isPremium ? 'Premium' : 'Free'}</span>
+              </div>
+              {currentUser && !currentUser.isPremium && (
+                <div className="upgrade-card">
+                  <div className="upgrade-card-text">
+                    <span className="upgrade-eyebrow">Unlock more power</span>
+                    <p>Go premium for unlimited optimizations and priority features.</p>
+                  </div>
+                  <button className="upgrade-button" onClick={() => navigate('/profile?tab=billing')}>
+                    Upgrade to Premium
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="usage-summary">
+            <h3>Your Usage</h3>
+            <div className="usage-card guest-usage">
+              <p>Sign in to track optimizations, save documents, and unlock premium features.</p>
+              <button onClick={() => navigate('/signup')}>Create free account</button>
+            </div>
+          </div>
+        )}
       </div>
 
       {showSignOutModal && (
