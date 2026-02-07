@@ -2,6 +2,46 @@
 
 RankKit is a professional SaaS platform for optimizing resumes and social media content using AI. Features include ATS resume optimization, social media SEO, document management, version history, and export functionality.
 
+---
+
+## 🚀 MVP Roadmap (Ready for Launch!)
+
+### 🔴 Critical (Must-Have)
+- [ ] **Payment Integration** - Stripe setup for premium subscriptions
+- [ ] **Premium Tier Enforcement** - Enforce usage limits per subscription plan
+- [ ] **Email Verification** - Verify email addresses on signup
+- [ ] **Legal Pages** - Privacy Policy, Terms of Service
+- [ ] **Edge Case Testing** - Test with various document types/sizes
+- [ ] **Security Audit** - Review API keys, permissions, data access
+
+### 🟡 High Priority (Should-Have)
+- [ ] **User Onboarding** - Welcome flow for new users
+- [ ] **Help Documentation** - In-app help & FAQ
+- [ ] **Mobile Responsiveness** - Full mobile testing & optimization
+- [ ] **Performance Testing** - Load testing & optimization
+- [ ] **Bug Fixes** - QA testing & fix remaining issues
+- [ ] **Monitoring Setup** - Error tracking & analytics (Sentry, etc.)
+
+### 🟢 Nice-to-Have (Could-Have)
+- [ ] **Analytics Dashboard** - Track user behavior & engagement
+- [ ] **User Feedback System** - In-app feedback/surveys
+- [ ] **Email Notifications** - Send alerts for subscription/usage
+- [ ] **Accessibility** - WCAG compliance improvements
+- [ ] **Dark Mode** - Dark theme support
+- [ ] **Export PDF/DOCX** - Advanced document export
+
+### ✅ Already Complete
+- ✅ 11 AI-powered tools with save-to-documents
+- ✅ Document management system
+- ✅ User authentication (Email + Google)
+- ✅ User profiles with bio
+- ✅ Responsive design
+- ✅ Error boundaries & error handling
+- ✅ Request caching & optimization
+- ✅ Version history tracking
+
+---
+
 ## Features
 
 ### Document Management
