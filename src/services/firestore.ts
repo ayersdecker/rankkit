@@ -114,7 +114,7 @@ export async function createDocument(
   userId: string,
   name: string,
   content: string,
-  type: 'resume' | 'cover-letter' | 'post' | 'cold-email' | 'sales-script' | 'interview-prep' | 'job-search' | 'hashtags' | 'other',
+  type: 'resume' | 'cover-letter' | 'post' | 'cold-email' | 'sales-script' | 'interview-prep' | 'job-search' | 'hashtags' | 'selling-points' | 'objection-handler' | 'pitch-perfect' | 'other',
   originalFileName?: string,
   fileType?: string,
   aiGenerated?: boolean,

@@ -156,6 +156,7 @@ function AccountSettings() {
   const { currentUser, updateProfile, changePassword, canChangePassword, deleteAccount, signOut } = useAuth();
   const navigate = useNavigate();
   const [displayName, setDisplayName] = useState(currentUser?.displayName || '');
+  const [bio, setBio] = useState(currentUser?.bio || '');
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateMessage, setUpdateMessage] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
@@ -170,7 +171,8 @@ function AccountSettings() {
   // Sync local state with currentUser when it changes
   useEffect(() => {
     setDisplayName(currentUser?.displayName || '');
-  }, [currentUser?.displayName]);
+    setBio(currentUser?.bio || '');
+  }, [currentUser?.displayName, currentUser?.bio]);
 
   async function handleUpdateProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -183,7 +185,7 @@ function AccountSettings() {
     setUpdateMessage('');
 
     try {
-      await updateProfile(displayName.trim());
+      await updateProfile(displayName.trim(), bio.trim());
       setUpdateMessage('✓ Profile updated successfully!');
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -289,6 +291,15 @@ function AccountSettings() {
             placeholder="Your name" 
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
+          />
+        </div>
+        <div className="setting-field">
+          <label>Bio</label>
+          <textarea
+            placeholder="Short bio used across tools"
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            rows={4}
           />
         </div>
         {updateMessage && (

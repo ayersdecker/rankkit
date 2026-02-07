@@ -18,6 +18,9 @@ import InterviewPrep from './modules/Interview/InterviewPrep';
 import JobSearchAssistant from './modules/JobSearch/JobSearchAssistant';
 import ColdEmailGenerator from './modules/WorkplaceTools/ColdEmailGenerator';
 import SellingPointsFinder from './modules/WorkplaceTools/SellingPointsFinder';
+import SalesScriptBuilder from './modules/WorkplaceTools/SalesScriptBuilder';
+import ObjectionHandler from './modules/WorkplaceTools/ObjectionHandler';
+import PitchPerfect from './modules/WorkplaceTools/PitchPerfect';
 import SocialMediaToolsDashboard from './modules/SocialMediaTools/SocialMediaToolsDashboard';
 import HashtagGenerator from './modules/SocialMediaTools/HashtagGenerator';
 import { promotionalNotifications } from './config/notifications';
@@ -141,6 +144,30 @@ function App() {
                   element={
                     <PrivateRoute>
                       <SellingPointsFinder />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/sales-script"
+                  element={
+                    <PrivateRoute>
+                      <SalesScriptBuilder />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/objection-handler"
+                  element={
+                    <PrivateRoute>
+                      <ObjectionHandler />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/pitch-perfect"
+                  element={
+                    <PrivateRoute>
+                      <PitchPerfect />
                     </PrivateRoute>
                   }
                 />

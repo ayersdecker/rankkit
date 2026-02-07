@@ -32,6 +32,8 @@ export interface OptimizationRequest {
   type: 'resume' | 'post';
   content: string;
   context?: string;
+  userName?: string;
+  userBio?: string;
 }
 
 export interface OptimizationResponse {
@@ -93,7 +95,7 @@ function validateRequest(request: OptimizationRequest): void {
  * Generates cache key for request
  */
 function getCacheKey(request: OptimizationRequest): string {
-  return `${request.type}:${request.context}:${request.content.substring(0, 100)}`;
+  return `${request.type}:${request.context}:${request.userName}:${request.userBio}:${request.content.substring(0, 100)}`;
 }
 
 /**
@@ -952,6 +954,179 @@ OUTPUT (Valid JSON only):
     }
     throw new OptimizationError(
       'Failed to generate sales script',
+      'GENERATION_FAILED'
+    );
+  }
+}
+
+/**
+ * Generates objection handling responses
+ */
+export async function generateObjectionHandler(params: {
+  productService: string;
+  targetAudience: string;
+  objections: string;
+  tone: string;
+  userId?: string;
+}): Promise<{
+  responses: { objection: string; response: string; followUp: string; reframe: string }[];
+  principles: string[];
+  pitfalls: string[];
+}> {
+  if (!params.productService || !params.objections) {
+    throw new OptimizationError('Product/service and objections are required', 'INVALID_INPUT');
+  }
+
+  const prompt = `
+You are an expert sales coach and objection handling strategist.
+
+PRODUCT/SERVICE: ${params.productService}
+TARGET AUDIENCE: ${params.targetAudience}
+TONE: ${params.tone}
+OBJECTIONS (one per line):
+${params.objections}
+
+TASK:
+For each objection, provide:
+1. A confident response
+2. A helpful reframe
+3. A follow-up question to move the conversation forward
+
+Also provide:
+- 4-6 guiding principles for objection handling
+- 3-5 common pitfalls to avoid
+
+OUTPUT (Valid JSON only):
+{
+  "responses": [
+    {
+      "objection": "objection text",
+      "response": "response text",
+      "reframe": "reframe text",
+      "follow_up": "follow-up question"
+    }
+  ],
+  "principles": ["principle 1", "principle 2"],
+  "pitfalls": ["pitfall 1", "pitfall 2"]
+}
+  `.trim();
+
+  try {
+    const rawResult = await makeOpenAIRequest(prompt);
+    const jsonMatch = rawResult.match(/```json\s*([\s\S]*?)\s*```/) || rawResult.match(/\{[\s\S]*\}/);
+
+    if (!jsonMatch) {
+      throw new Error('No JSON found in response');
+    }
+
+    const jsonStr = jsonMatch[1] || jsonMatch[0];
+    const parsed = JSON.parse(jsonStr);
+
+    if (params.userId) {
+      await trackUsage(params.userId, 'objection-handler', true);
+    }
+
+    const responses = Array.isArray(parsed.responses) ? parsed.responses.map((item: any) => ({
+      objection: item.objection || '',
+      response: item.response || '',
+      reframe: item.reframe || '',
+      followUp: item.follow_up || ''
+    })) : [];
+
+    return {
+      responses,
+      principles: Array.isArray(parsed.principles) ? parsed.principles : [],
+      pitfalls: Array.isArray(parsed.pitfalls) ? parsed.pitfalls : []
+    };
+  } catch (error) {
+    console.error('[OpenAI] Objection handler error:', error);
+    if (params.userId) {
+      await trackUsage(params.userId, 'objection-handler', false);
+    }
+    throw new OptimizationError(
+      'Failed to generate objection responses',
+      'GENERATION_FAILED'
+    );
+  }
+}
+
+/**
+ * Generates elevator pitches and taglines
+ */
+export async function generatePitchPerfect(params: {
+  productService: string;
+  targetAudience: string;
+  differentiator: string;
+  tone: string;
+  length: string;
+  userId?: string;
+}): Promise<{
+  pitch: string;
+  keyPoints: string[];
+  variants: string[];
+  tagline: string;
+}> {
+  if (!params.productService || !params.targetAudience) {
+    throw new OptimizationError('Product/service and target audience are required', 'INVALID_INPUT');
+  }
+
+  const prompt = `
+You are an expert brand strategist and pitch writer.
+
+PRODUCT/SERVICE: ${params.productService}
+TARGET AUDIENCE: ${params.targetAudience}
+DIFFERENTIATOR: ${params.differentiator}
+TONE: ${params.tone}
+PITCH LENGTH: ${params.length}
+
+TASK:
+Create an elevator pitch that:
+1. States the problem and solution clearly
+2. Highlights the main differentiator
+3. Ends with a memorable punch
+
+Also provide:
+- 3-5 key points to emphasize
+- 2-3 alternate pitch variants
+- A short, memorable tagline
+
+OUTPUT (Valid JSON only):
+{
+  "pitch": "main pitch",
+  "key_points": ["point 1", "point 2"],
+  "variants": ["variant 1", "variant 2"],
+  "tagline": "short tagline"
+}
+  `.trim();
+
+  try {
+    const rawResult = await makeOpenAIRequest(prompt);
+    const jsonMatch = rawResult.match(/```json\s*([\s\S]*?)\s*```/) || rawResult.match(/\{[\s\S]*\}/);
+
+    if (!jsonMatch) {
+      throw new Error('No JSON found in response');
+    }
+
+    const jsonStr = jsonMatch[1] || jsonMatch[0];
+    const parsed = JSON.parse(jsonStr);
+
+    if (params.userId) {
+      await trackUsage(params.userId, 'pitch-perfect', true);
+    }
+
+    return {
+      pitch: parsed.pitch || '',
+      keyPoints: Array.isArray(parsed.key_points) ? parsed.key_points : [],
+      variants: Array.isArray(parsed.variants) ? parsed.variants : [],
+      tagline: parsed.tagline || ''
+    };
+  } catch (error) {
+    console.error('[OpenAI] Pitch perfect error:', error);
+    if (params.userId) {
+      await trackUsage(params.userId, 'pitch-perfect', false);
+    }
+    throw new OptimizationError(
+      'Failed to generate pitch',
       'GENERATION_FAILED'
     );
   }

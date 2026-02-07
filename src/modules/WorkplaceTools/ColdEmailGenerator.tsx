@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { PaywallModal } from '../../components/Shared/PaywallModal';
 import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
+import { useSaveDocument } from '../../utils/useSaveDocument';
+import { formatPlainTextDocument } from '../../utils/documentFormatting';
 import '../CoverLetter/CoverLetterWriter.css';
 
 export default function ColdEmailGenerator() {
@@ -25,6 +27,7 @@ export default function ColdEmailGenerator() {
 
   const { currentUser, refreshUser } = useAuth();
   const navigate = useNavigate();
+  const { saveDocument, saving, saveError, saveSuccess } = useSaveDocument();
 
   useEffect(() => {
     // Check if user has premium access
@@ -71,6 +74,18 @@ export default function ColdEmailGenerator() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleSave() {
+    if (!result) return;
+    const sections = [
+      { heading: 'Subject Line', content: result.subject },
+      { heading: 'Email Body', content: result.email },
+      { heading: 'Alternative Subject Lines', content: result.alternatives },
+      { heading: 'Follow-up Tips', content: result.tips }
+    ];
+    const formatted = formatPlainTextDocument('Cold Email', sections);
+    await saveDocument(formatted, 'cold-email', 'Cold Email');
   }
 
   function handleCopy() {
@@ -135,6 +150,8 @@ export default function ColdEmailGenerator() {
             </button>
 
             {error && <div className="error-message">{error}</div>}
+            {saveError && <div className="error-message">{saveError}</div>}
+            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
           </div>
 
           <div className="output-section">
@@ -170,6 +187,9 @@ export default function ColdEmailGenerator() {
                   )}
 
                   <div className="action-buttons">
+                    <button className="secondary-button" onClick={handleSave} disabled={saving}>
+                      {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                    </button>
                     <button className="secondary-button" onClick={handleCopy}>
                       📋 Copy Email
                     </button>

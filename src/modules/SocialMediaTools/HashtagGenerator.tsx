@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { PaywallModal } from '../../components/Shared/PaywallModal';
 import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall, hasPremiumAccess } from '../../utils/premiumUtils';
+import { useSaveDocument } from '../../utils/useSaveDocument';
+import { formatPlainTextDocument } from '../../utils/documentFormatting';
 import './HashtagGenerator.css';
 
 type Platform = 'instagram' | 'tiktok' | 'youtube' | 'twitter';
@@ -26,6 +28,7 @@ export default function HashtagGenerator() {
 
   const { currentUser, refreshUser } = useAuth();
   const navigate = useNavigate();
+  const { saveDocument, saving, saveError, saveSuccess } = useSaveDocument();
 
   useEffect(() => {
     // Check if user has premium access
@@ -33,6 +36,18 @@ export default function HashtagGenerator() {
       setShowPaywall(true);
     }
   }, [currentUser, navigate]);
+
+  async function handleSave() {
+    if (hashtags.length === 0) return;
+    const sections = [
+      { heading: `All Hashtags (${hashtags.length})`, content: hashtags.join(' ') },
+      { heading: 'Popular Hashtags', content: categories.popular.join(' ') },
+      { heading: 'Niche Hashtags', content: categories.niche.join(' ') },
+      { heading: 'Trending Hashtags', content: categories.trending.join(' ') }
+    ];
+    const formatted = formatPlainTextDocument(`${platform.charAt(0).toUpperCase() + platform.slice(1)} Hashtags`, sections);
+    await saveDocument(formatted, 'hashtags', `${platform} Hashtags`);
+  }
 
   async function handleGenerate() {
     if (!contentDescription) {
@@ -150,6 +165,8 @@ export default function HashtagGenerator() {
             </button>
 
             {error && <div className="error-message">{error}</div>}
+            {saveError && <div className="error-message">{saveError}</div>}
+            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
 
             <div className="info-box">
               <h4>💡 Tips for Best Results</h4>
@@ -233,6 +250,12 @@ export default function HashtagGenerator() {
                     <strong>YouTube:</strong> Add to video description, not title.<br/>
                     <strong>Twitter:</strong> Use sparingly (1-2 max) in tweets.
                   </p>
+                </div>
+
+                <div className="action-buttons">
+                  <button className="secondary-button" onClick={handleSave} disabled={saving}>
+                    {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                  </button>
                 </div>
               </>
             ) : (

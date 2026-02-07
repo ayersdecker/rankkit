@@ -26,6 +26,9 @@ const getDocTypeLabel = (type: string) => {
     'interview-prep': 'Interview Prep',
     'job-search': 'Job Search',
     'hashtags': 'Hashtags',
+    'selling-points': 'Selling Points',
+    'objection-handler': 'Objection Handler',
+    'pitch-perfect': 'Pitch Perfect',
     'other': 'Other'
   };
   return labels[type] || type;
@@ -41,6 +44,9 @@ const getDocTypeEmoji = (type: string) => {
     'interview-prep': '💼',
     'job-search': '🔍',
     'hashtags': '#️⃣',
+    'selling-points': '💡',
+    'objection-handler': '🛡️',
+    'pitch-perfect': '🎯',
     'other': '📄'
   };
   return emojis[type] || '📄';
@@ -134,7 +140,7 @@ export default function DocumentLibrary() {
   const filteredDocs = documents.filter(doc => {
     if (filter === 'all') return true;
     if (filter === 'career') return ['resume', 'cover-letter', 'interview-prep', 'job-search'].includes(doc.type);
-    if (filter === 'workplace') return ['cold-email', 'sales-script'].includes(doc.type);
+    if (filter === 'workplace') return ['cold-email', 'sales-script', 'selling-points', 'objection-handler', 'pitch-perfect'].includes(doc.type);
     if (filter === 'social') return ['post', 'hashtags'].includes(doc.type);
     if (filter === 'other') return doc.type === 'other';
     return false;
@@ -151,6 +157,9 @@ export default function DocumentLibrary() {
       'interview-prep': 0,
       'job-search': 0,
       'hashtags': 0,
+      'selling-points': 0,
+      'objection-handler': 0,
+      'pitch-perfect': 0,
       'other': 0
     };
     documents.forEach(doc => {
@@ -286,7 +295,7 @@ export default function DocumentLibrary() {
             className={`filter-button ${filter === 'workplace' ? 'active' : ''}`}
             onClick={() => setFilter('workplace')}
           >
-            Workplace ({['cold-email', 'sales-script'].reduce((acc, type) => acc + (docTypeStats[type as keyof typeof docTypeStats] || 0), 0)})
+            Workplace ({['cold-email', 'sales-script', 'selling-points', 'objection-handler', 'pitch-perfect'].reduce((acc, type) => acc + (docTypeStats[type as keyof typeof docTypeStats] || 0), 0)})
           </button>
           <button
             className={`filter-button ${filter === 'social' ? 'active' : ''}`}
@@ -514,6 +523,9 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
       'interview-prep': 'Interview Prep',
       'job-search': 'Job Search',
       'hashtags': 'Hashtags',
+      'selling-points': 'Selling Points',
+      'objection-handler': 'Objection Handler',
+      'pitch-perfect': 'Pitch Perfect',
       'other': 'Document'
     };
     
@@ -599,6 +611,9 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
               <optgroup label="Workplace Tools">
                 <option value="cold-email">Cold Email</option>
                 <option value="sales-script">Sales Script</option>
+                <option value="selling-points">Selling Points</option>
+                <option value="objection-handler">Objection Handler</option>
+                <option value="pitch-perfect">Pitch Perfect</option>
               </optgroup>
               <optgroup label="Social Media Tools">
                 <option value="post">Social Post</option>

@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { PaywallModal } from '../../components/Shared/PaywallModal';
 import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
+import { useSaveDocument } from '../../utils/useSaveDocument';
+import { formatPlainTextDocument } from '../../utils/documentFormatting';
 import './SellingPointsFinder.css';
 
 export default function SellingPointsFinder() {
@@ -25,6 +27,7 @@ export default function SellingPointsFinder() {
 
   const { currentUser, refreshUser } = useAuth();
   const navigate = useNavigate();
+  const { saveDocument, saving, saveError, saveSuccess } = useSaveDocument();
 
   useEffect(() => {
     // Check if user has premium access
@@ -32,6 +35,19 @@ export default function SellingPointsFinder() {
       setShowPaywall(true);
     }
   }, [currentUser, navigate]);
+
+  async function handleSave() {
+    if (!analysis) return;
+    const sections = [
+      { heading: 'Key Selling Points', content: analysis.sellingPoints },
+      { heading: 'Unique Value Propositions', content: analysis.uniqueValueProps },
+      { heading: 'Competitive Advantages', content: analysis.competitiveAdvantages },
+      { heading: 'Target Pain Points Addressed', content: analysis.targetPainPoints },
+      { heading: 'Messaging Tips', content: analysis.messagingTips }
+    ];
+    const formatted = formatPlainTextDocument('Selling Points Analysis', sections);
+    await saveDocument(formatted, 'selling-points', 'Selling Points');
+  }
 
   async function handleAnalyze() {
     if (!productDescription && !productUrl) {
@@ -120,6 +136,8 @@ export default function SellingPointsFinder() {
             </button>
 
             {error && <div className="error-message">{error}</div>}
+            {saveError && <div className="error-message">{saveError}</div>}
+            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
           </div>
 
           <div className="output-section">
@@ -168,6 +186,12 @@ export default function SellingPointsFinder() {
                       <li key={index}>{tip}</li>
                     ))}
                   </ul>
+                </div>
+
+                <div className="action-buttons">
+                  <button className="secondary-button" onClick={handleSave} disabled={saving}>
+                    {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                  </button>
                 </div>
               </>
             ) : (

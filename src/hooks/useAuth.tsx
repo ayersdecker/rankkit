@@ -25,7 +25,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
-  updateProfile: (displayName: string) => Promise<void>;
+  updateProfile: (displayName: string, bio?: string) => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   canChangePassword: boolean;
   deleteAccount: () => Promise<void>;
@@ -133,7 +133,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await firebaseSignOut(auth);
   }
 
-  async function updateProfile(displayName: string) {
+  async function updateProfile(displayName: string, bio?: string) {
     if (!auth.currentUser) {
       throw new Error('No user logged in');
     }
@@ -143,7 +143,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Update Firestore user document
     await updateDoc(doc(db, 'users', auth.currentUser.uid), {
-      displayName
+      displayName,
+      bio: bio || ''
     });
 
     // Refresh the user data in context

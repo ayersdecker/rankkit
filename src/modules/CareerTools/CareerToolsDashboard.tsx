@@ -55,6 +55,23 @@ export default function CareerToolsDashboard() {
       description: 'Find the best platforms, strategies, and keywords for your search',
       path: '/job-search',
       color: '#9C27B0'
+    },
+    {
+      id: 'post-optimizer',
+      title: 'Job Post Optimizer',
+      icon: '🚀',
+      description: 'Sharpen job posts and announcements for higher visibility',
+      path: '/post-optimizer',
+      color: '#00BCD4'
+    },
+    {
+      id: 'networking-message',
+      title: 'Networking Message Builder',
+      icon: '🤝',
+      description: 'Create warm outreach messages for introductions and LinkedIn DMs',
+      path: '/networking-message',
+      color: '#FF7043',
+      comingSoon: true
     }
   ];
 
@@ -147,17 +164,24 @@ export default function CareerToolsDashboard() {
           {tools.map((tool) => (
             <div 
               key={tool.id}
-              className="tool-card"
-              onClick={() => navigate(tool.path)}
-              style={{ borderTopColor: tool.color }}
+              className={`tool-card ${tool.comingSoon ? 'coming-soon' : ''}`}
+              onClick={() => !tool.comingSoon && navigate(tool.path)}
+              style={{ borderTopColor: tool.color, cursor: tool.comingSoon ? 'not-allowed' : 'pointer' }}
             >
-              <div className="tool-icon" style={{ background: `${tool.color}15` }}>
+              {tool.comingSoon && (
+                <div className="construction-badge">Coming Soon</div>
+              )}
+              <div className="tool-icon" style={{ background: `${tool.color}15`, opacity: tool.comingSoon ? 0.5 : 1 }}>
                 <span style={{ fontSize: '2.5rem' }}>{tool.icon}</span>
               </div>
               <h3>{tool.title}</h3>
               <p>{tool.description}</p>
-              <button className="tool-button" style={{ background: tool.color }}>
-                Open Tool →
+              <button
+                className="tool-button"
+                style={{ background: tool.comingSoon ? '#999' : tool.color }}
+                disabled={tool.comingSoon}
+              >
+                {tool.comingSoon ? 'Coming Soon' : 'Open Tool →'}
               </button>
             </div>
           ))}

@@ -2,6 +2,7 @@ export interface User {
   uid: string;
   email: string;
   displayName?: string;
+  bio?: string;
   photoURL?: string;
   isPremium: boolean;
   subscriptionPlan?: 'free' | 'career' | 'work' | 'social' | 'pro-bundle' | 'ultimate-bundle';
@@ -15,7 +16,7 @@ export interface Document {
   id: string;
   userId: string;
   name: string;
-  type: 'resume' | 'cover-letter' | 'post' | 'cold-email' | 'sales-script' | 'interview-prep' | 'job-search' | 'hashtags' | 'other';
+  type: 'resume' | 'cover-letter' | 'post' | 'cold-email' | 'sales-script' | 'interview-prep' | 'job-search' | 'hashtags' | 'selling-points' | 'objection-handler' | 'pitch-perfect' | 'other';
   content: string;
   originalFileName?: string;
   fileType?: string;
@@ -121,5 +122,5 @@ export interface SubscriptionPlan {
 }
 
 export type OptimizationType = 'ats' | 'seo' | 'engagement' | 'readability';
-export type DocumentType = 'resume' | 'cover-letter' | 'post' | 'cold-email' | 'sales-script' | 'interview-prep' | 'job-search' | 'hashtags' | 'other';
+export type DocumentType = 'resume' | 'cover-letter' | 'post' | 'cold-email' | 'sales-script' | 'interview-prep' | 'job-search' | 'hashtags' | 'selling-points' | 'objection-handler' | 'pitch-perfect' | 'other';
 export type Platform = 'instagram' | 'tiktok' | 'youtube' | 'twitter';

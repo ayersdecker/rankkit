@@ -7,6 +7,7 @@ import { Document } from '../../types';
 import { PaywallModal } from '../../components/Shared/PaywallModal';
 import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
+import { useSaveDocument } from '../../utils/useSaveDocument';
 import './CoverLetterWriter.css';
 
 export default function CoverLetterWriter() {
@@ -22,6 +23,7 @@ export default function CoverLetterWriter() {
 
   const { currentUser, refreshUser } = useAuth();
   const navigate = useNavigate();
+  const { saveDocument, saving, saveError, saveSuccess } = useSaveDocument();
 
   useEffect(() => {
     // Check if user has premium access
@@ -74,7 +76,7 @@ export default function CoverLetterWriter() {
       const result = await generateCoverLetter({
         resumeContent: selectedDoc.content,
         jobDescription: jobDescription,
-        bio: bio || undefined,
+        bio: bio || currentUser.bio || undefined,
         userId: currentUser.uid
       });
 
@@ -91,6 +93,10 @@ export default function CoverLetterWriter() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleSave() {
+    await saveDocument(coverLetter, 'cover-letter', 'Cover Letter');
   }
 
   function handleCopy() {
@@ -150,7 +156,7 @@ export default function CoverLetterWriter() {
 
             <h3>Your Bio (Optional)</h3>
             <textarea
-              placeholder="Tell us about yourself, your passion, career goals, or any additional context..."
+              placeholder={currentUser?.bio || "Tell us about yourself, your passion, career goals, or any additional context..."}
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               rows={6}
@@ -165,6 +171,8 @@ export default function CoverLetterWriter() {
             </button>
 
             {error && <div className="error-message">{error}</div>}
+            {saveError && <div className="error-message">{saveError}</div>}
+            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
           </div>
 
           <div className="output-section">
@@ -187,11 +195,14 @@ export default function CoverLetterWriter() {
                 )}
 
                 <div className="action-buttons">
+                  <button className="secondary-button" onClick={handleSave} disabled={saving}>
+                    {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                  </button>
                   <button className="secondary-button" onClick={handleCopy}>
                     📋 Copy to Clipboard
                   </button>
                   <button className="download-button" onClick={handleDownload}>
-                    💾 Download as TXT
+                    📥 Download as TXT
                   </button>
                 </div>
               </>

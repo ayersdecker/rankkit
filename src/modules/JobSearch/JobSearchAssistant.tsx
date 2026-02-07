@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { PaywallModal } from '../../components/Shared/PaywallModal';
 import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
+import { useSaveDocument } from '../../utils/useSaveDocument';
+import { formatPlainTextDocument } from '../../utils/documentFormatting';
 import './JobSearchAssistant.css';
 
 export default function JobSearchAssistant() {
@@ -24,6 +26,7 @@ export default function JobSearchAssistant() {
 
   const { currentUser, refreshUser } = useAuth();
   const navigate = useNavigate();
+  const { saveDocument, saving, saveError, saveSuccess } = useSaveDocument();
 
   useEffect(() => {
     // Check if user has premium access
@@ -32,6 +35,17 @@ export default function JobSearchAssistant() {
       return;
     }
   }, [currentUser, navigate]);
+
+  async function handleSave() {
+    if (!searchData) return;
+    const sections = [
+      { heading: 'Recommended Job Platforms', content: searchData.platforms },
+      { heading: 'Search Strategies', content: searchData.searchStrategies },
+      { heading: 'Keywords & Search Terms', content: searchData.keywords.join(', ') }
+    ];
+    const formatted = formatPlainTextDocument(`Job Search Strategy - ${jobTitle}`, sections);
+    await saveDocument(formatted, 'job-search', `Job Search ${jobTitle}`);
+  }
 
   async function handleGenerate() {
     if (!jobTitle || !skills) {
@@ -145,6 +159,8 @@ export default function JobSearchAssistant() {
             </button>
 
             {error && <div className="error-message">{error}</div>}
+            {saveError && <div className="error-message">{saveError}</div>}
+            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
           </div>
 
           <div className="output-section job-search-output">
@@ -179,12 +195,14 @@ export default function JobSearchAssistant() {
                       </span>
                     ))}
                   </div>
-                  <button 
-                    className="secondary-button copy-keywords-btn" 
-                    onClick={handleCopyKeywords}
-                  >
-                    📋 Copy All Keywords
-                  </button>
+                  <div className="action-buttons">
+                    <button className="secondary-button" onClick={handleSave} disabled={saving}>
+                      {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                    </button>
+                    <button className="secondary-button" onClick={handleCopyKeywords}>
+                      📋 Copy All Keywords
+                    </button>
+                  </div>
                 </div>
               </>
             ) : (

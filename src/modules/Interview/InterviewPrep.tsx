@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { PaywallModal } from '../../components/Shared/PaywallModal';
 import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
+import { useSaveDocument } from '../../utils/useSaveDocument';
+import { formatPlainTextDocument } from '../../utils/documentFormatting';
 import './InterviewPrep.css';
 
 export default function InterviewPrep() {
@@ -24,6 +26,7 @@ export default function InterviewPrep() {
 
   const { currentUser, refreshUser } = useAuth();
   const navigate = useNavigate();
+  const { saveDocument, saving, saveError, saveSuccess } = useSaveDocument();
 
   useEffect(() => {
     // Check if user has premium access
@@ -31,6 +34,21 @@ export default function InterviewPrep() {
       setShowPaywall(true);
     }
   }, [currentUser, navigate]);
+
+  async function handleSave() {
+    if (!prepData) return;
+    const sections = [
+      { heading: 'Interview Tips', content: prepData.tips },
+      { heading: 'Common Interview Questions', content: prepData.commonQuestions },
+      ...prepData.suggestedAnswers.map((item) => ({
+        heading: `Q: ${item.question}`,
+        content: `A: ${item.answer}`
+      })),
+      { heading: 'Questions You Should Ask', content: prepData.questionsToAsk }
+    ];
+    const formatted = formatPlainTextDocument('Interview Preparation Guide', sections);
+    await saveDocument(formatted, 'interview-prep', 'Interview Prep');
+  }
 
   async function handleGenerate() {
     if (!jobDescription) {
@@ -136,6 +154,8 @@ export default function InterviewPrep() {
             </button>
 
             {error && <div className="error-message">{error}</div>}
+            {saveError && <div className="error-message">{saveError}</div>}
+            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
           </div>
 
           <div className="output-section interview-output">
@@ -180,9 +200,14 @@ export default function InterviewPrep() {
                   </ul>
                 </div>
 
-                <button className="download-button print-button" onClick={handlePrint}>
-                  🖨️ Print Interview Prep
-                </button>
+                <div className="action-buttons">
+                  <button className="secondary-button" onClick={handleSave} disabled={saving}>
+                    {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                  </button>
+                  <button className="secondary-button" onClick={handlePrint}>
+                    🖨️ Print Interview Prep
+                  </button>
+                </div>
               </>
             ) : (
               <div className="empty-state">

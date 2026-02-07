@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { optimizeContent } from '../../services/openai';
-import { canUserOptimize, decrementFreeOptimization, getUserDocuments, createDocument } from '../../services/firestore';
+import { canUserOptimize, decrementFreeOptimization, getUserDocuments } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
 import { Document } from '../../types';
 import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
+import { useSaveDocument } from '../../utils/useSaveDocument';
 import './ResumeOptimizer.css';
 
 export default function ResumeOptimizer() {
@@ -19,6 +20,7 @@ export default function ResumeOptimizer() {
 
   const { currentUser, refreshUser } = useAuth();
   const navigate = useNavigate();
+  const { saveDocument, saving, saveError, saveSuccess } = useSaveDocument();
 
   useEffect(() => {
     async function loadDocuments() {
@@ -90,50 +92,10 @@ export default function ResumeOptimizer() {
       return;
     }
     
-    setLoading(true);
-    setError('');
+    const originalDoc = documents.find(d => d.id === selectedDocId);
+    const docName = `${originalDoc?.name || 'Resume'} (Optimized)`;
     
-    try {
-      const originalDoc = documents.find(d => d.id === selectedDocId);
-      const docName = `${originalDoc?.name || 'Resume'} (Optimized)`;
-      
-      console.log('Saving document:', {
-        userId: currentUser.uid,
-        name: docName,
-        contentLength: optimizedResume.length,
-        type: 'resume'
-      });
-      
-      const docId = await createDocument(
-        currentUser.uid,
-        docName,
-        optimizedResume,
-        'resume',
-        undefined,
-        undefined,
-        true // Mark as AI-generated
-      );
-      
-      console.log('Document saved successfully:', docId);
-      
-      // Reload documents list
-      const docs = await getUserDocuments(currentUser.uid, 'resume');
-      setDocuments(docs);
-      
-      // Navigate to documents page
-      navigate('/documents');
-    } catch (err: any) {
-      console.error('Save error details:', {
-        error: err,
-        message: err.message,
-        code: err.code,
-        stack: err.stack
-      });
-      const errorMsg = err.message || err.code || 'Unknown error';
-      setError('Save failed: ' + errorMsg);
-    } finally {
-      setLoading(false);
-    }
+    await saveDocument(optimizedResume, 'resume', docName);
   }
 
   function handlePrint() {
@@ -273,6 +235,8 @@ export default function ResumeOptimizer() {
             </button>
 
             {error && <div className="error-message">{error}</div>}
+            {saveError && <div className="error-message">{saveError}</div>}
+            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
 
             {optimizedResume && (
               <>
@@ -319,8 +283,8 @@ export default function ResumeOptimizer() {
                 }}></div>
 
                 <div style={{ display: 'flex', gap: '10px', marginTop: '20px', flexWrap: 'wrap' }}>
-                  <button className="download-button" onClick={handleSaveToDocuments}>
-                    💾 Save to Documents
+                  <button className="download-button" onClick={handleSaveToDocuments} disabled={saving}>
+                    {saving ? '💾 Saving...' : '💾 Save to Documents'}
                   </button>
                   <button className="download-button" onClick={handlePrint}>
                     🖨️ Print / Save as PDF

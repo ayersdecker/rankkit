@@ -40,7 +40,7 @@ export default function WorkplaceToolsDashboard() {
       description: 'Generate effective sales scripts for calls, demos, and pitches',
       path: '/sales-script',
       color: '#4ECDC4',
-      comingSoon: true
+      comingSoon: false
     },
     {
       id: 'selling-points',
@@ -58,7 +58,7 @@ export default function WorkplaceToolsDashboard() {
       description: 'Get responses to common sales objections and push-backs',
       path: '/objection-handler',
       color: '#F38181',
-      comingSoon: true
+      comingSoon: false
     },
     {
       id: 'pitch-perfect',
@@ -67,7 +67,7 @@ export default function WorkplaceToolsDashboard() {
       description: 'Create compelling elevator pitches and value propositions',
       path: '/pitch-perfect',
       color: '#AA96DA',
-      comingSoon: true
+      comingSoon: false
     },
     {
       id: 'meeting-prep',

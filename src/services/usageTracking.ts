@@ -3,7 +3,7 @@ import { db } from './firebase';
 
 export interface UsageRecord {
   userId: string;
-  toolType: 'resume' | 'cover-letter' | 'post' | 'hashtag' | 'cold-email' | 'selling-points' | 'interview' | 'job-search' | 'sales-script';
+  toolType: 'resume' | 'cover-letter' | 'post' | 'hashtag' | 'cold-email' | 'selling-points' | 'interview' | 'job-search' | 'sales-script' | 'objection-handler' | 'pitch-perfect';
   timestamp: Date;
   success: boolean;
   tokensUsed?: number;
@@ -22,6 +22,8 @@ export interface UsageStats {
     interview: number;
     'job-search': number;
     'sales-script': number;
+    'objection-handler': number;
+    'pitch-perfect': number;
   };
   lastUpdated: Date;
 }
@@ -103,7 +105,9 @@ export async function getMonthlyUsageStats(userId: string, month?: string): Prom
           'selling-points': 0,
           interview: 0,
           'job-search': 0,
-          'sales-script': 0
+          'sales-script': 0,
+          'objection-handler': 0,
+          'pitch-perfect': 0
         },
         lastUpdated: new Date()
       };
@@ -122,7 +126,9 @@ export async function getMonthlyUsageStats(userId: string, month?: string): Prom
         'selling-points': 0,
         interview: 0,
         'job-search': 0,
-        'sales-script': 0
+        'sales-script': 0,
+        'objection-handler': 0,
+        'pitch-perfect': 0
       },
       lastUpdated: data.lastUpdated?.toDate() || new Date()
     };
@@ -173,7 +179,9 @@ export async function resetMonthlyUsage(userId: string, month?: string): Promise
         'selling-points': 0,
         interview: 0,
         'job-search': 0,
-        'sales-script': 0
+        'sales-script': 0,
+        'objection-handler': 0,
+        'pitch-perfect': 0
       },
       tokensUsed: 0,
       successCount: 0,

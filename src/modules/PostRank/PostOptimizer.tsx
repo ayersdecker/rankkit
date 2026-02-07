@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { PaywallModal } from '../../components/Shared/PaywallModal';
 import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
+import { useSaveDocument } from '../../utils/useSaveDocument';
+import { formatPlainTextDocument } from '../../utils/documentFormatting';
 import '../ResumeRank/ResumeOptimizer.css';
 
 type Platform = 'instagram' | 'tiktok' | 'youtube' | 'twitter';
@@ -23,6 +25,7 @@ export default function PostOptimizer() {
 
   const { currentUser, refreshUser } = useAuth();
   const navigate = useNavigate();
+  const { saveDocument, saving, saveError, saveSuccess } = useSaveDocument();
 
   useEffect(() => {
     // Check if user has premium access
@@ -30,6 +33,18 @@ export default function PostOptimizer() {
       setShowPaywall(true);
     }
   }, [currentUser, navigate]);
+
+  async function handleSave() {
+    if (!optimizedPost) return;
+    const sections = [
+      { heading: 'Optimized Post', content: optimizedPost },
+      { heading: 'Recommended Hashtags', content: hashtags.join(' ') },
+      { heading: 'Key Improvements', content: suggestions },
+      { heading: 'Engagement Score', content: `${engagementScore}/100` }
+    ];
+    const formatted = formatPlainTextDocument(`Optimized ${platform.charAt(0).toUpperCase() + platform.slice(1)} Post`, sections);
+    await saveDocument(formatted, 'post', `${platform} Post`);
+  }
 
   async function handleOptimize() {
     if (!originalPost) {
@@ -120,6 +135,8 @@ export default function PostOptimizer() {
             </button>
 
             {error && <div className="error-message">{error}</div>}
+            {saveError && <div className="error-message">{saveError}</div>}
+            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
           </div>
 
           <div className="output-section">
@@ -156,12 +173,17 @@ export default function PostOptimizer() {
                   ))}
                 </ul>
 
-                <button
-                  className="download-button"
-                  onClick={() => navigator.clipboard.writeText(optimizedPost + '\n\n' + hashtags.join(' '))}
-                >
-                  Copy to Clipboard
-                </button>
+                <div className="action-buttons">
+                  <button className="secondary-button" onClick={handleSave} disabled={saving}>
+                    {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                  </button>
+                  <button
+                    className="secondary-button"
+                    onClick={() => navigator.clipboard.writeText(optimizedPost + '\n\n' + hashtags.join(' '))}
+                  >
+                    📋 Copy to Clipboard
+                  </button>
+                </div>
               </>
             ) : (
               <div className="empty-state">
