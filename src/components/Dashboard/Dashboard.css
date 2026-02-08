@@ -693,8 +693,17 @@
     top: 18px;
     right: 20px;
     width: auto;
+    display: flex;
     justify-content: flex-end;
+    align-items: center;
     gap: 12px;
+    flex-direction: row;
+  }
+
+  .auth-actions {
+    display: flex;
+    gap: 8px;
+    order: 1;
   }
 
   .nav-toggle {
@@ -702,6 +711,7 @@
     width: 34px;
     height: 34px;
     font-size: 18px;
+    order: 2;
   }
 
   .profile-button {
@@ -710,6 +720,11 @@
 
   .profile-nav-link {
     display: flex;
+  }
+
+  .user-info {
+    display: flex;
+    order: 1;
   }
 
   .user-info span {
