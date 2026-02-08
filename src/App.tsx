@@ -64,8 +64,8 @@ function ScrollToTop() {
 }
 
 function App() {
-  // Use /rankkit basename for GitHub Pages deployment
-  const basename = process.env.NODE_ENV === 'production' ? '/rankkit' : '/';
+  // Use root basename for custom domain www.rankkit.net
+  const basename = '/';
     
   return (
     <ErrorBoundary>
