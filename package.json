@@ -2,7 +2,7 @@
   "name": "rankkit",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://ayersdecker.github.io/rankkit",
+  "homepage": "/",
   "dependencies": {
     "@stripe/stripe-js": "^8.7.0",
     "@testing-library/dom": "^10.4.1",
