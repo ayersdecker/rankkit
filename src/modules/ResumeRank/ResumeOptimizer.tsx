@@ -112,7 +112,7 @@ export default function ResumeOptimizer() {
           <style>
             body {
               font-family: 'Calibri', 'Arial', sans-serif;
-              line-height: 1.5;
+              line-height: 1.6;
               max-width: 8.5in;
               margin: 0 auto;
               padding: 0.5in;
@@ -120,36 +120,37 @@ export default function ResumeOptimizer() {
               font-size: 11pt;
             }
             h1 {
-              font-size: 20pt;
-              margin-bottom: 6pt;
+              font-size: 22pt;
+              margin-bottom: 4pt;
               border-bottom: 2pt solid #2c5282;
-              padding-bottom: 4pt;
+              padding-bottom: 6pt;
               color: #1a1a1a;
+              font-weight: 700;
             }
             h2 {
-              font-size: 12pt;
-              margin-top: 14pt;
-              margin-bottom: 6pt;
+              font-size: 13pt;
+              margin-top: 18pt;
+              margin-bottom: 8pt;
               color: #2c5282;
               text-transform: uppercase;
               border-bottom: 1pt solid #cbd5e0;
-              padding-bottom: 2pt;
+              padding-bottom: 3pt;
               font-weight: 600;
             }
             h3 {
               font-size: 11pt;
-              margin-top: 8pt;
-              margin-bottom: 2pt;
+              margin-top: 12pt;
+              margin-bottom: 3pt;
               font-weight: bold;
               color: #2d3748;
             }
             p, li {
-              margin: 3pt 0;
-              line-height: 1.4;
+              margin: 4pt 0;
+              line-height: 1.5;
             }
             ul {
-              margin: 3pt 0;
-              padding-left: 18pt;
+              margin: 6pt 0;
+              padding-left: 20pt;
             }
             em {
               font-style: italic;

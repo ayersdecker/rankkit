@@ -97,7 +97,7 @@ export async function exportAsPDF(content: string, fileName: string): Promise<vo
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 20;
     const maxWidth = pageWidth - (margin * 2);
-    const lineHeight = 7;
+    const lineHeight = 6;
     let yPosition = margin;
 
     // Split content by paragraphs
@@ -116,9 +116,14 @@ export async function exportAsPDF(content: string, fileName: string): Promise<vo
 
       // Set styling based on parsed format
       if (parsed.isHeading) {
-        const headingSizes = [16, 14, 12, 11, 11];
+        const headingSizes = [18, 14, 12, 11, 11];
         doc.setFontSize(headingSizes[Math.min(parsed.headingLevel - 1, 4)] || 12);
         doc.setFont('helvetica', 'bold');
+        
+        // Add extra space before headings (except first one)
+        if (yPosition > margin + 5) {
+          yPosition += lineHeight * 1.5;
+        }
         
         // Prevent headings from being orphaned at bottom of page
         // Check if there's room for heading + at least 2-3 lines of content
@@ -158,9 +163,11 @@ export async function exportAsPDF(content: string, fileName: string): Promise<vo
 
       // Add extra space after headings and paragraphs
       if (parsed.isHeading) {
-        yPosition += lineHeight * 0.5;
+        yPosition += lineHeight * 0.8;
+      } else if (parsed.isBullet) {
+        yPosition += lineHeight * 0.15;
       } else {
-        yPosition += lineHeight * 0.2;
+        yPosition += lineHeight * 0.3;
       }
     });
 
@@ -206,8 +213,8 @@ export async function exportAsWord(content: string, fileName: string): Promise<v
               })
             ],
             spacing: {
-              before: 240,
-              after: 120
+              before: 280,
+              after: 160
             },
             // Keep heading with next paragraph to prevent orphaning
             keepNext: true
@@ -227,8 +234,8 @@ export async function exportAsWord(content: string, fileName: string): Promise<v
               level: 0
             },
             spacing: {
-              before: 60,
-              after: 60
+              before: 80,
+              after: 80
             }
           })
         );
@@ -244,8 +251,8 @@ export async function exportAsWord(content: string, fileName: string): Promise<v
               })
             ],
             spacing: {
-              before: 120,
-              after: 120
+              before: 140,
+              after: 140
             }
           })
         );

@@ -307,25 +307,30 @@ INSTRUCTIONS:
    - NEVER use "John Doe", "Jane Smith", "Candidate's Actual Name", or ANY generic placeholder
    - The name is usually in the first few lines of the resume
 
-2. Extract key skills and keywords from the job posting
-3. EXPAND and enhance the resume - DO NOT SHORTEN IT
-4. Add relevant keywords naturally throughout
-5. Improve action verbs and quantify achievements where possible
-6. Maintain or INCREASE the level of detail
-7. Add proper formatting with section headers
-8. Preserve all original accomplishments and experience
-9. Format for both ATS readability and human review
-10. Maintain truthfulness - do not add fake experience
+2. **PRESERVE ALL CONTACT INFORMATION**: Extract and include phone, email, LinkedIn, location, website, etc.
+   - Find phone number, email, LinkedIn URL, location/address in original resume
+   - Place immediately after the name in a clear, readable format
+   - DO NOT drop or omit any contact details
+
+3. Extract key skills and keywords from the job posting
+4. EXPAND and enhance the resume - DO NOT SHORTEN IT
+5. Add relevant keywords naturally throughout
+6. Improve action verbs and quantify achievements where possible
+7. Maintain or INCREASE the level of detail
+8. Add proper formatting with section headers and adequate spacing
+9. Preserve all original accomplishments and experience
+10. Format for both ATS readability and human review
+11. Maintain truthfulness - do not add fake experience
 
 OUTPUT FORMAT (Valid JSON only):
 {
-  "optimized_resume": "# [PUT THE REAL NAME YOU FOUND HERE]\\n\\n## PROFESSIONAL SUMMARY\\n[2-3 sentence compelling summary]\\n\\n## PROFESSIONAL EXPERIENCE\\n\\n### [Company Name] | [Job Title]\\n*[Dates]*\\n- [Achievement with metrics]\\n- [Achievement with metrics]\\n\\n### [Next Company] | [Job Title]\\n*[Dates]*\\n- [Achievement]\\n\\n## EDUCATION\\n\\n### [Institution] - [Degree]\\n*[Graduation Date]*\\n\\n## TECHNICAL SKILLS\\n\\n**Languages:** [List]  \\n**Frameworks:** [List]  \\n**Tools:** [List]\\n\\n## KEY STRENGTHS\\n- [Notable strengths or achievements]",
+  "optimized_resume": "# [PUT THE REAL NAME YOU FOUND HERE]\\n\\n[Phone] | [Email] | [LinkedIn] | [Location]\\n\\n## PROFESSIONAL SUMMARY\\n\\n[2-3 sentence compelling summary]\\n\\n## PROFESSIONAL EXPERIENCE\\n\\n### [Company Name] | [Job Title]\\n*[Dates]*\\n\\n- [Achievement with metrics]\\n- [Achievement with metrics]\\n- [Achievement with metrics]\\n\\n### [Next Company] | [Job Title]\\n*[Dates]*\\n\\n- [Achievement]\\n- [Achievement]\\n\\n## EDUCATION\\n\\n### [Institution] - [Degree]\\n*[Graduation Date]*\\n\\n## TECHNICAL SKILLS\\n\\n**Languages:** [List]  \\n**Frameworks:** [List]  \\n**Tools:** [List]\\n\\n## KEY STRENGTHS\\n\\n- [Notable strengths or achievements]\\n- [Notable strengths or achievements]",
   "match_score": 85,
   "suggestions": ["Specific improvements made to enhance the resume"],
   "missing_keywords": ["keyword1", "keyword2"]
 }
 
-REMINDER: Start your optimized_resume with "# " followed by THE ACTUAL NAME from the resume, NOT a placeholder!
+REMINDER: Start with "# " followed by THE ACTUAL NAME, then the ACTUAL CONTACT INFO on the next line!
     `.trim();
   } else {
     return `

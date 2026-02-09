@@ -5,7 +5,8 @@ import {
   getUserDocuments,
   createDocument,
   deleteDocument,
-  uploadDocumentFile
+  uploadDocumentFile,
+  getAuthenticatedFileBlob
 } from '../../services/firestore';
 import { extractTextFromFile, validateFile, formatFileSize, getFileIcon, validateDocumentPages } from '../../utils/fileUtils';
 import { exportAsPDF, exportAsWord, formatExportFileName, isExportable } from '../../utils/documentExport';
@@ -749,6 +750,40 @@ function DocumentViewModal({
   const [viewMode, setViewMode] = useState<'original' | 'text'>(document.fileUrl ? 'original' : 'text');
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState('');
+  const [blobUrl, setBlobUrl] = useState<string>('');
+  const [loadingFile, setLoadingFile] = useState(false);
+  const [fileError, setFileError] = useState('');
+
+  // Load authenticated blob URL when viewing original file
+  useEffect(() => {
+    let objectUrl: string | null = null;
+    
+    async function loadFile() {
+      if (document.fileUrl && viewMode === 'original') {
+        try {
+          setLoadingFile(true);
+          setFileError('');
+          const url = await getAuthenticatedFileBlob(document.fileUrl);
+          objectUrl = url;
+          setBlobUrl(url);
+        } catch (error) {
+          console.error('Failed to load file:', error);
+          setFileError('Failed to load file. Please try again or view text content instead.');
+        } finally {
+          setLoadingFile(false);
+        }
+      }
+    }
+
+    loadFile();
+
+    // Cleanup: revoke object URL when component unmounts or file changes
+    return () => {
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [document.fileUrl, viewMode]);
 
   const handleExportPDF = async () => {
     if (!isExportable(document.content)) {
@@ -825,9 +860,24 @@ function DocumentViewModal({
         <div className="document-content">
           {viewMode === 'original' && document.fileUrl ? (
             <div className="file-viewer">
-              {document.fileType?.includes('pdf') ? (
+              {loadingFile ? (
+                <div className="file-loading">
+                  <div className="spinner"></div>
+                  <p>Loading file...</p>
+                </div>
+              ) : fileError ? (
+                <div className="file-error">
+                  <p>⚠️ {fileError}</p>
+                  <button 
+                    onClick={() => setViewMode('text')}
+                    className="switch-view-button"
+                  >
+                    View Text Content
+                  </button>
+                </div>
+              ) : document.fileType?.includes('pdf') && blobUrl ? (
                 <iframe
-                  src={document.fileUrl}
+                  src={blobUrl}
                   title={document.name}
                   className="pdf-viewer"
                 />
@@ -835,15 +885,15 @@ function DocumentViewModal({
                 <div className="file-download">
                   <div className="file-icon-large">{getDocTypeEmoji(document.type)}</div>
                   <p>Cannot preview this file type in browser</p>
-                  <a 
-                    href={document.fileUrl} 
-                    download={document.originalFileName || document.name}
-                    className="download-button"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    📥 Download {document.originalFileName || 'File'}
-                  </a>
+                  {blobUrl && (
+                    <a 
+                      href={blobUrl} 
+                      download={document.originalFileName || document.name}
+                      className="download-button"
+                    >
+                      📥 Download {document.originalFileName || 'File'}
+                    </a>
+                  )}
                 </div>
               )}
             </div>
@@ -880,13 +930,11 @@ function DocumentViewModal({
             </button>
           </div>
           <div className="action-buttons">
-            {document.fileUrl && (
+            {document.fileUrl && blobUrl && (
               <a 
-                href={document.fileUrl} 
+                href={blobUrl} 
                 download={document.originalFileName || document.name}
                 className="download-link-button"
-                target="_blank"
-                rel="noopener noreferrer"
               >
                 📥 Download Original
               </a>

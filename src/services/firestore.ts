@@ -14,7 +14,7 @@ import {
   // limit as firestoreLimit // Reserved for future use
 } from 'firebase/firestore';
 import type { DocumentReference } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, deleteObject, getBlob } from 'firebase/storage';
 import { db, storage } from './firebase';
 import { Document, OptimizationVersion } from '../types';
 import { isWhitelistedEmail } from '../config';
@@ -54,6 +54,7 @@ function validateDocumentData(name: string, content: string): void {
 
 /**
  * Uploads a file to Firebase Storage
+ * Returns the storage path (not URL) to avoid CORS issues
  */
 export async function uploadDocumentFile(
   userId: string,
@@ -79,11 +80,10 @@ export async function uploadDocumentFile(
       contentType: file.type
     });
     
-    // Get the download URL
-    const downloadURL = await getDownloadURL(storageRef);
-    
-    console.log('[Storage] File uploaded successfully:', downloadURL);
-    return downloadURL;
+    // Return the storage path (not URL) to avoid CORS issues
+    // We'll use getAuthenticatedFileBlob() when we need to access the file
+    console.log('[Storage] File uploaded successfully to path:', storagePath);
+    return storagePath;
   } catch (error: any) {
     console.error('[Storage] Upload error:', error);
     throw new FirestoreError('Failed to upload file', 'UPLOAD_ERROR', error);
@@ -92,10 +92,11 @@ export async function uploadDocumentFile(
 
 /**
  * Deletes a file from Firebase Storage
+ * @param pathOrUrl - Storage path or URL
  */
-export async function deleteDocumentFile(fileUrl: string): Promise<void> {
+export async function deleteDocumentFile(pathOrUrl: string): Promise<void> {
   try {
-    const storageRef = ref(storage, fileUrl);
+    const storageRef = ref(storage, pathOrUrl);
     await deleteObject(storageRef);
     console.log('[Storage] File deleted successfully');
   } catch (error: any) {
@@ -108,7 +109,32 @@ export async function deleteDocumentFile(fileUrl: string): Promise<void> {
 }
 
 /**
+ * Gets an authenticated blob URL for viewing files
+ * This bypasses CORS issues by downloading the file with auth and creating a local blob URL
+ * @param pathOrUrl - Storage path (e.g., 'users/xxx/documents/file.pdf') or full URL
+ */
+export async function getAuthenticatedFileBlob(pathOrUrl: string): Promise<string> {
+  try {
+    // Get storage reference from path or URL
+    const storageRef = ref(storage, pathOrUrl);
+    
+    // Download the file as a blob using authenticated request
+    const blob = await getBlob(storageRef);
+    
+    // Create a local object URL
+    const objectUrl = URL.createObjectURL(blob);
+    
+    console.log('[Storage] Created authenticated blob URL from path:', pathOrUrl);
+    return objectUrl;
+  } catch (error: any) {
+    console.error('[Storage] Blob creation error:', error);
+    throw new FirestoreError('Failed to load file', 'BLOB_ERROR', error);
+  }
+}
+
+/**
  * Creates a new document
+ * @param fileUrl - Storage path (e.g., 'users/xxx/documents/file.pdf'), NOT a full URL
  */
 export async function createDocument(
   userId: string,
