@@ -4,6 +4,7 @@ export interface User {
   displayName?: string;
   bio?: string;
   photoURL?: string;
+  emailVerified: boolean;
   isPremium: boolean;
   subscriptionPlan?: 'free' | 'career' | 'work' | 'social' | 'pro-bundle' | 'ultimate-bundle';
   subscriptionStatus?: 'active' | 'canceled' | 'expired' | 'trial';

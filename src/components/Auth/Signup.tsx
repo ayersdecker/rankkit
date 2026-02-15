@@ -10,6 +10,7 @@ export default function Signup() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   
   const { signUp, signInWithGoogle, currentUser } = useAuth();
   const navigate = useNavigate();
@@ -32,6 +33,10 @@ export default function Signup() {
     
     if (password.length < 6) {
       return setError('Password must be at least 6 characters');
+    }
+
+    if (!acceptedTerms) {
+      return setError('You must accept the Terms of Service to continue');
     }
     
     try {
@@ -113,6 +118,17 @@ export default function Signup() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
+            <div className="terms-checkbox">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+              />
+              <label htmlFor="terms">
+                I agree to the <Link to="/terms" target="_blank">Terms of Service</Link>
+              </label>
+            </div>
             <button type="submit" disabled={loading}>
               {loading ? 'Creating account...' : 'Sign Up'}
             </button>

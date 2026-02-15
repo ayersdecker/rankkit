@@ -9,6 +9,8 @@ import Dashboard from './components/Dashboard/Dashboard';
 import DocumentLibrary from './components/Dashboard/DocumentLibrary';
 import OptimizationWorkspace from './components/Dashboard/OptimizationWorkspace';
 import Profile from './components/Dashboard/Profile';
+import TermsOfService from './components/Legal/TermsOfService';
+import Footer from './components/Shared/Footer';
 import CareerToolsDashboard from './modules/CareerTools/CareerToolsDashboard';
 import WorkplaceToolsDashboard from './modules/WorkplaceTools/WorkplaceToolsDashboard';
 import ResumeOptimizer from './modules/ResumeRank/ResumeOptimizer';
@@ -220,8 +222,10 @@ function App() {
                     </PrivateRoute>
                   }
                 />
+                <Route path="/terms" element={<TermsOfService />} />
                 <Route path="/" element={<Navigate to="/dashboard" />} />
               </Routes>
+              <Footer />
             </Router>
           </div>
         </div>

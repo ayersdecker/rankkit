@@ -11,7 +11,9 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   updatePassword as firebaseUpdatePassword,
-  deleteUser as firebaseDeleteUser
+  deleteUser as firebaseDeleteUser,
+  sendEmailVerification,
+  reload as firebaseReload
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../services/firebase';
@@ -30,6 +32,8 @@ interface AuthContextType {
   canChangePassword: boolean;
   deleteAccount: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  checkEmailVerification: () => Promise<void>;
+  resendVerificationEmail: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -77,16 +81,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userData = userDoc.data() as User;
       // Merge photoURL from Firebase Auth if it exists and isn't in Firestore
       if (firebaseUser.photoURL && !userData.photoURL) {
-        const updatedUser = { ...userData, photoURL: firebaseUser.photoURL };
-        await updateDoc(doc(db, 'users', firebaseUser.uid), { photoURL: firebaseUser.photoURL });
+        const updatedUser = { ...userData, photoURL: firebaseUser.photoURL, emailVerified: firebaseUser.emailVerified };
+        await updateDoc(doc(db, 'users', firebaseUser.uid), { photoURL: firebaseUser.photoURL, emailVerified: firebaseUser.emailVerified });
         return updatedUser;
       }
-      return userData;
+      return { ...userData, emailVerified: firebaseUser.emailVerified };
     } else {
       // Create new user document
       const newUser: Partial<User> = {
         uid: firebaseUser.uid,
         email: firebaseUser.email!,
+        emailVerified: firebaseUser.emailVerified,
         isPremium: false,
         usageCount: 0,
         freeOptimizationsRemaining: 1,
@@ -113,7 +118,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function signUp(email: string, password: string) {
-    await createUserWithEmailAndPassword(auth, email, password);
+    const result = await createUserWithEmailAndPassword(auth, email, password);
+    // Send verification email
+    if (result.user) {
+      await sendEmailVerification(result.user, {
+        url: `${window.location.origin}/verify-email`,
+        handleCodeInApp: true
+      });
+    }
   }
 
   async function signInWithGoogle() {
@@ -191,6 +203,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  async function checkEmailVerification() {
+    if (auth.currentUser) {
+      // Reload to get latest email verification status
+      await firebaseReload(auth.currentUser);
+      await refreshUser();
+    }
+  }
+
+  async function resendVerificationEmail() {
+    if (auth.currentUser) {
+      await sendEmailVerification(auth.currentUser, {
+        url: `${window.location.origin}/verify-email`,
+        handleCodeInApp: true
+      });
+    }
+  }
+
   const value = {
     currentUser,
     loading,
@@ -202,7 +231,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     changePassword,
     canChangePassword,
     deleteAccount,
-    refreshUser
+    refreshUser,
+    checkEmailVerification,
+    resendVerificationEmail
   };
 
   return (
