@@ -1,4 +1,6 @@
 import React from 'react';
+import { Trash2 } from 'lucide-react';
+import { MonoIcon } from './MonoIcon';
 import './DeleteDocumentConfirmation.css';
 
 interface DeleteDocumentConfirmationProps {
@@ -19,7 +21,9 @@ export function DeleteDocumentConfirmation({
   return (
     <div className="delete-doc-overlay" onClick={onCancel}>
       <div className="delete-doc-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="delete-doc-icon">🗑️</div>
+        <div className="delete-doc-icon">
+          <MonoIcon icon={Trash2} size={32} className="mono-icon" />
+        </div>
         <h2>Delete Document</h2>
         <p className="delete-doc-message">
           This will permanently delete <strong>{documentName}</strong>.

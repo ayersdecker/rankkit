@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { CheckCircle2, Printer, Save } from 'lucide-react';
 import { optimizeContent } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization, getUserDocuments } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
 import { Document } from '../../types';
 import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { useSaveDocument } from '../../utils/useSaveDocument';
+import { MonoIcon } from '../../components/Shared/MonoIcon';
 import './ResumeOptimizer.css';
 
 export default function ResumeOptimizer() {
@@ -244,7 +246,12 @@ export default function ResumeOptimizer() {
 
             {error && <div className="error-message">{error}</div>}
             {saveError && <div className="error-message">{saveError}</div>}
-            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
+            {saveSuccess && (
+              <div className="update-message success">
+                <MonoIcon icon={CheckCircle2} size={16} className="mono-icon inline" />
+                Saved to Documents!
+              </div>
+            )}
 
             {optimizedResume && (
               <>
@@ -292,10 +299,12 @@ export default function ResumeOptimizer() {
 
                 <div style={{ display: 'flex', gap: '10px', marginTop: '20px', flexWrap: 'wrap' }}>
                   <button className="download-button" onClick={handleSaveToDocuments} disabled={saving}>
-                    {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                    <MonoIcon icon={Save} size={16} className="mono-icon inline" />
+                    {saving ? 'Saving...' : 'Save to Documents'}
                   </button>
                   <button className="download-button" onClick={handlePrint}>
-                    🖨️ Print / Save as PDF
+                    <MonoIcon icon={Printer} size={16} className="mono-icon inline" />
+                    Print / Save as PDF
                   </button>
                 </div>
 

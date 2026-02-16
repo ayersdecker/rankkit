@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { CheckCircle2, Copy, Download, Save } from 'lucide-react';
 import { generateCoverLetter } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization, getUserDocuments } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +9,7 @@ import { PaywallModal } from '../../components/Shared/PaywallModal';
 import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
 import { useSaveDocument } from '../../utils/useSaveDocument';
+import { MonoIcon } from '../../components/Shared/MonoIcon';
 import './CoverLetterWriter.css';
 
 export default function CoverLetterWriter() {
@@ -172,7 +174,12 @@ export default function CoverLetterWriter() {
 
             {error && <div className="error-message">{error}</div>}
             {saveError && <div className="error-message">{saveError}</div>}
-            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
+            {saveSuccess && (
+              <div className="update-message success">
+                <MonoIcon icon={CheckCircle2} size={16} className="mono-icon inline" />
+                Saved to Documents!
+              </div>
+            )}
           </div>
 
           <div className="output-section">
@@ -196,13 +203,16 @@ export default function CoverLetterWriter() {
 
                 <div className="action-buttons">
                   <button className="secondary-button" onClick={handleSave} disabled={saving}>
-                    {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                    <MonoIcon icon={Save} size={16} className="mono-icon inline" />
+                    {saving ? 'Saving...' : 'Save to Documents'}
                   </button>
                   <button className="secondary-button" onClick={handleCopy}>
-                    📋 Copy to Clipboard
+                    <MonoIcon icon={Copy} size={16} className="mono-icon inline" />
+                    Copy to Clipboard
                   </button>
                   <button className="download-button" onClick={handleDownload}>
-                    📥 Download as TXT
+                    <MonoIcon icon={Download} size={16} className="mono-icon inline" />
+                    Download as TXT
                   </button>
                 </div>
               </>

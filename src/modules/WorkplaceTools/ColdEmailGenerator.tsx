@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { CheckCircle2, Copy, Mail, RefreshCcw, Save, Lightbulb } from 'lucide-react';
 import { generateColdEmail } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +9,7 @@ import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
 import { useSaveDocument } from '../../utils/useSaveDocument';
 import { formatPlainTextDocument } from '../../utils/documentFormatting';
+import { MonoIcon } from '../../components/Shared/MonoIcon';
 import '../CoverLetter/CoverLetterWriter.css';
 
 export default function ColdEmailGenerator() {
@@ -151,22 +153,36 @@ export default function ColdEmailGenerator() {
 
             {error && <div className="error-message">{error}</div>}
             {saveError && <div className="error-message">{saveError}</div>}
-            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
+            {saveSuccess && (
+              <div className="update-message success">
+                <MonoIcon icon={CheckCircle2} size={16} className="mono-icon inline" />
+                Saved to Documents!
+              </div>
+            )}
           </div>
 
           <div className="output-section">
             {result ? (
               <>
                 <div className="email-preview">
-                  <h3>📧 Subject Line</h3>
+                  <h3>
+                    <MonoIcon icon={Mail} size={18} className="mono-icon inline" />
+                    Subject Line
+                  </h3>
                   <div className="subject-line">{result.subject}</div>
                   
-                  <h3 style={{ marginTop: '1.5rem' }}>✉️ Email Body</h3>
+                  <h3 style={{ marginTop: '1.5rem' }}>
+                    <MonoIcon icon={Mail} size={18} className="mono-icon inline" />
+                    Email Body
+                  </h3>
                   <div className="optimized-output">{result.email}</div>
 
                   {result.alternatives.length > 0 && (
                     <>
-                      <h3>🔄 Alternative Subject Lines</h3>
+                      <h3>
+                        <MonoIcon icon={RefreshCcw} size={18} className="mono-icon inline" />
+                        Alternative Subject Lines
+                      </h3>
                       <ul className="suggestions-list">
                         {result.alternatives.map((alt, index) => (
                           <li key={index}>{alt}</li>
@@ -177,7 +193,10 @@ export default function ColdEmailGenerator() {
 
                   {result.tips.length > 0 && (
                     <>
-                      <h3>💡 Follow-up Tips</h3>
+                      <h3>
+                        <MonoIcon icon={Lightbulb} size={18} className="mono-icon inline" />
+                        Follow-up Tips
+                      </h3>
                       <ul className="suggestions-list">
                         {result.tips.map((tip, index) => (
                           <li key={index}>{tip}</li>
@@ -188,10 +207,12 @@ export default function ColdEmailGenerator() {
 
                   <div className="action-buttons">
                     <button className="secondary-button" onClick={handleSave} disabled={saving}>
-                      {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                      <MonoIcon icon={Save} size={16} className="mono-icon inline" />
+                      {saving ? 'Saving...' : 'Save to Documents'}
                     </button>
                     <button className="secondary-button" onClick={handleCopy}>
-                      📋 Copy Email
+                      <MonoIcon icon={Copy} size={16} className="mono-icon inline" />
+                      Copy Email
                     </button>
                   </div>
                 </div>

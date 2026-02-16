@@ -68,8 +68,8 @@ export const SUBSCRIPTION_PLANS: Record<string, SubscriptionPlan> = {
     price: 19.99,
     interval: 'month',
     features: [
-      '✨ All Workplace Tools',
-      '✨ All Social Media Tools',
+      'All Workplace Tools',
+      'All Social Media Tools',
       'Priority support',
       'Advanced analytics',
       'Up to 30 saved documents',
@@ -84,9 +84,9 @@ export const SUBSCRIPTION_PLANS: Record<string, SubscriptionPlan> = {
     price: 24.99,
     interval: 'month',
     features: [
-      '✨ All Career Tools',
-      '✨ All Workplace Tools',
-      '✨ All Social Media Tools',
+      'All Career Tools',
+      'All Workplace Tools',
+      'All Social Media Tools',
       'Priority support',
       'Early access to new tools',
       'Advanced analytics',

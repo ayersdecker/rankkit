@@ -6,6 +6,17 @@ import { DeleteAccountConfirmation } from '../Shared/DeleteAccountConfirmation';
 import { getUserDocuments } from '../../services/firestore';
 import { getMonthlyUsageStats, UsageStats } from '../../services/usageTracking';
 import { Document } from '../../types';
+import {
+  AlertTriangle,
+  BarChart2,
+  CreditCard,
+  Folder,
+  Menu,
+  Sparkles,
+  Upload,
+  User
+} from 'lucide-react';
+import { MonoIcon } from '../Shared/MonoIcon';
 import './Profile.css';
 
 export default function Profile() {
@@ -67,7 +78,7 @@ export default function Profile() {
             aria-expanded={isMenuOpen}
             aria-controls="mobile-navigation"
           >
-            ☰
+            <MonoIcon icon={Menu} size={18} className="mono-icon" />
           </button>
           <div className="user-info">
             <button
@@ -107,25 +118,29 @@ export default function Profile() {
               className={`menu-item ${activeTab === 'account' ? 'active' : ''}`}
               onClick={() => setActiveTab('account')}
             >
-              👤 Account Settings
+              <MonoIcon icon={User} size={16} className="mono-icon inline" />
+              Account Settings
             </button>
             <button
               className={`menu-item ${activeTab === 'documents' ? 'active' : ''}`}
               onClick={() => setActiveTab('documents')}
             >
-              📁 Document Management
+              <MonoIcon icon={Folder} size={16} className="mono-icon inline" />
+              Document Management
             </button>
             <button
               className={`menu-item ${activeTab === 'billing' ? 'active' : ''}`}
               onClick={() => setActiveTab('billing')}
             >
-              💳 Billing & Plans
+              <MonoIcon icon={CreditCard} size={16} className="mono-icon inline" />
+              Billing & Plans
             </button>
             <button
               className={`menu-item ${activeTab === 'usage' ? 'active' : ''}`}
               onClick={() => setActiveTab('usage')}
             >
-              📊 Usage Stats
+              <MonoIcon icon={BarChart2} size={16} className="mono-icon inline" />
+              Usage Stats
             </button>
           </div>
 
@@ -164,10 +179,12 @@ function AccountSettings() {
   const [twitterUrl, setTwitterUrl] = useState(currentUser?.twitterUrl || '');
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateMessage, setUpdateMessage] = useState('');
+  const [updateStatus, setUpdateStatus] = useState<'success' | 'error' | ''>('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [passwordMessage, setPasswordMessage] = useState('');
+  const [passwordStatus, setPasswordStatus] = useState<'success' | 'error' | ''>('');
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState('');
@@ -188,11 +205,13 @@ function AccountSettings() {
     e.preventDefault();
     if (!displayName.trim()) {
       setUpdateMessage('Display name cannot be empty');
+      setUpdateStatus('error');
       return;
     }
 
     setIsUpdating(true);
     setUpdateMessage('');
+    setUpdateStatus('');
 
     try {
       await updateProfile(displayName.trim(), bio.trim(), {
@@ -202,10 +221,12 @@ function AccountSettings() {
         portfolioUrl: portfolioUrl.trim(),
         twitterUrl: twitterUrl.trim()
       });
-      setUpdateMessage('✓ Profile updated successfully!');
+      setUpdateMessage('Profile updated successfully!');
+      setUpdateStatus('success');
     } catch (error) {
       console.error('Error updating profile:', error);
-      setUpdateMessage('✗ Failed to update profile');
+      setUpdateMessage('Failed to update profile');
+      setUpdateStatus('error');
     } finally {
       setIsUpdating(false);
     }
@@ -216,43 +237,53 @@ function AccountSettings() {
 
     if (!canChangePassword) {
       setPasswordMessage('Password changes are not available for this sign-in method.');
+      setPasswordStatus('error');
       return;
     }
 
     if (!currentPassword || !newPassword || !confirmNewPassword) {
       setPasswordMessage('Please fill in all password fields.');
+      setPasswordStatus('error');
       return;
     }
 
     if (newPassword !== confirmNewPassword) {
       setPasswordMessage('New passwords do not match.');
+      setPasswordStatus('error');
       return;
     }
 
     if (newPassword.length < 6) {
       setPasswordMessage('New password must be at least 6 characters.');
+      setPasswordStatus('error');
       return;
     }
 
     setIsChangingPassword(true);
     setPasswordMessage('');
+    setPasswordStatus('');
 
     try {
       await changePassword(currentPassword, newPassword);
-      setPasswordMessage('✓ Password updated successfully!');
+      setPasswordMessage('Password updated successfully!');
+      setPasswordStatus('success');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmNewPassword('');
     } catch (error: any) {
       const errorCode = error?.code || '';
       if (errorCode === 'auth/wrong-password') {
-        setPasswordMessage('✗ Current password is incorrect.');
+        setPasswordMessage('Current password is incorrect.');
+        setPasswordStatus('error');
       } else if (errorCode === 'auth/weak-password') {
-        setPasswordMessage('✗ New password is too weak.');
+        setPasswordMessage('New password is too weak.');
+        setPasswordStatus('error');
       } else if (errorCode === 'auth/requires-recent-login') {
-        setPasswordMessage('✗ Please sign in again to change your password.');
+        setPasswordMessage('Please sign in again to change your password.');
+        setPasswordStatus('error');
       } else {
-        setPasswordMessage('✗ Failed to update password.');
+        setPasswordMessage('Failed to update password.');
+        setPasswordStatus('error');
       }
     } finally {
       setIsChangingPassword(false);
@@ -377,7 +408,7 @@ function AccountSettings() {
         </div>
 
         {updateMessage && (
-          <div className={`update-message ${updateMessage.includes('✓') ? 'success' : 'error'}`}>
+          <div className={`update-message ${updateStatus || 'error'}`}>
             {updateMessage}
           </div>
         )}
@@ -421,7 +452,7 @@ function AccountSettings() {
             />
           </div>
           {passwordMessage && (
-            <div className={`update-message ${passwordMessage.includes('✓') ? 'success' : 'error'}`}>
+            <div className={`update-message ${passwordStatus || 'error'}`}>
               {passwordMessage}
             </div>
           )}
@@ -445,7 +476,10 @@ function AccountSettings() {
           This action is <strong>immediate and irreversible</strong>.
         </p>
         <div className="danger-warning">
-          <strong>⚠️ This will permanently delete:</strong>
+          <strong>
+            <MonoIcon icon={AlertTriangle} size={16} className="mono-icon inline" />
+            This will permanently delete:
+          </strong>
           <ul>
             <li>Your account and profile information</li>
             <li>All saved documents and optimizations</li>
@@ -527,11 +561,15 @@ function DocumentManagement() {
         <h3>Quick Actions</h3>
         <div className="quick-action-grid">
           <button onClick={() => navigate('/documents?action=upload')}>
-            <span>📤</span>
+            <span>
+              <MonoIcon icon={Upload} size={16} className="mono-icon" />
+            </span>
             Upload New Document
           </button>
           <button onClick={() => navigate('/documents')}>
-            <span>📁</span>
+            <span>
+              <MonoIcon icon={Folder} size={16} className="mono-icon" />
+            </span>
             View All Documents
           </button>
         </div>
@@ -639,8 +677,8 @@ function BillingPlans() {
       price: 19.99,
       savings: 'Save $5.99/month',
       features: [
-        '✨ All Workplace Tools',
-        '✨ All Social Media Tools',
+        'All Workplace Tools',
+        'All Social Media Tools',
         'Priority support',
         'Advanced analytics',
         'Up to 30 saved documents',
@@ -653,9 +691,9 @@ function BillingPlans() {
       price: 24.99,
       savings: 'Save $8.98/month',
       features: [
-        '✨ All Career Tools',
-        '✨ All Workplace Tools', 
-        '✨ All Social Media Tools',
+        'All Career Tools',
+        'All Workplace Tools', 
+        'All Social Media Tools',
         'Priority support',
         'Early access to new tools',
         'Advanced analytics',
@@ -671,7 +709,10 @@ function BillingPlans() {
       <h2>Billing & Plans</h2>
       
       <div className="setting-card beta-banner">
-        <div className="beta-badge">🎉 Beta Launch Special</div>
+        <div className="beta-badge">
+          <MonoIcon icon={Sparkles} size={16} className="mono-icon inline" />
+          Beta Launch Special
+        </div>
         <h3>All Features Free During Beta!</h3>
         <p>
           Thank you for being an early user! While we're in beta, all premium features 

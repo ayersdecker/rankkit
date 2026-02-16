@@ -21,6 +21,22 @@ body {
   overflow-x: hidden;
 }
 
+.mono-icon {
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mono-icon.inline {
+  margin-right: 8px;
+  vertical-align: -0.2em;
+}
+
+.mono-icon.light {
+  color: #fff;
+}
+
 #root {
   min-height: 100%;
 }

@@ -4,6 +4,7 @@ import {
   formatFileSize,
   getFileIcon
 } from '../fileUtils';
+import { File as FileIcon, FileText, Paperclip } from 'lucide-react';
 
 describe('File Utils', () => {
   describe('validateFile', () => {
@@ -57,11 +58,11 @@ describe('File Utils', () => {
 
   describe('getFileIcon', () => {
     it('should return correct icons', () => {
-      expect(getFileIcon('application/pdf')).toBe('📄');
-      expect(getFileIcon('application/vnd.openxmlformats-officedocument.wordprocessingml.document')).toBe('📝');
-      expect(getFileIcon('application/msword')).toBe('📝');
-      expect(getFileIcon('text/plain')).toBe('📃');
-      expect(getFileIcon('unknown')).toBe('📎');
+      expect(getFileIcon('application/pdf')).toBe(FileIcon);
+      expect(getFileIcon('application/vnd.openxmlformats-officedocument.wordprocessingml.document')).toBe(FileText);
+      expect(getFileIcon('application/msword')).toBe(FileText);
+      expect(getFileIcon('text/plain')).toBe(FileText);
+      expect(getFileIcon('unknown')).toBe(Paperclip);
     });
   });
 });

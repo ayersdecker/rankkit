@@ -1,4 +1,6 @@
 import React from 'react';
+import { LogOut } from 'lucide-react';
+import { MonoIcon } from './MonoIcon';
 import './SignOutConfirmation.css';
 
 interface SignOutConfirmationProps {
@@ -10,7 +12,9 @@ export function SignOutConfirmation({ onConfirm, onCancel }: SignOutConfirmation
   return (
     <div className="signout-overlay" onClick={onCancel}>
       <div className="signout-modal" onClick={e => e.stopPropagation()}>
-        <div className="signout-icon">👋</div>
+        <div className="signout-icon">
+          <MonoIcon icon={LogOut} size={32} className="mono-icon" />
+        </div>
         
         <h2>Sign Out?</h2>
         

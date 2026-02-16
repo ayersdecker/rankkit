@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { Mail, CheckCircle2 } from 'lucide-react';
+import { MonoIcon } from '../Shared/MonoIcon';
 import './Auth.css';
 
 export default function VerifyEmail() {
@@ -36,7 +38,7 @@ export default function VerifyEmail() {
       await checkEmailVerification();
       
       if (currentUser?.emailVerified) {
-        setMessage('✓ Email verified! Redirecting to dashboard...');
+        setMessage('Email verified! Redirecting to dashboard...');
         setTimeout(() => navigate('/dashboard', { replace: true }), 1500);
       } else {
         setCheckCount(prev => prev + 1);
@@ -54,7 +56,7 @@ export default function VerifyEmail() {
       setError('');
       setMessage('');
       await resendVerificationEmail();
-      setMessage('✓ Verification email sent! Check your inbox.');
+      setMessage('Verification email sent! Check your inbox.');
       setCheckCount(0); // Reset auto-check timer
     } catch (err: any) {
       setError(err.message || 'Failed to resend email');
@@ -66,13 +68,20 @@ export default function VerifyEmail() {
   return (
     <div className="auth-container">
       <div className="auth-card verify-email-card">
-        <div className="verify-icon">✉️</div>
+        <div className="verify-icon">
+          <MonoIcon icon={Mail} size={32} className="mono-icon" />
+        </div>
         <h1>Confirm Your Email</h1>
         <p className="verify-subtitle">
           We've sent a verification link to <strong>{currentUser?.email}</strong>
         </p>
 
-        {message && <div className="success-message">{message}</div>}
+        {message && (
+          <div className="success-message">
+            <MonoIcon icon={CheckCircle2} size={16} className="mono-icon inline" />
+            {message}
+          </div>
+        )}
         {error && <div className="error-message">{error}</div>}
 
         <div className="verify-content">

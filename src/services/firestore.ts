@@ -14,7 +14,7 @@ import {
   // limit as firestoreLimit // Reserved for future use
 } from 'firebase/firestore';
 import type { DocumentReference } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject, getBlob } from 'firebase/storage';
+import { ref, uploadBytes, deleteObject, getBlob } from 'firebase/storage';
 import { db, storage } from './firebase';
 import { Document, OptimizationVersion } from '../types';
 import { isWhitelistedEmail } from '../config';

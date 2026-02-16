@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAvailablePlans, getRecommendedPlan } from '../../config/pricing';
+import { Lock, Sparkles, Star } from 'lucide-react';
+import { MonoIcon } from './MonoIcon';
 import './PaywallModal.css';
 
 interface PaywallModalProps {
@@ -29,14 +31,17 @@ export function PaywallModal({ toolName, toolCategory, onClose }: PaywallModalPr
         <button className="paywall-close" onClick={onClose}>×</button>
         
         <div className="paywall-header">
-          <div className="paywall-icon">⭐</div>
+          <div className="paywall-icon">
+            <MonoIcon icon={Star} size={32} className="mono-icon" />
+          </div>
           <h2>Unlock Premium Features</h2>
           <p className="paywall-message">
             <strong>{toolName}</strong> requires a subscription.
             {toolCategory && <span className="category-badge">{toolCategory}</span>}
           </p>
           <p className="beta-notice">
-            ✨ <strong>Beta Access:</strong> All features are currently free! Choose a plan to prepare for launch.
+            <MonoIcon icon={Sparkles} size={16} className="mono-icon inline" />
+            <strong>Beta Access:</strong> All features are currently free! Choose a plan to prepare for launch.
           </p>
         </div>
         
@@ -81,7 +86,10 @@ export function PaywallModal({ toolName, toolCategory, onClose }: PaywallModalPr
         </div>
         
         <div className="paywall-footer">
-          <p>🔒 All plans include secure storage • Priority support • Cancel anytime</p>
+          <p>
+            <MonoIcon icon={Lock} size={16} className="mono-icon inline" />
+            All plans include secure storage • Priority support • Cancel anytime
+          </p>
           <button className="cancel-button-text" onClick={onClose}>
             I'll stick with the free trial for now
           </button>

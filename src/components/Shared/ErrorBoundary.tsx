@@ -1,4 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { AlertTriangle } from 'lucide-react';
+import { MonoIcon } from './MonoIcon';
 import './ErrorBoundary.css';
 
 interface Props {
@@ -62,7 +64,9 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="error-boundary">
           <div className="error-boundary-content">
-            <div className="error-icon">⚠️</div>
+            <div className="error-icon">
+              <MonoIcon icon={AlertTriangle} size={32} className="mono-icon" />
+            </div>
             <h1>Something went wrong</h1>
             <p>We're sorry, but something unexpected happened.</p>
             

@@ -14,6 +14,29 @@ import { Document } from '../../types';
 import { hasPremiumAccess } from '../../utils/premiumUtils';
 import { DeleteDocumentConfirmation } from '../Shared/DeleteDocumentConfirmation';
 import { SignOutConfirmation } from '../Shared/SignOutConfirmation';
+import type { LucideIcon } from 'lucide-react';
+import {
+  AlertTriangle,
+  Clipboard,
+  Download,
+  File,
+  FileText,
+  Hash,
+  Lightbulb,
+  Mail,
+  Menu,
+  Package,
+  Paperclip,
+  Phone,
+  Search,
+  Shield,
+  Sparkles,
+  Star,
+  Smartphone,
+  Target,
+  Upload
+} from 'lucide-react';
+import { MonoIcon } from '../Shared/MonoIcon';
 import './DocumentLibrary.css';
 
 // Helper functions for document type display
@@ -35,22 +58,22 @@ const getDocTypeLabel = (type: string) => {
   return labels[type] || type;
 };
 
-const getDocTypeEmoji = (type: string) => {
-  const emojis: Record<string, string> = {
-    'resume': '📝',
-    'cover-letter': '✉️',
-    'post': '📱',
-    'cold-email': '📧',
-    'sales-script': '📞',
-    'interview-prep': '💼',
-    'job-search': '🔍',
-    'hashtags': '#️⃣',
-    'selling-points': '💡',
-    'objection-handler': '🛡️',
-    'pitch-perfect': '🎯',
-    'other': '📄'
+const getDocTypeIcon = (type: string): LucideIcon => {
+  const icons: Record<string, LucideIcon> = {
+    'resume': FileText,
+    'cover-letter': Mail,
+    'post': Smartphone,
+    'cold-email': Mail,
+    'sales-script': Phone,
+    'interview-prep': FileText,
+    'job-search': Search,
+    'hashtags': Hash,
+    'selling-points': Lightbulb,
+    'objection-handler': Shield,
+    'pitch-perfect': Target,
+    'other': File
   };
-  return emojis[type] || '📄';
+  return icons[type] || File;
 };
 
 const getPreviewText = (content: string) => {
@@ -207,7 +230,7 @@ export default function DocumentLibrary() {
             aria-expanded={isMenuOpen}
             aria-controls="mobile-navigation"
           >
-            ☰
+            <MonoIcon icon={Menu} size={18} className="mono-icon" />
           </button>
           <div className="user-info">
             <button
@@ -232,13 +255,16 @@ export default function DocumentLibrary() {
         <div className="library-header">
           <h2>Document Library</h2>
           <button className="primary-button" onClick={() => setUploadModalOpen(true)}>
-            📤 Upload Document
+            <MonoIcon icon={Upload} size={16} className="mono-icon inline" />
+            Upload Document
           </button>
         </div>
 
         <div className="storage-stats">
           <div className="stat-card">
-            <div className="stat-icon">📄</div>
+            <div className="stat-icon">
+              <MonoIcon icon={FileText} size={20} className="mono-icon" />
+            </div>
             <div className="stat-info">
               <div className="stat-value">{documents.length}</div>
               <div className="stat-label">Total Documents</div>
@@ -254,7 +280,9 @@ export default function DocumentLibrary() {
                   return (
                     <div key={type} className="doc-type-row">
                       <div className="doc-type-info">
-                        <span className="doc-type-emoji">{getDocTypeEmoji(type)}</span>
+                        <span className="doc-type-emoji">
+                          <MonoIcon icon={getDocTypeIcon(type)} size={16} className="mono-icon" />
+                        </span>
                         <span className="doc-type-name">{getDocTypeLabel(type)}</span>
                       </div>
                       <div className="doc-type-bar-container">
@@ -271,7 +299,9 @@ export default function DocumentLibrary() {
             </div>
           </div>
           <div className="stat-card">
-            <div className="stat-icon">{currentUser?.isPremium ? '⭐' : '📦'}</div>
+            <div className="stat-icon">
+              <MonoIcon icon={currentUser?.isPremium ? Star : Package} size={20} className="mono-icon" />
+            </div>
             <div className="stat-info">
               <div className="stat-value">{currentUser?.isPremium ? 'Premium' : 'Free'}</div>
               <div className="stat-label">Account Type</div>
@@ -316,7 +346,9 @@ export default function DocumentLibrary() {
           <div className="loading-state">Loading documents...</div>
         ) : filteredDocs.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">📄</div>
+            <div className="empty-icon">
+              <MonoIcon icon={File} size={28} className="mono-icon" />
+            </div>
             <h3>No documents yet</h3>
             <p>Upload your first document to get started</p>
             <button className="primary-button" onClick={() => setUploadModalOpen(true)}>
@@ -335,12 +367,17 @@ export default function DocumentLibrary() {
                     : previewText || 'No preview available yet.';
                   return (
                     <>
-                <div className="doc-icon">{getDocTypeEmoji(doc.type)}</div>
+                <div className="doc-icon">
+                  <MonoIcon icon={getDocTypeIcon(doc.type)} size={20} className="mono-icon" />
+                </div>
                 <h3>{doc.name}</h3>
                 <div className="doc-meta">
                   <span className="doc-type">{getDocTypeLabel(doc.type)}</span>
                   {doc.aiGenerated && (
-                    <span className="doc-badge">✨ AI Generated</span>
+                    <span className="doc-badge">
+                      <MonoIcon icon={Sparkles} size={14} className="mono-icon inline" />
+                      AI Generated
+                    </span>
                   )}
                   <span className="doc-date">
                     {new Date(doc.updatedAt).toLocaleDateString()}
@@ -568,12 +605,14 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
               />
               {extracting && (
                 <div className="file-info extracting">
-                  ⏳ Extracting text from file...
+                  <MonoIcon icon={Clipboard} size={16} className="mono-icon inline" />
+                  Extracting text from file...
                 </div>
               )}
               {file && !extracting && (
                 <div className="file-info">
-                  {getFileIcon(file.type)} {file.name} ({formatFileSize(file.size)})
+                  <MonoIcon icon={getFileIcon(file.type)} size={16} className="mono-icon inline" />
+                  {file.name} ({formatFileSize(file.size)})
                 </div>
               )}
             </div>
@@ -833,7 +872,10 @@ function DocumentViewModal({
               <span className="doc-type">{getDocTypeLabel(document.type)}</span>
               <span>Updated {new Date(document.updatedAt).toLocaleDateString()}</span>
               {document.originalFileName && (
-                <span>📎 {document.originalFileName}</span>
+                <span>
+                  <MonoIcon icon={Paperclip} size={14} className="mono-icon inline" />
+                  {document.originalFileName}
+                </span>
               )}
             </div>
           </div>
@@ -846,13 +888,15 @@ function DocumentViewModal({
               className={`mode-button ${viewMode === 'original' ? 'active' : ''}`}
               onClick={() => setViewMode('original')}
             >
-              📄 Original File
+              <MonoIcon icon={File} size={16} className="mono-icon inline" />
+              Original File
             </button>
             <button
               className={`mode-button ${viewMode === 'text' ? 'active' : ''}`}
               onClick={() => setViewMode('text')}
             >
-              📝 Text Content
+              <MonoIcon icon={FileText} size={16} className="mono-icon inline" />
+              Text Content
             </button>
           </div>
         )}
@@ -867,7 +911,10 @@ function DocumentViewModal({
                 </div>
               ) : fileError ? (
                 <div className="file-error">
-                  <p>⚠️ {fileError}</p>
+                  <p>
+                    <MonoIcon icon={AlertTriangle} size={16} className="mono-icon inline" />
+                    {fileError}
+                  </p>
                   <button 
                     onClick={() => setViewMode('text')}
                     className="switch-view-button"
@@ -883,7 +930,9 @@ function DocumentViewModal({
                 />
               ) : (
                 <div className="file-download">
-                  <div className="file-icon-large">{getDocTypeEmoji(document.type)}</div>
+                  <div className="file-icon-large">
+                    <MonoIcon icon={getDocTypeIcon(document.type)} size={32} className="mono-icon" />
+                  </div>
                   <p>Cannot preview this file type in browser</p>
                   {blobUrl && (
                     <a 
@@ -891,7 +940,8 @@ function DocumentViewModal({
                       download={document.originalFileName || document.name}
                       className="download-button"
                     >
-                      📥 Download {document.originalFileName || 'File'}
+                      <MonoIcon icon={Download} size={16} className="mono-icon inline" />
+                      Download {document.originalFileName || 'File'}
                     </a>
                   )}
                 </div>
@@ -918,7 +968,8 @@ function DocumentViewModal({
               className="export-button pdf"
               title="Export as PDF"
             >
-              📄 {exporting ? 'Exporting...' : 'Export PDF'}
+              <MonoIcon icon={File} size={16} className="mono-icon inline" />
+              {exporting ? 'Exporting...' : 'Export PDF'}
             </button>
             <button 
               onClick={handleExportWord}
@@ -926,7 +977,8 @@ function DocumentViewModal({
               className="export-button word"
               title="Export as Word Document"
             >
-              📝 {exporting ? 'Exporting...' : 'Export Word'}
+              <MonoIcon icon={FileText} size={16} className="mono-icon inline" />
+              {exporting ? 'Exporting...' : 'Export Word'}
             </button>
           </div>
           <div className="action-buttons">
@@ -936,7 +988,8 @@ function DocumentViewModal({
                 download={document.originalFileName || document.name}
                 className="download-link-button"
               >
-                📥 Download Original
+                <MonoIcon icon={Download} size={16} className="mono-icon inline" />
+                Download Original
               </a>
             )}
             <button onClick={onClose}>Close</button>

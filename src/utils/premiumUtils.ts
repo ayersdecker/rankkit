@@ -1,6 +1,5 @@
 import { User } from '../types';
 import { isWhitelistedEmail } from '../config';
-import { hasAccessToCategory } from '../config/pricing';
 
 /**
  * Check if user has premium access (including whitelisted emails)

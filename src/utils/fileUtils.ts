@@ -1,6 +1,8 @@
 // File upload and text extraction utilities
 import mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
+import { File, FileText, Paperclip } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 // Configure PDF.js worker - use local worker file from public directory
 pdfjsLib.GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.min.mjs`;
@@ -89,11 +91,11 @@ export function formatFileSize(bytes: number): string {
   return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
 }
 
-export function getFileIcon(fileType: string): string {
-  if (fileType.includes('pdf')) return '📄';
-  if (fileType.includes('word') || fileType.includes('document')) return '📝';
-  if (fileType.includes('text')) return '📃';
-  return '📎';
+export function getFileIcon(fileType: string): LucideIcon {
+  if (fileType.includes('pdf')) return File;
+  if (fileType.includes('word') || fileType.includes('document')) return FileText;
+  if (fileType.includes('text')) return FileText;
+  return Paperclip;
 }
 
 export function estimatePageCount(text: string): number {

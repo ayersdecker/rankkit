@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { CheckCircle2, Copy, Save } from 'lucide-react';
 import { generateSalesScript } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +9,7 @@ import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
 import { useSaveDocument } from '../../utils/useSaveDocument';
 import { formatPlainTextDocument } from '../../utils/documentFormatting';
+import { MonoIcon } from '../../components/Shared/MonoIcon';
 import '../ResumeRank/ResumeOptimizer.css';
 import '../CoverLetter/CoverLetterWriter.css';
 import './SellingPointsFinder.css';
@@ -173,7 +175,12 @@ export default function SalesScriptBuilder() {
 
             {error && <div className="error-message">{error}</div>}
             {saveError && <div className="error-message">{saveError}</div>}
-            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
+            {saveSuccess && (
+              <div className="update-message success">
+                <MonoIcon icon={CheckCircle2} size={16} className="mono-icon inline" />
+                Saved to Documents!
+              </div>
+            )}
           </div>
 
           <div className="output-section">
@@ -217,10 +224,12 @@ export default function SalesScriptBuilder() {
 
                 <div className="action-buttons">
                   <button className="secondary-button" onClick={handleSave} disabled={saving}>
-                    {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                    <MonoIcon icon={Save} size={16} className="mono-icon inline" />
+                    {saving ? 'Saving...' : 'Save to Documents'}
                   </button>
                   <button className="secondary-button" onClick={handleCopy}>
-                    📋 Copy Script
+                    <MonoIcon icon={Copy} size={16} className="mono-icon inline" />
+                    Copy Script
                   </button>
                 </div>
               </>

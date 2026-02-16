@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { CheckCircle2, Copy, Globe, Key, Save, Target } from 'lucide-react';
 import { generateJobSearchStrategy } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +9,7 @@ import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
 import { useSaveDocument } from '../../utils/useSaveDocument';
 import { formatPlainTextDocument } from '../../utils/documentFormatting';
+import { MonoIcon } from '../../components/Shared/MonoIcon';
 import './JobSearchAssistant.css';
 
 export default function JobSearchAssistant() {
@@ -160,14 +162,22 @@ export default function JobSearchAssistant() {
 
             {error && <div className="error-message">{error}</div>}
             {saveError && <div className="error-message">{saveError}</div>}
-            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
+            {saveSuccess && (
+              <div className="update-message success">
+                <MonoIcon icon={CheckCircle2} size={16} className="mono-icon inline" />
+                Saved to Documents!
+              </div>
+            )}
           </div>
 
           <div className="output-section job-search-output">
             {searchData ? (
               <>
                 <div className="search-section">
-                  <h3>🌐 Recommended Job Platforms</h3>
+                  <h3>
+                    <MonoIcon icon={Globe} size={18} className="mono-icon inline" />
+                    Recommended Job Platforms
+                  </h3>
                   <div className="platforms-grid">
                     {searchData.platforms.map((platform, index) => (
                       <div key={index} className="platform-card">
@@ -178,7 +188,10 @@ export default function JobSearchAssistant() {
                 </div>
 
                 <div className="search-section">
-                  <h3>🎯 Search Strategies</h3>
+                  <h3>
+                    <MonoIcon icon={Target} size={18} className="mono-icon inline" />
+                    Search Strategies
+                  </h3>
                   <ul className="strategies-list">
                     {searchData.searchStrategies.map((strategy, index) => (
                       <li key={index}>{strategy}</li>
@@ -187,7 +200,10 @@ export default function JobSearchAssistant() {
                 </div>
 
                 <div className="search-section">
-                  <h3>🔑 Keywords & Search Terms</h3>
+                  <h3>
+                    <MonoIcon icon={Key} size={18} className="mono-icon inline" />
+                    Keywords & Search Terms
+                  </h3>
                   <div className="keywords-container">
                     {searchData.keywords.map((keyword, index) => (
                       <span key={index} className="keyword-tag">
@@ -197,10 +213,12 @@ export default function JobSearchAssistant() {
                   </div>
                   <div className="action-buttons">
                     <button className="secondary-button" onClick={handleSave} disabled={saving}>
-                      {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                      <MonoIcon icon={Save} size={16} className="mono-icon inline" />
+                      {saving ? 'Saving...' : 'Save to Documents'}
                     </button>
                     <button className="secondary-button" onClick={handleCopyKeywords}>
-                      📋 Copy All Keywords
+                      <MonoIcon icon={Copy} size={16} className="mono-icon inline" />
+                      Copy All Keywords
                     </button>
                   </div>
                 </div>

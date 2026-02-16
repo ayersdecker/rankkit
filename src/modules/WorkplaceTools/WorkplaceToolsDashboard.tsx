@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import {
+  Briefcase,
+  ClipboardList,
+  Flame,
+  Lightbulb,
+  Mail,
+  Menu,
+  Phone,
+  Shield,
+  Sparkles,
+  Target,
+  Wrench
+} from 'lucide-react';
 import { SignOutConfirmation } from '../../components/Shared/SignOutConfirmation';
+import { MonoIcon } from '../../components/Shared/MonoIcon';
 import './WorkplaceToolsDashboard.css';
 
 export default function WorkplaceToolsDashboard() {
@@ -27,7 +41,7 @@ export default function WorkplaceToolsDashboard() {
     {
       id: 'cold-email',
       title: 'Cold Email Generator',
-      icon: '📧',
+      icon: Mail,
       description: 'Create personalized cold outreach emails that get responses',
       path: '/cold-email',
       color: '#FF6B6B',
@@ -36,7 +50,7 @@ export default function WorkplaceToolsDashboard() {
     {
       id: 'sales-script',
       title: 'Sales Script Builder',
-      icon: '📞',
+      icon: Phone,
       description: 'Generate effective sales scripts for calls, demos, and pitches',
       path: '/sales-script',
       color: '#4ECDC4',
@@ -45,7 +59,7 @@ export default function WorkplaceToolsDashboard() {
     {
       id: 'selling-points',
       title: 'Selling Points Finder',
-      icon: '💡',
+      icon: Lightbulb,
       description: 'Analyze products/services and extract key selling points from links',
       path: '/selling-points',
       color: '#95E1D3',
@@ -54,7 +68,7 @@ export default function WorkplaceToolsDashboard() {
     {
       id: 'objection-handler',
       title: 'Objection Handler',
-      icon: '🛡️',
+      icon: Shield,
       description: 'Get responses to common sales objections and push-backs',
       path: '/objection-handler',
       color: '#F38181',
@@ -63,7 +77,7 @@ export default function WorkplaceToolsDashboard() {
     {
       id: 'pitch-perfect',
       title: 'Pitch Perfect',
-      icon: '🎯',
+      icon: Target,
       description: 'Create compelling elevator pitches and value propositions',
       path: '/pitch-perfect',
       color: '#AA96DA',
@@ -72,7 +86,7 @@ export default function WorkplaceToolsDashboard() {
     {
       id: 'meeting-prep',
       title: 'Meeting Prep Assistant',
-      icon: '📋',
+      icon: ClipboardList,
       description: 'Prepare for sales meetings with research and talking points',
       path: '/meeting-prep',
       color: '#FCBAD3',
@@ -118,7 +132,7 @@ export default function WorkplaceToolsDashboard() {
             aria-expanded={isMenuOpen}
             aria-controls="mobile-navigation"
           >
-            ☰
+            <MonoIcon icon={Menu} size={18} className="mono-icon" />
           </button>
           {isAuthed ? (
             <div className="user-info">
@@ -175,11 +189,12 @@ export default function WorkplaceToolsDashboard() {
             >
               {tool.comingSoon && (
                 <div className="construction-badge">
-                  🚧 Under Construction
+                  <MonoIcon icon={Wrench} size={14} className="mono-icon inline" />
+                  Under Construction
                 </div>
               )}
               <div className="tool-icon" style={{ background: `${tool.color}15`, opacity: tool.comingSoon ? 0.5 : 1 }}>
-                <span style={{ fontSize: '2.5rem' }}>{tool.icon}</span>
+                <MonoIcon icon={tool.icon} size={36} className="mono-icon" />
               </div>
               <h3>{tool.title}</h3>
               <p>{tool.description}</p>
@@ -196,7 +211,10 @@ export default function WorkplaceToolsDashboard() {
 
         <div className="tools-info">
           <div className="info-card">
-            <h3>💼 Perfect For</h3>
+            <h3>
+              <MonoIcon icon={Briefcase} size={18} className="mono-icon inline" />
+              Perfect For
+            </h3>
             <ul>
               <li>Sales professionals and business development</li>
               <li>Entrepreneurs and startup founders</li>
@@ -207,7 +225,10 @@ export default function WorkplaceToolsDashboard() {
           </div>
 
           <div className="info-card">
-            <h3>✨ Pro Workflow</h3>
+            <h3>
+              <MonoIcon icon={Sparkles} size={18} className="mono-icon inline" />
+              Pro Workflow
+            </h3>
             <p>
               <strong>1.</strong> Use <strong>Selling Points Finder</strong> to analyze your product<br/>
               <strong>2.</strong> Create a <strong>Pitch Perfect</strong> elevator pitch<br/>
@@ -219,7 +240,10 @@ export default function WorkplaceToolsDashboard() {
 
           {currentUser && !currentUser.isPremium && (
             <div className="info-card upgrade-card">
-              <h3>🔥 Go Pro</h3>
+              <h3>
+                <MonoIcon icon={Flame} size={18} className="mono-icon inline" />
+                Go Pro
+              </h3>
               <p>
                 Unlimited access to all workplace tools. Perfect for sales teams 
                 and professionals who need consistent, high-quality messaging.

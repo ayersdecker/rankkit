@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { Copy, Download, FileText, Menu, Zap } from 'lucide-react';
 import {
   getDocument,
   getUserDocuments,
@@ -13,6 +14,7 @@ import { optimizeContent } from '../../services/openai';
 import { Document, OptimizationVersion, OptimizationType } from '../../types';
 import { LoadingSpinner } from '../Shared/LoadingSpinner';
 import { SignOutConfirmation } from '../Shared/SignOutConfirmation';
+import { MonoIcon } from '../Shared/MonoIcon';
 import './OptimizationWorkspace.css';
 
 export default function OptimizationWorkspace() {
@@ -197,7 +199,7 @@ export default function OptimizationWorkspace() {
             aria-expanded={isMenuOpen}
             aria-controls="mobile-navigation"
           >
-            ☰
+            <MonoIcon icon={Menu} size={18} className="mono-icon" />
           </button>
           <div className="user-info">
             <button
@@ -238,7 +240,9 @@ export default function OptimizationWorkspace() {
                     navigate(`/optimize/${doc.id}`);
                   }}
                 >
-                  <div className="doc-item-icon">📄</div>
+                  <div className="doc-item-icon">
+                    <MonoIcon icon={FileText} size={18} className="mono-icon" />
+                  </div>
                   <div className="doc-item-info">
                     <div className="doc-item-name">{doc.name}</div>
                     <div className="doc-item-type">{doc.type}</div>
@@ -329,7 +333,14 @@ export default function OptimizationWorkspace() {
                   onClick={handleOptimize}
                   disabled={loading || (optimizationType === 'ats' && !context)}
                 >
-                  {loading ? 'Optimizing...' : '⚡ Optimize Document'}
+                  {loading ? (
+                    'Optimizing...'
+                  ) : (
+                    <>
+                      <MonoIcon icon={Zap} size={16} className="mono-icon inline" />
+                      Optimize Document
+                    </>
+                  )}
                 </button>
               </div>
 
@@ -350,8 +361,14 @@ export default function OptimizationWorkspace() {
                           Score: {result.score}/100
                         </div>
                         <div className="result-actions">
-                          <button onClick={handleCopy}>📋 Copy</button>
-                          <button onClick={handleExport}>💾 Export</button>
+                          <button onClick={handleCopy}>
+                            <MonoIcon icon={Copy} size={16} className="mono-icon inline" />
+                            Copy
+                          </button>
+                          <button onClick={handleExport}>
+                            <MonoIcon icon={Download} size={16} className="mono-icon inline" />
+                            Export
+                          </button>
                         </div>
                       </div>
                       <div className="content-box">

@@ -1,7 +1,19 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import {
+  Briefcase,
+  FileText,
+  Lightbulb,
+  Mail,
+  Menu,
+  Search,
+  Sparkles,
+  Star,
+  Users
+} from 'lucide-react';
 import { SignOutConfirmation } from '../../components/Shared/SignOutConfirmation';
+import { MonoIcon } from '../../components/Shared/MonoIcon';
 import './CareerToolsDashboard.css';
 
 export default function CareerToolsDashboard() {
@@ -27,7 +39,7 @@ export default function CareerToolsDashboard() {
     {
       id: 'resume',
       title: 'Resume Optimizer',
-      icon: '📝',
+      icon: FileText,
       description: 'Optimize your resume for ATS systems and specific job postings',
       path: '/resume-optimizer',
       color: '#4CAF50'
@@ -35,7 +47,7 @@ export default function CareerToolsDashboard() {
     {
       id: 'cover-letter',
       title: 'Cover Letter Writer',
-      icon: '✉️',
+      icon: Mail,
       description: 'Generate personalized cover letters from your resume and bio',
       path: '/cover-letter',
       color: '#2196F3'
@@ -43,7 +55,7 @@ export default function CareerToolsDashboard() {
     {
       id: 'interview',
       title: 'Interview Preparation',
-      icon: '💼',
+      icon: Briefcase,
       description: 'Get common questions, answers, and tips for your interviews',
       path: '/interview-prep',
       color: '#FF9800'
@@ -51,7 +63,7 @@ export default function CareerToolsDashboard() {
     {
       id: 'job-search',
       title: 'Job Search Assistant',
-      icon: '🔍',
+      icon: Search,
       description: 'Find the best platforms, strategies, and keywords for your search',
       path: '/job-search',
       color: '#9C27B0'
@@ -59,7 +71,7 @@ export default function CareerToolsDashboard() {
     {
       id: 'post-optimizer',
       title: 'Job Post Optimizer',
-      icon: '✨',
+      icon: Sparkles,
       description: 'Sharpen job posts and announcements for higher visibility',
       path: '/post-optimizer',
       color: '#00BCD4'
@@ -67,7 +79,7 @@ export default function CareerToolsDashboard() {
     {
       id: 'networking-message',
       title: 'Networking Message Builder',
-      icon: '🤝',
+      icon: Users,
       description: 'Create warm outreach messages for introductions and LinkedIn DMs',
       path: '/networking-message',
       color: '#FF7043',
@@ -113,7 +125,7 @@ export default function CareerToolsDashboard() {
             aria-expanded={isMenuOpen}
             aria-controls="mobile-navigation"
           >
-            ☰
+            <MonoIcon icon={Menu} size={18} className="mono-icon" />
           </button>
           {isAuthed ? (
             <div className="user-info">
@@ -172,7 +184,7 @@ export default function CareerToolsDashboard() {
                 <div className="construction-badge">Coming Soon</div>
               )}
               <div className="tool-icon" style={{ background: `${tool.color}15`, opacity: tool.comingSoon ? 0.5 : 1 }}>
-                <span style={{ fontSize: '2.5rem' }}>{tool.icon}</span>
+                <MonoIcon icon={tool.icon} size={36} className="mono-icon" />
               </div>
               <h3>{tool.title}</h3>
               <p>{tool.description}</p>
@@ -189,7 +201,10 @@ export default function CareerToolsDashboard() {
 
         <div className="tools-info">
           <div className="info-card">
-            <h3>💡 How It Works</h3>
+            <h3>
+              <MonoIcon icon={Lightbulb} size={18} className="mono-icon inline" />
+              How It Works
+            </h3>
             <ol>
               <li>Choose a tool from the dashboard above</li>
               <li>Enter your information and job details</li>
@@ -199,7 +214,10 @@ export default function CareerToolsDashboard() {
           </div>
 
           <div className="info-card">
-            <h3>✨ Pro Tip</h3>
+            <h3>
+              <MonoIcon icon={Sparkles} size={18} className="mono-icon inline" />
+              Pro Tip
+            </h3>
             <p>
               Start with the <strong>Resume Optimizer</strong> to perfect your resume, 
               then use the <strong>Cover Letter Writer</strong> to create matching letters. 
@@ -210,7 +228,10 @@ export default function CareerToolsDashboard() {
 
           {currentUser && !currentUser.isPremium && (
             <div className="info-card upgrade-card">
-              <h3>⭐ Upgrade to Premium</h3>
+              <h3>
+                <MonoIcon icon={Star} size={18} className="mono-icon inline" />
+                Upgrade to Premium
+              </h3>
               <p>
                 Get unlimited access to all career tools, priority support, 
                 and early access to new features.

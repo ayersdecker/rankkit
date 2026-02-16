@@ -1,5 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import {
+  AtSign,
+  Camera,
+  CheckCircle2,
+  Circle,
+  Flame,
+  Hash,
+  Lightbulb,
+  Music,
+  Save,
+  Smartphone,
+  Star,
+  Target,
+  TrendingUp,
+  Video
+} from 'lucide-react';
 import { generateHashtags } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +24,7 @@ import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall, hasPremiumAccess } from '../../utils/premiumUtils';
 import { useSaveDocument } from '../../utils/useSaveDocument';
 import { formatPlainTextDocument } from '../../utils/documentFormatting';
+import { MonoIcon } from '../../components/Shared/MonoIcon';
 import './HashtagGenerator.css';
 
 type Platform = 'instagram' | 'tiktok' | 'youtube' | 'twitter';
@@ -109,7 +126,17 @@ export default function HashtagGenerator() {
         <h1 onClick={() => navigate('/social-media-tools')}>← Hashtag Generator</h1>
         <div className="nav-right">
           <span className="user-badge">
-            {currentUser?.isPremium ? '⭐ Premium' : '🆓 Free'}
+            {currentUser?.isPremium ? (
+              <>
+                <MonoIcon icon={Star} size={14} className="mono-icon inline" />
+                Premium
+              </>
+            ) : (
+              <>
+                <MonoIcon icon={Circle} size={12} className="mono-icon inline" />
+                Free
+              </>
+            )}
           </span>
           <span className="optimizations-badge">
             {currentUser?.isPremium 
@@ -130,10 +157,18 @@ export default function HashtagGenerator() {
                   className={`platform-button ${platform === p ? 'active' : ''}`}
                   onClick={() => setPlatform(p)}
                 >
-                  {p === 'instagram' && '📷'}
-                  {p === 'tiktok' && '🎵'}
-                  {p === 'youtube' && '📹'}
-                  {p === 'twitter' && '🐦'}
+                  {p === 'instagram' && (
+                    <MonoIcon icon={Camera} size={16} className="mono-icon inline" />
+                  )}
+                  {p === 'tiktok' && (
+                    <MonoIcon icon={Music} size={16} className="mono-icon inline" />
+                  )}
+                  {p === 'youtube' && (
+                    <MonoIcon icon={Video} size={16} className="mono-icon inline" />
+                  )}
+                  {p === 'twitter' && (
+                    <MonoIcon icon={AtSign} size={16} className="mono-icon inline" />
+                  )}
                   {' '}
                   {p.charAt(0).toUpperCase() + p.slice(1)}
                 </button>
@@ -161,15 +196,30 @@ export default function HashtagGenerator() {
               disabled={loading || !contentDescription}
               className="generate-button"
             >
-              {loading ? 'Generating...' : '# Generate Hashtags'}
+              {loading ? (
+                'Generating...'
+              ) : (
+                <>
+                  <MonoIcon icon={Hash} size={16} className="mono-icon inline" />
+                  Generate Hashtags
+                </>
+              )}
             </button>
 
             {error && <div className="error-message">{error}</div>}
             {saveError && <div className="error-message">{saveError}</div>}
-            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
+            {saveSuccess && (
+              <div className="update-message success">
+                <MonoIcon icon={CheckCircle2} size={16} className="mono-icon inline" />
+                Saved to Documents!
+              </div>
+            )}
 
             <div className="info-box">
-              <h4>💡 Tips for Best Results</h4>
+              <h4>
+                <MonoIcon icon={Lightbulb} size={16} className="mono-icon inline" />
+                Tips for Best Results
+              </h4>
               <ul>
                 <li>Be specific about your content topic</li>
                 <li>Mention the niche to get targeted hashtags</li>
@@ -186,7 +236,10 @@ export default function HashtagGenerator() {
               <>
                 <div className="hashtag-results">
                   <div className="result-header">
-                    <h3>🎯 All Hashtags ({hashtags.length})</h3>
+                    <h3>
+                      <MonoIcon icon={Target} size={18} className="mono-icon inline" />
+                      All Hashtags ({hashtags.length})
+                    </h3>
                     <button className="copy-button" onClick={() => copyHashtags('all')}>
                       Copy All
                     </button>
@@ -201,7 +254,10 @@ export default function HashtagGenerator() {
                 <div className="hashtag-categories">
                   <div className="category-section">
                     <div className="category-header">
-                      <h4>🔥 Popular</h4>
+                      <h4>
+                        <MonoIcon icon={Flame} size={16} className="mono-icon inline" />
+                        Popular
+                      </h4>
                       <button className="copy-button-sm" onClick={() => copyHashtags('popular')}>
                         Copy
                       </button>
@@ -215,7 +271,10 @@ export default function HashtagGenerator() {
 
                   <div className="category-section">
                     <div className="category-header">
-                      <h4>🎯 Niche</h4>
+                      <h4>
+                        <MonoIcon icon={Target} size={16} className="mono-icon inline" />
+                        Niche
+                      </h4>
                       <button className="copy-button-sm" onClick={() => copyHashtags('niche')}>
                         Copy
                       </button>
@@ -229,7 +288,10 @@ export default function HashtagGenerator() {
 
                   <div className="category-section">
                     <div className="category-header">
-                      <h4>📈 Trending</h4>
+                      <h4>
+                        <MonoIcon icon={TrendingUp} size={16} className="mono-icon inline" />
+                        Trending
+                      </h4>
                       <button className="copy-button-sm" onClick={() => copyHashtags('trending')}>
                         Copy
                       </button>
@@ -243,7 +305,10 @@ export default function HashtagGenerator() {
                 </div>
 
                 <div className="usage-tips">
-                  <h4>📱 Platform-Specific Tips</h4>
+                  <h4>
+                    <MonoIcon icon={Smartphone} size={16} className="mono-icon inline" />
+                    Platform-Specific Tips
+                  </h4>
                   <p>
                     <strong>Instagram:</strong> Mix popular and niche hashtags. Place in first comment or caption.<br/>
                     <strong>TikTok:</strong> Focus on trending hashtags. Update regularly.<br/>
@@ -254,13 +319,16 @@ export default function HashtagGenerator() {
 
                 <div className="action-buttons">
                   <button className="secondary-button" onClick={handleSave} disabled={saving}>
-                    {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                    <MonoIcon icon={Save} size={16} className="mono-icon inline" />
+                    {saving ? 'Saving...' : 'Save to Documents'}
                   </button>
                 </div>
               </>
             ) : (
               <div className="empty-state">
-                <span className="empty-icon">#️⃣</span>
+                <span className="empty-icon">
+                  <MonoIcon icon={Hash} size={24} className="mono-icon" />
+                </span>
                 <p>Describe your content and click "Generate Hashtags" to get relevant hashtags for your post.</p>
               </div>
             )}

@@ -1,7 +1,20 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import {
+  BarChart3,
+  Calendar,
+  Flame,
+  Hash,
+  Menu,
+  Search,
+  Smartphone,
+  Sparkles,
+  Target,
+  Wrench
+} from 'lucide-react';
 import { SignOutConfirmation } from '../../components/Shared/SignOutConfirmation';
+import { MonoIcon } from '../../components/Shared/MonoIcon';
 import './SocialMediaToolsDashboard.css';
 
 export default function SocialMediaToolsDashboard() {
@@ -27,7 +40,7 @@ export default function SocialMediaToolsDashboard() {
     {
       id: 'post-optimizer',
       title: 'Post Optimizer',
-      icon: '📱',
+      icon: Smartphone,
       description: 'Optimize content for Instagram, TikTok, YouTube, and Twitter',
       path: '/post-optimizer',
       color: '#E91E63',
@@ -36,7 +49,7 @@ export default function SocialMediaToolsDashboard() {
     {
       id: 'hashtag-generator',
       title: 'Hashtag Generator',
-      icon: '#️⃣',
+      icon: Hash,
       description: 'Generate trending and relevant hashtags for your content',
       path: '/hashtag-generator',
       color: '#9C27B0',
@@ -45,7 +58,7 @@ export default function SocialMediaToolsDashboard() {
     {
       id: 'caption-analyzer',
       title: 'Caption Analyzer',
-      icon: '🔍',
+      icon: Search,
       description: 'Analyze caption performance and get improvement suggestions',
       path: '/caption-analyzer',
       color: '#3F51B5',
@@ -54,7 +67,7 @@ export default function SocialMediaToolsDashboard() {
     {
       id: 'content-calendar',
       title: 'Content Calendar',
-      icon: '📅',
+      icon: Calendar,
       description: 'Plan and schedule your social media content strategy',
       path: '/content-calendar',
       color: '#00BCD4',
@@ -63,7 +76,7 @@ export default function SocialMediaToolsDashboard() {
     {
       id: 'trend-finder',
       title: 'Trend Finder',
-      icon: '🔥',
+      icon: Flame,
       description: 'Discover trending topics and viral content ideas',
       path: '/trend-finder',
       color: '#FF5722',
@@ -72,7 +85,7 @@ export default function SocialMediaToolsDashboard() {
     {
       id: 'competitor-analysis',
       title: 'Competitor Analysis',
-      icon: '📊',
+      icon: BarChart3,
       description: 'Analyze competitors and learn from their best content',
       path: '/competitor-analysis',
       color: '#4CAF50',
@@ -118,7 +131,7 @@ export default function SocialMediaToolsDashboard() {
             aria-expanded={isMenuOpen}
             aria-controls="mobile-navigation"
           >
-            ☰
+            <MonoIcon icon={Menu} size={18} className="mono-icon" />
           </button>
           {isAuthed ? (
             <div className="user-info">
@@ -175,11 +188,12 @@ export default function SocialMediaToolsDashboard() {
             >
               {tool.comingSoon && (
                 <div className="construction-badge">
-                  🚧 Under Construction
+                  <MonoIcon icon={Wrench} size={14} className="mono-icon inline" />
+                  Under Construction
                 </div>
               )}
               <div className="tool-icon" style={{ background: `${tool.color}15`, opacity: tool.comingSoon ? 0.5 : 1 }}>
-                <span style={{ fontSize: '2.5rem' }}>{tool.icon}</span>
+                <MonoIcon icon={tool.icon} size={36} className="mono-icon" />
               </div>
               <h3>{tool.title}</h3>
               <p>{tool.description}</p>
@@ -196,7 +210,10 @@ export default function SocialMediaToolsDashboard() {
 
         <div className="tools-info">
           <div className="info-card">
-            <h3>🎯 Perfect For</h3>
+            <h3>
+              <MonoIcon icon={Target} size={18} className="mono-icon inline" />
+              Perfect For
+            </h3>
             <ul>
               <li>Content creators and influencers</li>
               <li>Social media managers</li>
@@ -207,7 +224,10 @@ export default function SocialMediaToolsDashboard() {
           </div>
 
           <div className="info-card">
-            <h3>✨ Content Strategy</h3>
+            <h3>
+              <MonoIcon icon={Sparkles} size={18} className="mono-icon inline" />
+              Content Strategy
+            </h3>
             <p>
               <strong>1.</strong> Use <strong>Trend Finder</strong> to discover hot topics<br/>
               <strong>2.</strong> Create content with <strong>Post Optimizer</strong><br/>
@@ -219,7 +239,10 @@ export default function SocialMediaToolsDashboard() {
 
           {currentUser && !currentUser.isPremium && (
             <div className="info-card upgrade-card">
-              <h3>🔥 Go Pro</h3>
+              <h3>
+                <MonoIcon icon={Flame} size={18} className="mono-icon inline" />
+                Go Pro
+              </h3>
               <p>
                 Unlimited optimizations, hashtag sets, and advanced analytics. 
                 Perfect for serious content creators who post daily.

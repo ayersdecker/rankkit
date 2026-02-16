@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { CheckCircle2, Copy, Save, Shield } from 'lucide-react';
 import { generateObjectionHandler } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +9,7 @@ import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
 import { useSaveDocument } from '../../utils/useSaveDocument';
 import { formatPlainTextDocument } from '../../utils/documentFormatting';
+import { MonoIcon } from '../../components/Shared/MonoIcon';
 import '../ResumeRank/ResumeOptimizer.css';
 import '../CoverLetter/CoverLetterWriter.css';
 import './SellingPointsFinder.css';
@@ -178,7 +180,12 @@ export default function ObjectionHandler() {
 
             {error && <div className="error-message">{error}</div>}
             {saveError && <div className="error-message">{saveError}</div>}
-            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
+            {saveSuccess && (
+              <div className="update-message success">
+                <MonoIcon icon={CheckCircle2} size={16} className="mono-icon inline" />
+                Saved to Documents!
+              </div>
+            )}
           </div>
 
           <div className="output-section">
@@ -186,7 +193,10 @@ export default function ObjectionHandler() {
               <>
                 {result.responses.map((item, index) => (
                   <div key={index} className="analysis-section">
-                    <h3>🛡️ {item.objection}</h3>
+                    <h3>
+                      <MonoIcon icon={Shield} size={18} className="mono-icon inline" />
+                      {item.objection}
+                    </h3>
                     <ul className="points-list">
                       <li><strong>Response:</strong> {item.response}</li>
                       <li><strong>Reframe:</strong> {item.reframe}</li>
@@ -219,10 +229,12 @@ export default function ObjectionHandler() {
 
                 <div className="action-buttons">
                   <button className="secondary-button" onClick={handleSave} disabled={saving}>
-                    {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                    <MonoIcon icon={Save} size={16} className="mono-icon inline" />
+                    {saving ? 'Saving...' : 'Save to Documents'}
                   </button>
                   <button className="secondary-button" onClick={handleCopy}>
-                    📋 Copy Playbook
+                    <MonoIcon icon={Copy} size={16} className="mono-icon inline" />
+                    Copy Playbook
                   </button>
                 </div>
               </>

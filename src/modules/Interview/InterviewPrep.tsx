@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { CheckCircle2, HelpCircle, Lightbulb, MessageCircle, Printer, Save } from 'lucide-react';
 import { generateInterviewPrep } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +9,7 @@ import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
 import { useSaveDocument } from '../../utils/useSaveDocument';
 import { formatPlainTextDocument } from '../../utils/documentFormatting';
+import { MonoIcon } from '../../components/Shared/MonoIcon';
 import './InterviewPrep.css';
 
 export default function InterviewPrep() {
@@ -155,14 +157,22 @@ export default function InterviewPrep() {
 
             {error && <div className="error-message">{error}</div>}
             {saveError && <div className="error-message">{saveError}</div>}
-            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
+            {saveSuccess && (
+              <div className="update-message success">
+                <MonoIcon icon={CheckCircle2} size={16} className="mono-icon inline" />
+                Saved to Documents!
+              </div>
+            )}
           </div>
 
           <div className="output-section interview-output">
             {prepData ? (
               <>
                 <div className="prep-section">
-                  <h3>💡 Interview Tips</h3>
+                  <h3>
+                    <MonoIcon icon={Lightbulb} size={18} className="mono-icon inline" />
+                    Interview Tips
+                  </h3>
                   <ul className="tips-list">
                     {prepData.tips.map((tip, index) => (
                       <li key={index}>{tip}</li>
@@ -171,7 +181,10 @@ export default function InterviewPrep() {
                 </div>
 
                 <div className="prep-section">
-                  <h3>❓ Common Interview Questions</h3>
+                  <h3>
+                    <MonoIcon icon={HelpCircle} size={18} className="mono-icon inline" />
+                    Common Interview Questions
+                  </h3>
                   <ol className="questions-list">
                     {prepData.commonQuestions.map((question, index) => (
                       <li key={index}>{question}</li>
@@ -181,7 +194,10 @@ export default function InterviewPrep() {
 
                 {prepData.suggestedAnswers.length > 0 && (
                   <div className="prep-section">
-                    <h3>💬 Suggested Answer Frameworks</h3>
+                    <h3>
+                      <MonoIcon icon={MessageCircle} size={18} className="mono-icon inline" />
+                      Suggested Answer Frameworks
+                    </h3>
                     {prepData.suggestedAnswers.map((item, index) => (
                       <div key={index} className="answer-card">
                         <h4>Q: {item.question}</h4>
@@ -192,7 +208,10 @@ export default function InterviewPrep() {
                 )}
 
                 <div className="prep-section">
-                  <h3>🤔 Questions You Should Ask</h3>
+                  <h3>
+                    <MonoIcon icon={HelpCircle} size={18} className="mono-icon inline" />
+                    Questions You Should Ask
+                  </h3>
                   <ul className="questions-to-ask-list">
                     {prepData.questionsToAsk.map((question, index) => (
                       <li key={index}>{question}</li>
@@ -202,10 +221,12 @@ export default function InterviewPrep() {
 
                 <div className="action-buttons">
                   <button className="secondary-button" onClick={handleSave} disabled={saving}>
-                    {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                    <MonoIcon icon={Save} size={16} className="mono-icon inline" />
+                    {saving ? 'Saving...' : 'Save to Documents'}
                   </button>
                   <button className="secondary-button" onClick={handlePrint}>
-                    🖨️ Print Interview Prep
+                    <MonoIcon icon={Printer} size={16} className="mono-icon inline" />
+                    Print Interview Prep
                   </button>
                 </div>
               </>

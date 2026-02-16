@@ -64,10 +64,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           console.log('[Auth] Loading user data...');
           const user = await loadUserData(firebaseUser);
-          console.log('[Auth] ✓ User data loaded:', user.email);
+          console.log('[Auth] User data loaded:', user.email);
           setCurrentUser(user);
         } catch (error) {
-          console.error('[Auth] ✗ Error loading user data:', error);
+          console.error('[Auth] Error loading user data:', error);
           setCurrentUser(null);
         }
       } else {

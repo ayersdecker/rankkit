@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from 'react';
+import { AlertTriangle } from 'lucide-react';
+import { MonoIcon } from './MonoIcon';
 import './DeleteAccountConfirmation.css';
 
 interface DeleteAccountConfirmationProps {
@@ -25,7 +27,9 @@ export function DeleteAccountConfirmation({
   return (
     <div className="delete-overlay" onClick={onCancel}>
       <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="delete-icon">⚠️</div>
+        <div className="delete-icon">
+          <MonoIcon icon={AlertTriangle} size={32} className="mono-icon" />
+        </div>
         <h2>Delete Account</h2>
         <p className="delete-message">
           This action permanently deletes your account and data. Type your email to confirm.

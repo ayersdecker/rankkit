@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { CheckCircle2, Gem, Lightbulb, Save, Target, Zap } from 'lucide-react';
 import { analyzeSellingPoints } from '../../services/openai';
 import { canUserOptimize, decrementFreeOptimization } from '../../services/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +9,7 @@ import { LoadingSpinner } from '../../components/Shared/LoadingSpinner';
 import { shouldShowPaywall } from '../../utils/premiumUtils';
 import { useSaveDocument } from '../../utils/useSaveDocument';
 import { formatPlainTextDocument } from '../../utils/documentFormatting';
+import { MonoIcon } from '../../components/Shared/MonoIcon';
 import './SellingPointsFinder.css';
 
 export default function SellingPointsFinder() {
@@ -137,14 +139,22 @@ export default function SellingPointsFinder() {
 
             {error && <div className="error-message">{error}</div>}
             {saveError && <div className="error-message">{saveError}</div>}
-            {saveSuccess && <div className="update-message success">✓ Saved to Documents!</div>}
+            {saveSuccess && (
+              <div className="update-message success">
+                <MonoIcon icon={CheckCircle2} size={16} className="mono-icon inline" />
+                Saved to Documents!
+              </div>
+            )}
           </div>
 
           <div className="output-section">
             {analysis ? (
               <>
                 <div className="analysis-section">
-                  <h3>🎯 Key Selling Points</h3>
+                  <h3>
+                    <MonoIcon icon={Target} size={18} className="mono-icon inline" />
+                    Key Selling Points
+                  </h3>
                   <ul className="points-list">
                     {analysis.sellingPoints.map((point, index) => (
                       <li key={index}>{point}</li>
@@ -153,7 +163,10 @@ export default function SellingPointsFinder() {
                 </div>
 
                 <div className="analysis-section">
-                  <h3>💎 Unique Value Propositions</h3>
+                  <h3>
+                    <MonoIcon icon={Gem} size={18} className="mono-icon inline" />
+                    Unique Value Propositions
+                  </h3>
                   <ul className="points-list">
                     {analysis.uniqueValueProps.map((prop, index) => (
                       <li key={index}>{prop}</li>
@@ -162,7 +175,10 @@ export default function SellingPointsFinder() {
                 </div>
 
                 <div className="analysis-section">
-                  <h3>⚡ Competitive Advantages</h3>
+                  <h3>
+                    <MonoIcon icon={Zap} size={18} className="mono-icon inline" />
+                    Competitive Advantages
+                  </h3>
                   <ul className="points-list">
                     {analysis.competitiveAdvantages.map((adv, index) => (
                       <li key={index}>{adv}</li>
@@ -171,7 +187,10 @@ export default function SellingPointsFinder() {
                 </div>
 
                 <div className="analysis-section">
-                  <h3>🎯 Target Pain Points Addressed</h3>
+                  <h3>
+                    <MonoIcon icon={Target} size={18} className="mono-icon inline" />
+                    Target Pain Points Addressed
+                  </h3>
                   <ul className="points-list">
                     {analysis.targetPainPoints.map((pain, index) => (
                       <li key={index}>{pain}</li>
@@ -180,7 +199,10 @@ export default function SellingPointsFinder() {
                 </div>
 
                 <div className="analysis-section">
-                  <h3>💡 Messaging Tips</h3>
+                  <h3>
+                    <MonoIcon icon={Lightbulb} size={18} className="mono-icon inline" />
+                    Messaging Tips
+                  </h3>
                   <ul className="points-list">
                     {analysis.messagingTips.map((tip, index) => (
                       <li key={index}>{tip}</li>
@@ -190,7 +212,8 @@ export default function SellingPointsFinder() {
 
                 <div className="action-buttons">
                   <button className="secondary-button" onClick={handleSave} disabled={saving}>
-                    {saving ? '💾 Saving...' : '💾 Save to Documents'}
+                    <MonoIcon icon={Save} size={16} className="mono-icon inline" />
+                    {saving ? 'Saving...' : 'Save to Documents'}
                   </button>
                 </div>
               </>

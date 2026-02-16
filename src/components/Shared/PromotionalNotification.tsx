@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { LucideIcon } from 'lucide-react';
+import { MonoIcon } from './MonoIcon';
 import './PromotionalNotification.css';
 
 export interface NotificationConfig {
@@ -10,7 +12,7 @@ export interface NotificationConfig {
   linkText?: string;
   linkUrl?: string;
   action?: () => void;
-  emoji?: string;
+  icon?: LucideIcon;
 }
 
 interface PromotionalNotificationProps {
@@ -71,8 +73,10 @@ export function PromotionalNotification({
         ×
       </button>
       
-      {currentNotification.emoji && (
-        <div className="promo-notification-emoji">{currentNotification.emoji}</div>
+      {currentNotification.icon && (
+        <div className="promo-notification-emoji">
+          <MonoIcon icon={currentNotification.icon} size={24} className="mono-icon" />
+        </div>
       )}
       
       <h3 className="promo-notification-title">{currentNotification.title}</h3>

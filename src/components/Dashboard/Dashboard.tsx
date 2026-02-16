@@ -1,7 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { SignOutConfirmation } from '../Shared/SignOutConfirmation';
+import { getUserDocuments } from '../../services/firestore';
+import {
+  Briefcase,
+  FileText,
+  Folder,
+  Lightbulb,
+  Mail,
+  Menu,
+  MessageCircle,
+  Search,
+  Smartphone,
+  Target,
+  TrendingUp
+} from 'lucide-react';
+import { MonoIcon } from '../Shared/MonoIcon';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -9,7 +24,71 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [documentCount, setDocumentCount] = useState(0);
   const isAuthed = !!currentUser;
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchDocumentCount() {
+      if (!currentUser) {
+        if (isMounted) {
+          setDocumentCount(0);
+        }
+        return;
+      }
+
+      try {
+        const docs = await getUserDocuments(currentUser.uid);
+        if (isMounted) {
+          setDocumentCount(docs.length);
+        }
+      } catch (error) {
+        console.error('Failed to load document count:', error);
+        if (isMounted) {
+          setDocumentCount(0);
+        }
+      }
+    }
+
+    fetchDocumentCount();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentUser]);
+
+  function getAccountAgeLabel() {
+    if (!currentUser?.createdAt) {
+      return 'New';
+    }
+
+    const createdAt = (currentUser.createdAt instanceof Date)
+      ? currentUser.createdAt
+      : (typeof (currentUser.createdAt as any)?.toDate === 'function')
+        ? (currentUser.createdAt as any).toDate()
+        : new Date(currentUser.createdAt as any);
+
+    if (Number.isNaN(createdAt.getTime())) {
+      return 'New';
+    }
+
+    const now = new Date();
+    const diffMs = Math.max(0, now.getTime() - createdAt.getTime());
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 30) {
+      return `${Math.max(diffDays, 1)} day${diffDays === 1 ? '' : 's'}`;
+    }
+
+    const diffMonths = Math.floor(diffDays / 30);
+    if (diffMonths < 12) {
+      return `${diffMonths} month${diffMonths === 1 ? '' : 's'}`;
+    }
+
+    const diffYears = Math.floor(diffDays / 365);
+    return `${diffYears} year${diffYears === 1 ? '' : 's'}`;
+  }
 
   function handleNavClick(path: string) {
     navigate(path);
@@ -61,7 +140,7 @@ export default function Dashboard() {
             aria-expanded={isMenuOpen}
             aria-controls="mobile-navigation"
           >
-            ☰
+            <MonoIcon icon={Menu} size={18} className="mono-icon" />
           </button>
           {isAuthed ? (
             <div className="user-info">
@@ -112,21 +191,27 @@ export default function Dashboard() {
           <h3>Tool Dashboards</h3>
           <div className="actions-grid main-dashboards">
             <div className="action-card featured" onClick={() => navigate('/career-tools')}>
-              <div className="action-icon">💼</div>
+              <div className="action-icon">
+                <MonoIcon icon={Briefcase} size={40} className="mono-icon light" />
+              </div>
               <h4>Career Tools</h4>
               <p>Resume optimization, cover letters, interview prep, and job search</p>
               <span className="tools-count">4 Tools Available</span>
             </div>
 
             <div className="action-card featured" onClick={() => navigate('/workplace-tools')}>
-              <div className="action-icon">🎯</div>
+              <div className="action-icon">
+                <MonoIcon icon={Target} size={40} className="mono-icon light" />
+              </div>
               <h4>Workplace Tools</h4>
               <p>Cold emails, sales scripts, selling points, and persuasion tactics</p>
               <span className="tools-count">6 Tools Available</span>
             </div>
 
             <div className="action-card featured" onClick={() => navigate('/social-media-tools')}>
-              <div className="action-icon">📱</div>
+              <div className="action-icon">
+                <MonoIcon icon={Smartphone} size={40} className="mono-icon light" />
+              </div>
               <h4>Social Media Tools</h4>
               <p>Optimize content for Instagram, TikTok, YouTube, and Twitter</p>
               <span className="tools-count">6 Tools Available</span>
@@ -138,37 +223,49 @@ export default function Dashboard() {
           <h3>Quick Access</h3>
           <div className="actions-grid">
             <div className="action-card" onClick={() => navigate('/resume-optimizer')}>
-              <div className="action-icon">📝</div>
+              <div className="action-icon">
+                <MonoIcon icon={FileText} size={36} className="mono-icon" />
+              </div>
               <h4>Resume Optimizer</h4>
               <p>Optimize your resume for ATS systems</p>
             </div>
 
             <div className="action-card" onClick={() => navigate('/cover-letter')}>
-              <div className="action-icon">✉️</div>
+              <div className="action-icon">
+                <MonoIcon icon={Mail} size={36} className="mono-icon" />
+              </div>
               <h4>Cover Letter Writer</h4>
               <p>Generate tailored cover letters</p>
             </div>
 
             <div className="action-card" onClick={() => navigate('/interview-prep')}>
-              <div className="action-icon">💼</div>
+              <div className="action-icon">
+                <MonoIcon icon={MessageCircle} size={36} className="mono-icon" />
+              </div>
               <h4>Interview Prep</h4>
               <p>Get ready for your next interview</p>
             </div>
 
             <div className="action-card" onClick={() => navigate('/post-optimizer')}>
-              <div className="action-icon">📱</div>
+              <div className="action-icon">
+                <MonoIcon icon={Smartphone} size={36} className="mono-icon" />
+              </div>
               <h4>Post Optimizer</h4>
               <p>Maximize social media engagement</p>
             </div>
 
             <div className="action-card" onClick={() => navigate('/job-search')}>
-              <div className="action-icon">🔍</div>
+              <div className="action-icon">
+                <MonoIcon icon={Search} size={36} className="mono-icon" />
+              </div>
               <h4>Job Search Assistant</h4>
               <p>Find the best places to apply</p>
             </div>
 
             <div className="action-card" onClick={() => navigate('/documents')}>
-              <div className="action-icon">📁</div>
+              <div className="action-icon">
+                <MonoIcon icon={Folder} size={36} className="mono-icon" />
+              </div>
               <h4>View Documents</h4>
               <p>Browse your document library</p>
             </div>
@@ -179,32 +276,50 @@ export default function Dashboard() {
           <h3>What You Can Do</h3>
           <div className="features-grid">
             <div className="feature">
-              <h4>📄 Resume Optimization</h4>
+              <h4>
+                <MonoIcon icon={FileText} size={18} className="mono-icon inline" />
+                Resume Optimization
+              </h4>
               <p>Optimize resumes to pass ATS systems and match job descriptions</p>
             </div>
             
             <div className="feature">
-              <h4>✉️ Cover Letters</h4>
+              <h4>
+                <MonoIcon icon={Mail} size={18} className="mono-icon inline" />
+                Cover Letters
+              </h4>
               <p>Generate personalized cover letters using your resume and bio</p>
             </div>
             
             <div className="feature">
-              <h4>💼 Interview Preparation</h4>
+              <h4>
+                <MonoIcon icon={MessageCircle} size={18} className="mono-icon inline" />
+                Interview Preparation
+              </h4>
               <p>Get common questions, answers, and tips for your interviews</p>
             </div>
             
             <div className="feature">
-              <h4>� Cold Emails</h4>
+              <h4>
+                <MonoIcon icon={Mail} size={18} className="mono-icon inline" />
+                Cold Emails
+              </h4>
               <p>Create personalized outreach emails that get responses</p>
             </div>
             
             <div className="feature">
-              <h4>💡 Selling Points Analysis</h4>
+              <h4>
+                <MonoIcon icon={Lightbulb} size={18} className="mono-icon inline" />
+                Selling Points Analysis
+              </h4>
               <p>Extract key selling points from any product or service</p>
             </div>
             
             <div className="feature">
-              <h4>📱 Social Media SEO</h4>
+              <h4>
+                <MonoIcon icon={TrendingUp} size={18} className="mono-icon inline" />
+                Social Media SEO
+              </h4>
               <p>Maximize engagement on Instagram, TikTok, YouTube, Twitter</p>
             </div>
           </div>
@@ -219,10 +334,12 @@ export default function Dashboard() {
                 <span className="stat-value">{currentUser?.usageCount || 0}</span>
               </div>
               <div className="usage-stat">
-                <span className="stat-label">Free Optimizations Remaining</span>
-                <span className="stat-value">
-                  {currentUser?.isPremium ? '∞' : (currentUser?.freeOptimizationsRemaining || 0)}
-                </span>
+                <span className="stat-label">Documents</span>
+                <span className="stat-value">{documentCount}</span>
+              </div>
+              <div className="usage-stat">
+                <span className="stat-label">Account Age</span>
+                <span className="stat-value">{getAccountAgeLabel()}</span>
               </div>
               <div className="usage-stat">
                 <span className="stat-label">Plan</span>
