@@ -1,6 +1,6 @@
 .footer {
   background: rgba(10, 15, 30, 0.8);
-  border-top: 1px solid rgba(0, 212, 255, 0.1);
+  border-top: 1px solid rgba(130, 160, 255, 0.15);
   color: #d0d0d0;
   padding: 40px 20px 20px;
   margin-top: 60px;
@@ -16,14 +16,17 @@
 }
 
 .footer-section h3 {
-  color: #00d4ff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-size: 1.2em;
   margin-bottom: 10px;
   font-weight: 600;
 }
 
 .footer-section h4 {
-  color: #00d4ff;
+  color: #e0e0e0;
   font-size: 0.95em;
   margin-bottom: 12px;
   font-weight: 600;
@@ -47,24 +50,28 @@
 }
 
 .footer-section a {
-  color: #00d4ff;
+  color: #e0e0e0;
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
   font-size: 0.9em;
+  position: relative;
 }
 
 .footer-section a:hover {
-  color: #00ffff;
-  text-decoration: underline;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
 }
 
 .footer-bottom {
   max-width: 1200px;
   margin: 0 auto;
   padding-top: 20px;
-  border-top: 1px solid rgba(0, 212, 255, 0.1);
+  border-top: 1px solid rgba(130, 160, 255, 0.1);
   text-align: center;
-  color: #666;
+  color: #888;
   font-size: 0.85em;
 }
 

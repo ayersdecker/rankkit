@@ -92,14 +92,14 @@ export default function Dashboard() {
       <div className="dashboard-content">
         <div className="hero-section">
           <h2>Welcome to <span className="brand-name">RankKit</span></h2>
-          <p>AI-powered document optimization for resumes and social content</p>
+          <p>AI-powered optimization platform for career advancement, workplace communication, and social media engagement</p>
         </div>
 
         {!isAuthed && (
           <div className="guest-cta">
             <div>
               <h3>Explore RankKit as a guest</h3>
-              <p>Browse the tools and see what is possible. Sign in to save work and run optimizations.</p>
+              <p>Browse our AI-powered career, workplace, and social media tools. Sign in to save work and run unlimited optimizations.</p>
             </div>
             <div className="guest-cta-actions">
               <button onClick={() => navigate('/signup')}>Create free account</button>

@@ -734,71 +734,77 @@
   .usage-card {
     flex-direction: column;
     align-items: flex-start;
-    padding: 28px 24px;
+    padding: 14px 12px;
   }
   
   .upgrade-button {
     margin-left: 0;
     width: 100%;
+    padding: 10px 16px;
+    font-size: 13px;
   }
 
   .action-card {
-    padding: 28px 24px;
+    padding: 14px 12px;
   }
 
   .dashboard-content {
-    padding: 22px 16px;
+    padding: 16px 12px;
   }
 
   .hero-section {
-    margin-bottom: 40px;
-    padding: 20px 0;
+    margin-bottom: 24px;
+    padding: 12px 0;
   }
 
   .hero-section h2 {
-    font-size: 30px;
+    font-size: 26px;
   }
 
   .hero-section p {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .quick-actions h3,
   .features-overview h3,
   .usage-summary h3 {
-    font-size: 20px;
+    font-size: 18px;
+    margin-bottom: 14px;
   }
 
   .action-card {
-    padding: 20px 18px;
+    padding: 14px 12px;
   }
 
   .actions-grid.main-dashboards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
+    gap: 10px;
   }
 
   .action-card.featured {
-    padding: 18px 16px;
-    min-height: 160px;
+    padding: 14px 12px;
+    min-height: 140px;
   }
 
   .action-card.featured .action-icon {
-    font-size: 40px;
-    margin-bottom: 10px;
+    font-size: 32px;
+    margin-bottom: 6px;
   }
 
   .action-card.featured h4 {
-    font-size: 18px;
+    font-size: 16px;
+    margin-bottom: 4px;
   }
 
   .action-card.featured p {
-    font-size: 13px;
+    font-size: 12px;
+    line-height: 1.4;
   }
 
   .tools-count {
-    font-size: 12px;
-    padding: 4px 10px;
+    font-size: 11px;
+    padding: 4px 8px;
+    margin-top: 6px;
   }
 
 
@@ -808,7 +814,13 @@
   }
 }
   .usage-card {
-    padding: 22px 18px;
-    gap: 20px;
+    padding: 14px 12px;
+    gap: 12px;
+  }
+
+  .quick-actions,
+  .features-overview,
+  .usage-summary {
+    margin-bottom: 24px;
   }
 }

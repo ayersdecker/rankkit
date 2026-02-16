@@ -34,6 +34,13 @@ export interface OptimizationRequest {
   context?: string;
   userName?: string;
   userBio?: string;
+  userSocialLinks?: {
+    linkedinUrl?: string;
+    githubUrl?: string;
+    websiteUrl?: string;
+    portfolioUrl?: string;
+    twitterUrl?: string;
+  };
 }
 
 export interface OptimizationResponse {
@@ -291,6 +298,21 @@ function generatePrompt(request: OptimizationRequest): string {
     : request.context;
   
   if (request.type === 'resume') {
+    // Build social links section if provided
+    let socialLinksSection = '';
+    if (request.userSocialLinks) {
+      const links = [];
+      if (request.userSocialLinks.linkedinUrl) links.push(`LinkedIn: ${request.userSocialLinks.linkedinUrl}`);
+      if (request.userSocialLinks.githubUrl) links.push(`GitHub: ${request.userSocialLinks.githubUrl}`);
+      if (request.userSocialLinks.websiteUrl) links.push(`Website: ${request.userSocialLinks.websiteUrl}`);
+      if (request.userSocialLinks.portfolioUrl) links.push(`Portfolio: ${request.userSocialLinks.portfolioUrl}`);
+      if (request.userSocialLinks.twitterUrl) links.push(`Twitter: ${request.userSocialLinks.twitterUrl}`);
+      
+      if (links.length > 0) {
+        socialLinksSection = `\n\nUSER'S PROFESSIONAL LINKS (Include these in contact info if not already present):\n${links.join('\n')}\n`;
+      }
+    }
+    
     return `
 CRITICAL FIRST STEP: Look at the resume below and find the candidate's real name (usually at the top). You MUST use this exact name in your output.
 
@@ -298,19 +320,23 @@ JOB POSTING:
 ${trimmedContext}
 
 CURRENT RESUME:
-${trimmedContent}
+${trimmedContent}${socialLinksSection}
 
 INSTRUCTIONS:
-1. **MOST IMPORTANT**: Find the candidate's name in the resume above (look at the very beginning)
-   - If you see "Decker Ayers" → Use "Decker Ayers"
-   - If you see "Sarah Johnson" → Use "Sarah Johnson"  
+1. **MOST IMPORTANT**: Find and use the candidate's actual name from the resume
+   - Look at the very beginning of the resume for the real name
    - NEVER use "John Doe", "Jane Smith", "Candidate's Actual Name", or ANY generic placeholder
-   - The name is usually in the first few lines of the resume
+   - Use the EXACT name found in the resume
 
-2. **PRESERVE ALL CONTACT INFORMATION**: Extract and include phone, email, LinkedIn, location, website, etc.
-   - Find phone number, email, LinkedIn URL, location/address in original resume
-   - Place immediately after the name in a clear, readable format
-   - DO NOT drop or omit any contact details
+2. **PRESERVE ONLY EXISTING CONTACT INFORMATION**: 
+   - ONLY include contact details that are ACTUALLY in the original resume
+   - If the resume has phone → include phone with actual number
+   - If the resume has email → include email with actual address  
+   - If the resume has LinkedIn → include LinkedIn with actual URL
+   - If the resume has location → include location with actual city
+   - If something is NOT in the original resume → DO NOT ADD IT
+   - DO NOT add placeholder text like "[LinkedIn URL]", "[Phone]", "[Email]"
+   - DO NOT invent or suggest adding contact info that isn't already there
 
 3. Extract key skills and keywords from the job posting
 4. EXPAND and enhance the resume - DO NOT SHORTEN IT
@@ -324,13 +350,17 @@ INSTRUCTIONS:
 
 OUTPUT FORMAT (Valid JSON only):
 {
-  "optimized_resume": "# [PUT THE REAL NAME YOU FOUND HERE]\\n\\n[Phone] | [Email] | [LinkedIn] | [Location]\\n\\n## PROFESSIONAL SUMMARY\\n\\n[2-3 sentence compelling summary]\\n\\n## PROFESSIONAL EXPERIENCE\\n\\n### [Company Name] | [Job Title]\\n*[Dates]*\\n\\n- [Achievement with metrics]\\n- [Achievement with metrics]\\n- [Achievement with metrics]\\n\\n### [Next Company] | [Job Title]\\n*[Dates]*\\n\\n- [Achievement]\\n- [Achievement]\\n\\n## EDUCATION\\n\\n### [Institution] - [Degree]\\n*[Graduation Date]*\\n\\n## TECHNICAL SKILLS\\n\\n**Languages:** [List]  \\n**Frameworks:** [List]  \\n**Tools:** [List]\\n\\n## KEY STRENGTHS\\n\\n- [Notable strengths or achievements]\\n- [Notable strengths or achievements]",
+  "optimized_resume": "# ACTUAL NAME FROM RESUME\\n\\n[Only include contact info that exists in original - no placeholders]\\n\\n## PROFESSIONAL SUMMARY\\n\\n[2-3 sentence compelling summary based on actual experience]\\n\\n## PROFESSIONAL EXPERIENCE\\n\\n### [Company Name] | [Job Title]\\n*[Dates]*\\n\\n- [Achievement with metrics from original resume]\\n- [Achievement with metrics]\\n- [Achievement with metrics]\\n\\n[Continue with all experience from original]\\n\\n## EDUCATION\\n\\n[Actual education from resume]\\n\\n## TECHNICAL SKILLS\\n\\n[Actual skills from resume, organized by category]\\n\\n## KEY STRENGTHS\\n\\n[Notable strengths based on actual experience]",
   "match_score": 85,
   "suggestions": ["Specific improvements made to enhance the resume"],
   "missing_keywords": ["keyword1", "keyword2"]
 }
 
-REMINDER: Start with "# " followed by THE ACTUAL NAME, then the ACTUAL CONTACT INFO on the next line!
+CRITICAL RULES:
+- Use the REAL NAME from the resume
+- ONLY include contact information that EXISTS in the original resume
+- DO NOT add placeholder text, brackets, or suggestions for missing info
+- The output should be 100% ready to use with NO further editing needed
     `.trim();
   } else {
     return `
@@ -420,6 +450,66 @@ function parseOptimizationResult(
           optimizedResume = optimizedResume.replace(/^#\s*.+$/m, `# ${extractedName}`);
         }
       }
+      
+      // Post-process: Remove placeholder contact information
+      // Look for common placeholder patterns in contact info (usually 2nd-3rd line)
+      const placeholderPatterns = [
+        /\[Phone\]|\[phone\]|\[PHONE\]/gi,
+        /\[Email\]|\[email\]|\[EMAIL\]/gi,
+        /\[LinkedIn\]|\[linkedin\]|\[LINKEDIN\]/gi,
+        /\[LinkedIn URL\]|\[linkedin url\]/gi,
+        /\[Location\]|\[location\]|\[LOCATION\]/gi,
+        /\[Address\]|\[address\]|\[ADDRESS\]/gi,
+        /\[Website\]|\[website\]|\[WEBSITE\]/gi,
+        /\[Portfolio\]|\[portfolio\]/gi,
+        /linkedin\.com\/in\/\[.*?\]/gi,
+        /\|\s*\|\s*\|/g, // Multiple pipes with nothing between them
+        /\|\s*$/gm, // Pipe at end of line
+        /^\s*\|\s*/gm, // Pipe at start of line
+      ];
+      
+      // Remove placeholder text from contact info lines
+      let lines = optimizedResume.split('\n');
+      for (let i = 0; i < Math.min(5, lines.length); i++) {
+        let line = lines[i];
+        
+        // Check if this line contains placeholder patterns
+        let hasPlaceholder = false;
+        for (const pattern of placeholderPatterns) {
+          if (pattern.test(line)) {
+            hasPlaceholder = true;
+            break;
+          }
+        }
+        
+        if (hasPlaceholder) {
+          // Remove all placeholder patterns from this line
+          for (const pattern of placeholderPatterns) {
+            line = line.replace(pattern, '');
+          }
+          
+          // Clean up formatting: remove empty pipes, extra spaces
+          line = line
+            .replace(/\s*\|\s*\|\s*/g, ' | ')  // Collapse multiple pipes
+            .replace(/^\s*\|\s*/, '')  // Remove leading pipe
+            .replace(/\s*\|\s*$/, '')  // Remove trailing pipe
+            .replace(/\s+/g, ' ')  // Collapse multiple spaces
+            .trim();
+          
+          // If line is now empty or just whitespace/pipes, remove it
+          if (!line || line === '|' || line.match(/^[\s|]+$/)) {
+            line = '';
+          }
+          
+          lines[i] = line;
+        }
+      }
+      
+      // Remove empty lines from the top section and rejoin
+      optimizedResume = lines
+        .filter((line: string, index: number) => index >= 5 || line.trim() !== '')  // Only filter first 5 lines
+        .join('\n')
+        .replace(/\n{3,}/g, '\n\n');  // Collapse multiple blank lines
       
       return {
         optimized: optimizedResume,
@@ -536,10 +626,12 @@ Create a compelling, professional cover letter that:
 4. Uses a professional but engaging tone
 5. Is 3-4 paragraphs in length
 6. Includes a strong opening and closing
+7. Uses ONLY information from the provided resume - do NOT add placeholder text or brackets
+8. The letter should be 100% ready to use with NO editing needed
 
 OUTPUT (Valid JSON only):
 {
-  "cover_letter": "full cover letter text with proper formatting",
+  "cover_letter": "full cover letter text with proper formatting - ready to use, no placeholders",
   "suggestions": ["tip 1", "tip 2", "tip 3"]
 }
   `.trim();

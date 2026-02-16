@@ -10,6 +10,7 @@ import DocumentLibrary from './components/Dashboard/DocumentLibrary';
 import OptimizationWorkspace from './components/Dashboard/OptimizationWorkspace';
 import Profile from './components/Dashboard/Profile';
 import TermsOfService from './components/Legal/TermsOfService';
+import PrivacyPolicy from './components/Legal/PrivacyPolicy';
 import Footer from './components/Shared/Footer';
 import CareerToolsDashboard from './modules/CareerTools/CareerToolsDashboard';
 import WorkplaceToolsDashboard from './modules/WorkplaceTools/WorkplaceToolsDashboard';
@@ -88,16 +89,9 @@ function App() {
             <div className="ai-node node-four" />
             <div className="data-beam beam-one" />
             <div className="data-beam beam-two" />
-            <div className="rocket rocket-one">
-              <span className="rocket-body" />
-              <span className="rocket-window" />
-              <span className="rocket-flame" />
-            </div>
-            <div className="rocket rocket-two">
-              <span className="rocket-body" />
-              <span className="rocket-window" />
-              <span className="rocket-flame" />
-            </div>
+            <div className="particle particle-one" />
+            <div className="particle particle-two" />
+            <div className="particle particle-three" />
           </div>
           <div className="app-content">
             <Router basename={basename}>
@@ -223,6 +217,7 @@ function App() {
                   }
                 />
                 <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/" element={<Navigate to="/dashboard" />} />
               </Routes>
               <Footer />

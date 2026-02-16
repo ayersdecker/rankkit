@@ -6,7 +6,7 @@ export const promotionalNotifications: NotificationConfig[] = [
   {
     id: 'premium-upgrade',
     type: 'subscribe',
-    title: '🚀 Unlock Premium Features',
+    title: '⭐ Unlock Premium Features',
     message: 'Get unlimited AI optimizations and access to all 16+ tools with Premium!',
     linkText: 'Upgrade Now',
     linkUrl: '/profile?tab=billing',
@@ -55,7 +55,7 @@ export const promotionalNotifications: NotificationConfig[] = [
     message: 'Generate perfect hashtags and optimize your social media content!',
     linkText: 'Check It Out',
     linkUrl: '/social-media-tools',
-    emoji: '🚀'
+    emoji: '✨'
   },
   {
     id: 'hint-save-progress',

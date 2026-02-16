@@ -67,7 +67,14 @@ export default function ResumeOptimizer() {
       const result = await optimizeContent({
         type: 'resume',
         content: selectedDoc.content,
-        context: jobPosting || 'General resume optimization without specific job posting'
+        context: jobPosting || 'General resume optimization without specific job posting',
+        userSocialLinks: {
+          linkedinUrl: currentUser.linkedinUrl,
+          githubUrl: currentUser.githubUrl,
+          websiteUrl: currentUser.websiteUrl,
+          portfolioUrl: currentUser.portfolioUrl,
+          twitterUrl: currentUser.twitterUrl
+        }
       }, currentUser.uid);
 
       // Decrement free optimization count

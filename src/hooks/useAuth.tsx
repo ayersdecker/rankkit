@@ -27,7 +27,13 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
-  updateProfile: (displayName: string, bio?: string) => Promise<void>;
+  updateProfile: (displayName: string, bio?: string, socialLinks?: {
+    linkedinUrl?: string;
+    githubUrl?: string;
+    websiteUrl?: string;
+    portfolioUrl?: string;
+    twitterUrl?: string;
+  }) => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   canChangePassword: boolean;
   deleteAccount: () => Promise<void>;
@@ -145,7 +151,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await firebaseSignOut(auth);
   }
 
-  async function updateProfile(displayName: string, bio?: string) {
+  async function updateProfile(displayName: string, bio?: string, socialLinks?: {
+    linkedinUrl?: string;
+    githubUrl?: string;
+    websiteUrl?: string;
+    portfolioUrl?: string;
+    twitterUrl?: string;
+  }) {
     if (!auth.currentUser) {
       throw new Error('No user logged in');
     }
@@ -154,10 +166,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await firebaseUpdateProfile(auth.currentUser, { displayName });
 
     // Update Firestore user document
-    await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+    const updateData: any = {
       displayName,
       bio: bio || ''
-    });
+    };
+
+    // Add social links if provided
+    if (socialLinks) {
+      if (socialLinks.linkedinUrl !== undefined) updateData.linkedinUrl = socialLinks.linkedinUrl;
+      if (socialLinks.githubUrl !== undefined) updateData.githubUrl = socialLinks.githubUrl;
+      if (socialLinks.websiteUrl !== undefined) updateData.websiteUrl = socialLinks.websiteUrl;
+      if (socialLinks.portfolioUrl !== undefined) updateData.portfolioUrl = socialLinks.portfolioUrl;
+      if (socialLinks.twitterUrl !== undefined) updateData.twitterUrl = socialLinks.twitterUrl;
+    }
+
+    await updateDoc(doc(db, 'users', auth.currentUser.uid), updateData);
 
     // Refresh the user data in context
     await refreshUser();

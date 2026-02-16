@@ -207,7 +207,7 @@ export default function SocialMediaToolsDashboard() {
           </div>
 
           <div className="info-card">
-            <h3>🚀 Content Strategy</h3>
+            <h3>✨ Content Strategy</h3>
             <p>
               <strong>1.</strong> Use <strong>Trend Finder</strong> to discover hot topics<br/>
               <strong>2.</strong> Create content with <strong>Post Optimizer</strong><br/>

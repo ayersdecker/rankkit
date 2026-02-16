@@ -272,47 +272,47 @@
 @media (max-width: 768px) {
   .profile-container {
     flex-direction: column;
-    padding: 22px 16px;
-    gap: 18px;
+    padding: 16px 12px;
+    gap: 12px;
     min-height: auto;
   }
 
   .profile-sidebar {
     width: 100%;
-    padding: 20px;
+    padding: 14px;
   }
 
   .avatar-circle {
-    width: 80px;
-    height: 80px;
-    font-size: 32px;
+    width: 70px;
+    height: 70px;
+    font-size: 28px;
   }
 
   .profile-sidebar .profile-avatar h2 {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .menu-item {
-    padding: 10px 12px;
-    font-size: 13px;
+    padding: 9px 10px;
+    font-size: 12px;
   }
 
   .settings-section h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
+    font-size: 22px;
+    margin-bottom: 14px;
   }
 
   .setting-card {
-    padding: 20px;
-    margin-bottom: 18px;
+    padding: 14px;
+    margin-bottom: 12px;
   }
 
   .setting-card h3 {
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .setting-field input {
-    padding: 12px 14px;
+    padding: 10px 12px;
     font-size: 13px;
   }
 
@@ -322,10 +322,76 @@
     padding: 10px 16px;
     font-size: 13px;
   }
+
+  .setting-card.danger {
+    padding: 14px;
+  }
+
+  .danger-warning {
+    padding: 12px;
+    margin: 15px 0;
+  }
+
+  .danger-warning ul {
+    padding-left: 18px;
+  }
+
+  .danger-warning li {
+    font-size: 13px;
+  }
 }
 
 .setting-card.danger {
   border: 1px solid #fcc;
+  margin-bottom: 0;
+  padding: 24px 35px;
+  background: white;
+}
+
+.setting-card.danger h3 {
+  margin-bottom: 12px;
+  color: #c33 !important;
+}
+
+.setting-card.danger p {
+  margin-bottom: 15px;
+  color: #666 !important;
+}
+
+.danger-warning {
+  background: #fff5f5;
+  border: 1px solid #fed7d7;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 20px 0;
+}
+
+.danger-warning strong {
+  color: #c33;
+  display: block;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.danger-warning ul {
+  margin: 0 0 16px 0;
+  padding-left: 20px;
+  color: #666;
+}
+
+.danger-warning li {
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.danger-note {
+  margin: 0 !important;
+  padding-top: 12px;
+  border-top: 1px solid #fed7d7;
+  color: #c33 !important;
+  font-size: 13px !important;
+  font-weight: 500;
 }
 
 .quick-action-grid {

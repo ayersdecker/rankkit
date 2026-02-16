@@ -207,7 +207,7 @@ export default function WorkplaceToolsDashboard() {
           </div>
 
           <div className="info-card">
-            <h3>🚀 Pro Workflow</h3>
+            <h3>✨ Pro Workflow</h3>
             <p>
               <strong>1.</strong> Use <strong>Selling Points Finder</strong> to analyze your product<br/>
               <strong>2.</strong> Create a <strong>Pitch Perfect</strong> elevator pitch<br/>

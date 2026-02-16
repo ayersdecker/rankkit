@@ -15,13 +15,16 @@ export default function Footer() {
       <div className="footer-content">
         <div className="footer-section">
           <h3>RankKit</h3>
-          <p>AI-powered document optimization</p>
+          <p>AI-powered optimization for career, workplace, and social media content</p>
         </div>
         <div className="footer-section">
           <h4>Legal</h4>
           <ul>
             <li>
               <Link to="/terms">Terms of Service</Link>
+            </li>
+            <li>
+              <Link to="/privacy">Privacy Policy</Link>
             </li>
           </ul>
         </div>

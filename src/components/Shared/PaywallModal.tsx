@@ -29,7 +29,7 @@ export function PaywallModal({ toolName, toolCategory, onClose }: PaywallModalPr
         <button className="paywall-close" onClick={onClose}>×</button>
         
         <div className="paywall-header">
-          <div className="paywall-icon">🚀</div>
+          <div className="paywall-icon">⭐</div>
           <h2>Unlock Premium Features</h2>
           <p className="paywall-message">
             <strong>{toolName}</strong> requires a subscription.

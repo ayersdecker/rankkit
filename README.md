@@ -1,6 +1,6 @@
-# RankKit - AI-Powered Document Optimization
+# RankKit - AI-Powered Content Optimization Platform
 
-RankKit is a professional SaaS platform for optimizing resumes and social media content using AI. Features include ATS resume optimization, social media SEO, document management, version history, and export functionality.
+RankKit is a comprehensive AI-powered SaaS platform that optimizes content across three key areas: **Career Tools** (resumes, cover letters, interview prep, job search), **Workplace Tools** (cold emails, sales scripts, selling points, persuasion tactics), and **Social Media Tools** (Instagram, TikTok, YouTube, Twitter optimization). Features include intelligent content analysis, ATS optimization, engagement scoring, document management, version history, and export functionality.
 
 ---
 
@@ -50,13 +50,27 @@ RankKit is a professional SaaS platform for optimizing resumes and social media 
 - 📝 Edit and manage all documents in one place
 - 🗑️ Delete documents with cascade deletion of versions
 
-### AI Optimization
-- 🎯 **ATS Resume Optimization** - Match resumes to job postings
-- 📱 **Social Media SEO** - Optimize for Instagram, TikTok, YouTube, Twitter
-- 📊 **Scoring System** - Get match/engagement scores (0-100)
-- 💡 **Smart Suggestions** - AI-powered improvement recommendations
-- #️⃣ **Hashtag Generation** - Auto-generate relevant hashtags for posts
-- 🔍 **Keyword Analysis** - Identify missing keywords in resumes
+### AI Optimization Capabilities
+
+#### Career Tools
+- 🎯 **Resume Optimization** - Match resumes to job postings with ATS scoring
+- ✉️ **Cover Letter Generation** - Create personalized cover letters
+- 💼 **Interview Prep** - Get questions, answers, and preparation strategies
+- 🔍 **Job Search Assistant** - Strategic guidance for job applications
+
+#### Workplace Tools
+- 📧 **Cold Email Generator** - Craft compelling outreach emails
+- 💬 **Sales Script Builder** - Generate persuasive sales conversations
+- 💡 **Selling Points Finder** - Extract key value propositions
+- 🎯 **Persuasion Tactics** - Apply proven influence techniques
+- 📝 **Professional Writing** - Negotiate, apologize, and communicate effectively
+
+#### Social Media Tools
+- 📱 **Multi-Platform Optimization** - Instagram, TikTok, YouTube, Twitter/X
+- #️⃣ **Hashtag Generation** - Smart hashtag recommendations
+- 📊 **Engagement Scoring** - Predict and maximize engagement (0-100)
+- 💡 **Content Enhancement** - AI-powered improvement suggestions
+- 🎨 **Platform-Specific Strategies** - Tailored optimization for each platform
 
 ### Version Control
 - 📜 Track all optimization versions

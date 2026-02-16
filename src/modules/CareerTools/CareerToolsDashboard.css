@@ -234,49 +234,90 @@
 
 @media (max-width: 768px) {
   .career-tools-content {
-    padding: 1.25rem 1rem;
+    padding: 0.85rem 0.75rem;
   }
 
   .tools-header h2 {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
 
   .tools-header {
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .tools-header p {
+    font-size: 1rem;
   }
   
   .tools-grid {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
   }
   
   .tools-info {
     grid-template-columns: 1fr;
-    gap: 1.25rem;
+    gap: 0.85rem;
   }
 
   .tool-card,
   .info-card {
-    padding: 1.25rem;
+    padding: 0.85rem;
   }
 
   .tool-icon {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+    margin-bottom: 8px;
   }
 
   .tool-card h3 {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
+    margin-bottom: 6px;
   }
 
-  .tool-card p,
+  .tool-card p {
+    font-size: 0.8rem;
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+
+  .info-card h3 {
+    font-size: 1rem;
+  }
+
   .info-card p {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
   }
 
   .tool-button,
   .upgrade-button {
-    padding: 0.65rem 1.25rem;
-    font-size: 0.95rem;
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tools-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tool-card {
+    padding: 1rem;
+  }
+
+  .tool-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 28px;
+  }
+
+  .tool-card h3 {
+    font-size: 1.05rem;
+  }
+
+  .tool-card p {
+    font-size: 0.85rem;
   }
 }

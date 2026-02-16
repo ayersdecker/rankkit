@@ -18,9 +18,15 @@ service cloud.firestore {
     }
 
     // Usage stats - users can only access their own stats
+    // Document ID format: {userId}_{YYYY-MM}
     match /usage_stats/{statsId} {
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow read, update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null && 
+                       request.resource.data.userId == request.auth.uid &&
+                       statsId.matches('^' + request.auth.uid + '_[0-9]{4}-[0-9]{2}$');
+      allow read, update: if request.auth != null && 
+                             statsId.matches('^' + request.auth.uid + '_[0-9]{4}-[0-9]{2}$');
+      allow delete: if request.auth != null && 
+                       resource.data.userId == request.auth.uid;
     }
     
     // Deny all other access by default

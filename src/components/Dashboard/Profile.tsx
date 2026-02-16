@@ -157,6 +157,11 @@ function AccountSettings() {
   const navigate = useNavigate();
   const [displayName, setDisplayName] = useState(currentUser?.displayName || '');
   const [bio, setBio] = useState(currentUser?.bio || '');
+  const [linkedinUrl, setLinkedinUrl] = useState(currentUser?.linkedinUrl || '');
+  const [githubUrl, setGithubUrl] = useState(currentUser?.githubUrl || '');
+  const [websiteUrl, setWebsiteUrl] = useState(currentUser?.websiteUrl || '');
+  const [portfolioUrl, setPortfolioUrl] = useState(currentUser?.portfolioUrl || '');
+  const [twitterUrl, setTwitterUrl] = useState(currentUser?.twitterUrl || '');
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateMessage, setUpdateMessage] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
@@ -172,7 +177,12 @@ function AccountSettings() {
   useEffect(() => {
     setDisplayName(currentUser?.displayName || '');
     setBio(currentUser?.bio || '');
-  }, [currentUser?.displayName, currentUser?.bio]);
+    setLinkedinUrl(currentUser?.linkedinUrl || '');
+    setGithubUrl(currentUser?.githubUrl || '');
+    setWebsiteUrl(currentUser?.websiteUrl || '');
+    setPortfolioUrl(currentUser?.portfolioUrl || '');
+    setTwitterUrl(currentUser?.twitterUrl || '');
+  }, [currentUser?.displayName, currentUser?.bio, currentUser?.linkedinUrl, currentUser?.githubUrl, currentUser?.websiteUrl, currentUser?.portfolioUrl, currentUser?.twitterUrl]);
 
   async function handleUpdateProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -185,7 +195,13 @@ function AccountSettings() {
     setUpdateMessage('');
 
     try {
-      await updateProfile(displayName.trim(), bio.trim());
+      await updateProfile(displayName.trim(), bio.trim(), {
+        linkedinUrl: linkedinUrl.trim(),
+        githubUrl: githubUrl.trim(),
+        websiteUrl: websiteUrl.trim(),
+        portfolioUrl: portfolioUrl.trim(),
+        twitterUrl: twitterUrl.trim()
+      });
       setUpdateMessage('✓ Profile updated successfully!');
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -302,6 +318,64 @@ function AccountSettings() {
             rows={4}
           />
         </div>
+
+        <h4 style={{ marginTop: '1.5rem', marginBottom: '0.5rem', fontSize: '1rem', color: '#666' }}>
+          Professional Links (Optional)
+        </h4>
+        <p style={{ marginTop: '0', marginBottom: '1rem', fontSize: '0.9rem', color: '#888' }}>
+          Add your professional profiles. These will be automatically included when optimizing your resume.
+        </p>
+        
+        <div className="setting-field">
+          <label>LinkedIn URL</label>
+          <input 
+            type="url" 
+            placeholder="https://linkedin.com/in/yourprofile" 
+            value={linkedinUrl}
+            onChange={(e) => setLinkedinUrl(e.target.value)}
+          />
+        </div>
+        
+        <div className="setting-field">
+          <label>GitHub URL</label>
+          <input 
+            type="url" 
+            placeholder="https://github.com/yourusername" 
+            value={githubUrl}
+            onChange={(e) => setGithubUrl(e.target.value)}
+          />
+        </div>
+        
+        <div className="setting-field">
+          <label>Personal Website</label>
+          <input 
+            type="url" 
+            placeholder="https://yourwebsite.com" 
+            value={websiteUrl}
+            onChange={(e) => setWebsiteUrl(e.target.value)}
+          />
+        </div>
+        
+        <div className="setting-field">
+          <label>Portfolio URL</label>
+          <input 
+            type="url" 
+            placeholder="https://yourportfolio.com" 
+            value={portfolioUrl}
+            onChange={(e) => setPortfolioUrl(e.target.value)}
+          />
+        </div>
+        
+        <div className="setting-field">
+          <label>Twitter/X URL</label>
+          <input 
+            type="url" 
+            placeholder="https://twitter.com/yourusername" 
+            value={twitterUrl}
+            onChange={(e) => setTwitterUrl(e.target.value)}
+          />
+        </div>
+
         {updateMessage && (
           <div className={`update-message ${updateMessage.includes('✓') ? 'success' : 'error'}`}>
             {updateMessage}
@@ -366,7 +440,23 @@ function AccountSettings() {
 
       <div className="setting-card danger">
         <h3>Danger Zone</h3>
-        <p>Delete your account and all associated data permanently.</p>
+        <p>
+          Permanently delete your RankKit account and all associated data. 
+          This action is <strong>immediate and irreversible</strong>.
+        </p>
+        <div className="danger-warning">
+          <strong>⚠️ This will permanently delete:</strong>
+          <ul>
+            <li>Your account and profile information</li>
+            <li>All saved documents and optimizations</li>
+            <li>Usage history and analytics</li>
+            <li>Any active subscriptions</li>
+          </ul>
+          <p className="danger-note">
+            Once deleted, this data <strong>cannot be recovered</strong>. 
+            Please ensure you have backed up any important documents before proceeding.
+          </p>
+        </div>
         <button className="danger-button" onClick={() => setShowDeleteModal(true)}>
           Delete Account
         </button>
@@ -563,9 +653,9 @@ function BillingPlans() {
       price: 24.99,
       savings: 'Save $8.98/month',
       features: [
-        '🚀 All Career Tools',
-        '🚀 All Workplace Tools', 
-        '🚀 All Social Media Tools',
+        '✨ All Career Tools',
+        '✨ All Workplace Tools', 
+        '✨ All Social Media Tools',
         'Priority support',
         'Early access to new tools',
         'Advanced analytics',

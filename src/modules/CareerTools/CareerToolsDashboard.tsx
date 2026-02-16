@@ -59,7 +59,7 @@ export default function CareerToolsDashboard() {
     {
       id: 'post-optimizer',
       title: 'Job Post Optimizer',
-      icon: '🚀',
+      icon: '✨',
       description: 'Sharpen job posts and announcements for higher visibility',
       path: '/post-optimizer',
       color: '#00BCD4'
@@ -210,7 +210,7 @@ export default function CareerToolsDashboard() {
 
           {currentUser && !currentUser.isPremium && (
             <div className="info-card upgrade-card">
-              <h3>🚀 Upgrade to Premium</h3>
+              <h3>⭐ Upgrade to Premium</h3>
               <p>
                 Get unlimited access to all career tools, priority support, 
                 and early access to new features.

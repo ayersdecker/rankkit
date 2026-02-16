@@ -11,6 +11,12 @@ export interface User {
   usageCount: number;
   freeOptimizationsRemaining: number;
   createdAt: Date;
+  // Optional professional/social links
+  linkedinUrl?: string;
+  githubUrl?: string;
+  websiteUrl?: string;
+  portfolioUrl?: string;
+  twitterUrl?: string;
 }
 
 export interface Document {
