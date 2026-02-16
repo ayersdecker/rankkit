@@ -28,6 +28,13 @@ service cloud.firestore {
       allow delete: if request.auth != null && 
                        resource.data.userId == request.auth.uid;
     }
+
+    // Bug Reports collection - any authenticated user can create reports, admin can read/delete
+    match /bugReports/{reportId} {
+      allow create: if request.auth != null;
+      allow read, write, delete: if request.auth != null && 
+                                    request.auth.token.email in ['ayersdecker@gmail.com', 'eclipse12895@gmail.com'];
+    }
     
     // Deny all other access by default
     match /{document=**} {

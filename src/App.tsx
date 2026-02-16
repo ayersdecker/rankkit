@@ -14,6 +14,7 @@ import PrivacyPolicy from './components/Legal/PrivacyPolicy';
 import SuccessDisclaimer from './components/Legal/SuccessDisclaimer';
 import CookiePolicy from './components/Legal/CookiePolicy';
 import LegalDisclaimer from './components/Legal/LegalDisclaimer';
+import AdminDashboard from './components/Admin/AdminDashboard';
 import Footer from './components/Shared/Footer';
 import CareerToolsDashboard from './modules/CareerTools/CareerToolsDashboard';
 import WorkplaceToolsDashboard from './modules/WorkplaceTools/WorkplaceToolsDashboard';
@@ -225,6 +226,7 @@ function App() {
                 <Route path="/success-disclaimer" element={<SuccessDisclaimer />} />
                 <Route path="/cookie-policy" element={<CookiePolicy />} />
                 <Route path="/legal-disclaimer" element={<LegalDisclaimer />} />
+                <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/" element={<Navigate to="/dashboard" />} />
               </Routes>
               <Footer />

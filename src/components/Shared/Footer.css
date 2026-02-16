@@ -65,6 +65,47 @@
   text-decoration: none;
 }
 
+.bug-report-link {
+  background: none;
+  border: none;
+  color: #e0e0e0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 0.9em;
+  padding: 0;
+  font-family: inherit;
+  position: relative;
+}
+
+.bug-report-link:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.admin-link {
+  background: none;
+  border: none;
+  color: #e0e0e0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 0.9em;
+  padding: 0;
+  font-family: inherit;
+  position: relative;
+  font-weight: 600;
+}
+
+.admin-link:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .footer-bottom {
   max-width: 1200px;
   margin: 0 auto;

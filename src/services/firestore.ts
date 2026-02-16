@@ -849,3 +849,118 @@ export async function deleteUserData(userId: string): Promise<void> {
     );
   }
 }
+/**
+ * Bug Report Service
+ */
+
+export interface BugReport {
+  id?: string;
+  timestamp: string;
+  title: string;
+  description: string;
+  severity: 'low' | 'medium' | 'high';
+  page: string;
+  email: string;
+  browserInfo: string;
+}
+
+/**
+ * Submit a bug report to Firestore
+ */
+export async function submitBugReport(report: Omit<BugReport, 'id' | 'timestamp'>): Promise<string> {
+  try {
+    const bugReportsRef = collection(db, 'bugReports');
+    const docRef = await addDoc(bugReportsRef, {
+      ...report,
+      timestamp: Timestamp.now(),
+      createdAt: Timestamp.now(),
+    });
+    console.log('[Firestore] Bug report submitted:', docRef.id);
+    return docRef.id;
+  } catch (error: any) {
+    console.error('[Firestore] Failed to submit bug report:', error);
+    throw new FirestoreError(
+      'Failed to submit bug report',
+      'SUBMIT_BUG_REPORT_FAILED',
+      error
+    );
+  }
+}
+
+/**
+ * Get all bug reports from Firestore
+ */
+export async function getAllBugReports(): Promise<BugReport[]> {
+  try {
+    const bugReportsRef = collection(db, 'bugReports');
+    const snapshot = await getDocs(bugReportsRef);
+    const reports: BugReport[] = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        title: data.title || '',
+        description: data.description || '',
+        severity: data.severity || 'medium',
+        page: data.page || '',
+        email: data.email || '',
+        browserInfo: data.browserInfo || '',
+        timestamp: data.timestamp?.toDate?.()?.toISOString() || new Date().toISOString(),
+      };
+    });
+    console.log('[Firestore] Retrieved', reports.length, 'bug reports');
+    return reports;
+  } catch (error: any) {
+    console.error('[Firestore] Failed to get bug reports:', error);
+    throw new FirestoreError(
+      'Failed to retrieve bug reports',
+      'GET_BUG_REPORTS_FAILED',
+      error
+    );
+  }
+}
+
+/**
+ * Delete a single bug report
+ */
+export async function deleteBugReport(reportId: string): Promise<void> {
+  try {
+    const reportRef = doc(db, 'bugReports', reportId);
+    await deleteDoc(reportRef);
+    console.log('[Firestore] Bug report deleted:', reportId);
+  } catch (error: any) {
+    console.error('[Firestore] Failed to delete bug report:', error);
+    throw new FirestoreError(
+      'Failed to delete bug report',
+      'DELETE_BUG_REPORT_FAILED',
+      error
+    );
+  }
+}
+
+/**
+ * Delete all bug reports (admin only)
+ */
+export async function deleteAllBugReports(): Promise<number> {
+  try {
+    const bugReportsRef = collection(db, 'bugReports');
+    const snapshot = await getDocs(bugReportsRef);
+    const batch = writeBatch(db);
+    let count = 0;
+
+    snapshot.docs.forEach(doc => {
+      batch.delete(doc.ref);
+      count++;
+    });
+
+    await batch.commit();
+    console.log('[Firestore] Deleted', count, 'bug reports');
+    return count;
+  } catch (error: any) {
+    console.error('[Firestore] Failed to delete all bug reports:', error);
+    throw new FirestoreError(
+      'Failed to delete bug reports',
+      'DELETE_ALL_BUG_REPORTS_FAILED',
+      error
+    );
+  }
+}
