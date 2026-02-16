@@ -5,7 +5,7 @@
 
 .dashboard-nav {
   background: white;
-  padding: 20px 40px;
+  padding: 20px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,6 +28,8 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  position: relative;
+  display: inline-block;
 }
 
 .nav-links {
@@ -662,7 +664,7 @@
   .dashboard-nav {
     flex-direction: column;
     gap: 10px;
-    padding: 16px;
+    padding: 16px 12px;
     position: sticky;
     top: 0;
   }
@@ -703,12 +705,12 @@
   .nav-right {
     position: absolute;
     top: 18px;
-    right: 20px;
+    right: 16px;
     width: auto;
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     flex-direction: row;
   }
 

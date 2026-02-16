@@ -11,6 +11,9 @@ import OptimizationWorkspace from './components/Dashboard/OptimizationWorkspace'
 import Profile from './components/Dashboard/Profile';
 import TermsOfService from './components/Legal/TermsOfService';
 import PrivacyPolicy from './components/Legal/PrivacyPolicy';
+import SuccessDisclaimer from './components/Legal/SuccessDisclaimer';
+import CookiePolicy from './components/Legal/CookiePolicy';
+import LegalDisclaimer from './components/Legal/LegalDisclaimer';
 import Footer from './components/Shared/Footer';
 import CareerToolsDashboard from './modules/CareerTools/CareerToolsDashboard';
 import WorkplaceToolsDashboard from './modules/WorkplaceTools/WorkplaceToolsDashboard';
@@ -27,6 +30,7 @@ import PitchPerfect from './modules/WorkplaceTools/PitchPerfect';
 import SocialMediaToolsDashboard from './modules/SocialMediaTools/SocialMediaToolsDashboard';
 import HashtagGenerator from './modules/SocialMediaTools/HashtagGenerator';
 import { promotionalNotifications } from './config/notifications';
+import { CookieConsentBanner } from './components/Shared/CookieConsentBanner';
 import './App.css';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -218,10 +222,14 @@ function App() {
                 />
                 <Route path="/terms" element={<TermsOfService />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/success-disclaimer" element={<SuccessDisclaimer />} />
+                <Route path="/cookie-policy" element={<CookiePolicy />} />
+                <Route path="/legal-disclaimer" element={<LegalDisclaimer />} />
                 <Route path="/" element={<Navigate to="/dashboard" />} />
               </Routes>
               <Footer />
             </Router>
+            <CookieConsentBanner />
           </div>
         </div>
       </AuthProvider>
