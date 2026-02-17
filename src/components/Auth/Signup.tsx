@@ -17,9 +17,9 @@ export default function Signup() {
   const location = useLocation();
   const from = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/dashboard';
 
-  // Redirect to destination if user is already logged in
+  // Redirect to dashboard if user is already logged in and verified
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser && currentUser.emailVerified) {
       navigate(from, { replace: true });
     }
   }, [currentUser, from, navigate]);
@@ -43,7 +43,8 @@ export default function Signup() {
       setError('');
       setLoading(true);
       await signUp(email, password);
-      navigate(from, { replace: true });
+      // Redirect to email verification instead of dashboard
+      navigate('/verify-email', { replace: true });
     } catch (err: any) {
       setError(err.message || 'Failed to create account');
     } finally {
@@ -56,7 +57,7 @@ export default function Signup() {
       setError('');
       setLoading(true);
       await signInWithGoogle();
-      // Popup will complete and auth state will update
+      // Google sign-in auto-verifies email, so redirect to dashboard
       navigate(from, { replace: true });
     } catch (err: any) {
       setError(err.message || 'Failed to sign in with Google');

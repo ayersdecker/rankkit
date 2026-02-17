@@ -11,6 +11,7 @@ import {
   BarChart2,
   CreditCard,
   Folder,
+  Mail,
   Menu,
   Sparkles,
   Upload,
@@ -625,8 +626,10 @@ function DocumentManagement() {
 }
 
 function BillingPlans() {
-  const { currentUser } = useAuth();
+  const { currentUser, resendVerificationEmail } = useAuth();
   const [searchParams] = useSearchParams();
+  const [isResending, setIsResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState('');
   const selectedPlan = searchParams.get('plan');
 
   const plans = [
@@ -704,9 +707,56 @@ function BillingPlans() {
     },
   ];
 
+  async function handleResendVerification() {
+    try {
+      setIsResending(true);
+      setResendMessage('');
+      await resendVerificationEmail();
+      setResendMessage('Verification email sent! Check your inbox.');
+      setTimeout(() => setResendMessage(''), 5000);
+    } catch (error: any) {
+      setResendMessage('Failed to resend verification email. Try again later.');
+      setTimeout(() => setResendMessage(''), 5000);
+    } finally {
+      setIsResending(false);
+    }
+  }
+
   return (
     <div className="settings-section">
       <h2>Billing & Plans</h2>
+      
+      {!currentUser?.emailVerified && (
+        <div className="setting-card email-verification-required">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+            <span style={{ color: '#ff9500' }}>
+              <MonoIcon icon={Mail} size={20} className="mono-icon" />
+            </span>
+            <h3 style={{ margin: 0 }}>Email Verification Required</h3>
+          </div>
+          <p>
+            Before selecting a subscription plan, please verify your email address. 
+            This helps us protect your account and ensure you receive important billing notifications.
+          </p>
+          <p><strong>Didn't receive the email?</strong></p>
+          <button 
+            onClick={handleResendVerification}
+            disabled={isResending}
+            className="secondary-button"
+            style={{ marginRight: '12px' }}
+          >
+            {isResending ? 'Sending...' : 'Resend Verification Email'}
+          </button>
+          {resendMessage && (
+            <span style={{ fontSize: '14px', color: resendMessage.includes('success') ? '#4ade80' : '#ff6b6b' }}>
+              {resendMessage}
+            </span>
+          )}
+          <p style={{ fontSize: '14px', marginTop: '16px', color: '#999' }}>
+            Once you've verified your email, return here to select your subscription plan.
+          </p>
+        </div>
+      )}
       
       <div className="setting-card beta-banner">
         <div className="beta-badge">
@@ -768,9 +818,14 @@ function BillingPlans() {
               className={`primary-button ${
                 currentUser?.subscriptionPlan === plan.id ? 'active' : ''
               }`}
-              disabled={currentUser?.subscriptionPlan === plan.id}
+              disabled={currentUser?.subscriptionPlan === plan.id || !currentUser?.emailVerified}
+              title={!currentUser?.emailVerified ? 'Please verify your email first' : ''}
             >
-              {currentUser?.subscriptionPlan === plan.id ? 'Current Plan' : 'Coming Soon'}
+              {currentUser?.subscriptionPlan === plan.id 
+                ? 'Current Plan' 
+                : !currentUser?.emailVerified 
+                  ? 'Verify email first'
+                  : 'Coming Soon'}
             </button>
           </div>
         ))}

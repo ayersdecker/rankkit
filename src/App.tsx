@@ -5,6 +5,7 @@ import { ErrorBoundary } from './components/Shared/ErrorBoundary';
 import { PromotionalNotification } from './components/Shared/PromotionalNotification';
 import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
+import VerifyEmail from './components/Auth/VerifyEmail';
 import Dashboard from './components/Dashboard/Dashboard';
 import DocumentLibrary from './components/Dashboard/DocumentLibrary';
 import OptimizationWorkspace from './components/Dashboard/OptimizationWorkspace';
@@ -105,6 +106,7 @@ function App() {
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route
                   path="/documents"

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Mail, CheckCircle2 } from 'lucide-react';
@@ -21,17 +21,7 @@ export default function VerifyEmail() {
     }
   }, [currentUser, navigate]);
 
-  // Auto-check every 3 seconds for first 30 seconds
-  useEffect(() => {
-    if (checkCount < 10) {
-      const timer = setTimeout(() => {
-        handleCheckVerification();
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [checkCount]);
-
-  async function handleCheckVerification() {
+  const handleCheckVerification = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -48,7 +38,17 @@ export default function VerifyEmail() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [currentUser?.emailVerified, checkEmailVerification, navigate]);
+
+  // Auto-check every 3 seconds for first 30 seconds
+  useEffect(() => {
+    if (checkCount < 10) {
+      const timer = setTimeout(() => {
+        handleCheckVerification();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [checkCount, handleCheckVerification]);
 
   async function handleResendEmail() {
     try {
