@@ -6,12 +6,18 @@ import './Footer.css';
 
 const ADMIN_EMAILS = ['ayersdecker@gmail.com', 'eclipse12895@gmail.com'];
 
-export default function Footer() {
+interface FooterProps {
+  theme: 'light' | 'dark' | 'darker';
+  onToggleTheme: () => void;
+}
+
+export default function Footer({ theme, onToggleTheme }: FooterProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [isBugReportOpen, setIsBugReportOpen] = useState(false);
   const isAdmin = currentUser && ADMIN_EMAILS.includes(currentUser.email || '');
+  const nextTheme = theme === 'light' ? 'Dark' : theme === 'dark' ? 'Darker' : 'Light';
   
   // Don't show footer on auth pages to keep them clean
   if (location.pathname === '/login' || location.pathname === '/signup') {
@@ -74,6 +80,14 @@ export default function Footer() {
           </div>
         </div>
         <div className="footer-bottom">
+          <button
+            type="button"
+            className="theme-toggle-button"
+            onClick={onToggleTheme}
+            aria-label={`Current theme ${theme}. Switch to ${nextTheme} mode.`}
+          >
+            Theme: {theme.charAt(0).toUpperCase() + theme.slice(1)} · Switch to {nextTheme}
+          </button>
           <p>&copy; 2026 RankKit. All rights reserved. Beta Version</p>
         </div>
       </footer>

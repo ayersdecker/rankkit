@@ -6,23 +6,49 @@
   position: relative;
   min-height: 100vh;
   overflow-x: hidden;
-  background: radial-gradient(circle at top, rgba(42, 58, 120, 0.35), transparent 55%),
-    radial-gradient(circle at 20% 80%, rgba(27, 110, 140, 0.3), transparent 50%),
-    #070b1b;
+  background: radial-gradient(circle at top, var(--rk-shell-accent-1), transparent 55%),
+    radial-gradient(circle at 20% 80%, var(--rk-shell-accent-2), transparent 50%),
+    var(--rk-bg-base);
 }
 
 .app-content {
   position: relative;
   z-index: 1;
   min-height: 100vh;
-  color: #f8f7ff;
+  color: var(--rk-text);
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -80px;
+  z-index: 2000;
+  padding: 10px 14px;
+  background: var(--rk-skip-link-bg);
+  color: var(--rk-skip-link-text);
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.skip-link:focus-visible {
+  top: 16px;
+}
+
+.app-content :is(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 3px solid var(--rk-focus-ring);
+  outline-offset: 2px;
+}
+
+#main-content:focus {
+  outline: none;
 }
 
 .app-content input,
 .app-content textarea,
 .app-content select,
 .app-content option {
-  color: #1a1a1a;
+  color: var(--rk-input-text);
 }
 
 .app-content .auth-container,
@@ -42,7 +68,7 @@
 .app-content .optimizer-container,
 .app-content .hashtag-generator-container,
 .app-content .auth-container {
-  color: #f8f7ff;
+  color: var(--rk-text);
 }
 
 .app-content .tool-card,
@@ -85,10 +111,10 @@
 }
 
 .app-content .auth-card {
-  background: rgba(10, 14, 28, 0.7);
-  border: 1px solid rgba(130, 160, 255, 0.2);
+  background: var(--rk-auth-bg);
+  border: 1px solid var(--rk-auth-border);
   box-shadow: 0 20px 60px rgba(3, 8, 18, 0.55);
-  color: #f8f7ff;
+  color: var(--rk-text);
   backdrop-filter: blur(10px);
 }
 
@@ -96,7 +122,7 @@
 .app-content .auth-card p,
 .app-content .auth-card .auth-link,
 .app-content .auth-card .auth-link a {
-  color: #f8f7ff;
+  color: var(--rk-text);
 }
 
 .app-content .auth-card input {
@@ -110,7 +136,7 @@
 .app-content .profile-container p,
 .app-content .dashboard-container > h2,
 .app-content .dashboard-container > p {
-  color: #f8f7ff;
+  color: var(--rk-text);
 }
 
 .app-content .dashboard-content .hero-section h2,
@@ -122,11 +148,196 @@
 .app-content .filter-bar,
 .app-content .filter-button,
 .app-content .loading-state {
-  color: #f8f7ff;
+  color: var(--rk-text);
 }
 
 .app-content .filter-button:hover {
   background: rgba(255, 255, 255, 0.12);
+}
+
+:root[data-theme='darker'] .app-content input,
+:root[data-theme='darker'] .app-content textarea,
+:root[data-theme='darker'] .app-content select,
+:root[data-theme='darker'] .app-content option {
+  background: #000000 !important;
+  color: #e8ddff !important;
+  border-color: #2c355a !important;
+}
+
+:root[data-theme='darker'] .app-content input::placeholder,
+:root[data-theme='darker'] .app-content textarea::placeholder {
+  color: #9ea7c2 !important;
+}
+
+:root[data-theme='darker'] .dashboard-nav,
+:root[data-theme='darker'] .optimizer-nav,
+:root[data-theme='darker'] .hashtag-nav,
+:root[data-theme='darker'] .tools-header,
+:root[data-theme='darker'] .workspace-header,
+:root[data-theme='darker'] .library-header,
+:root[data-theme='darker'] .admin-header,
+:root[data-theme='darker'] .modal-header,
+:root[data-theme='darker'] .result-header,
+:root[data-theme='darker'] .cookie-modal-header,
+:root[data-theme='darker'] .bug-report-header,
+:root[data-theme='darker'] .paywall-header {
+  background: #000000 !important;
+  border: 1px solid #1d2747 !important;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+:root[data-theme='darker'] .app-content h1,
+:root[data-theme='darker'] .app-content h2,
+:root[data-theme='darker'] .app-content .dashboard-nav h1,
+:root[data-theme='darker'] .app-content .tools-header h2,
+:root[data-theme='darker'] .app-content .workspace-header h2,
+:root[data-theme='darker'] .app-content .library-header h2,
+:root[data-theme='darker'] .app-content .admin-header h2 {
+  color: var(--rk-accent-purple) !important;
+}
+
+:root[data-theme='darker'] .app-content .dashboard-nav h1 {
+  background: none !important;
+  -webkit-text-fill-color: var(--rk-accent-purple) !important;
+}
+
+:root[data-theme='darker'] .app-content .optimizer-nav h1,
+:root[data-theme='darker'] .app-content .hashtag-nav h1 {
+  background: none !important;
+  color: var(--rk-accent-purple) !important;
+  -webkit-text-fill-color: var(--rk-accent-purple) !important;
+}
+
+:root[data-theme='darker'] .app-content h3,
+:root[data-theme='darker'] .app-content .panel h3,
+:root[data-theme='darker'] .app-content .footer-section h3,
+:root[data-theme='darker'] .app-content .tool-card h3,
+:root[data-theme='darker'] .app-content .report-title-section h3 {
+  color: var(--rk-accent-green) !important;
+}
+
+:root[data-theme='darker'] .app-content h4,
+:root[data-theme='darker'] .app-content h5,
+:root[data-theme='darker'] .app-content .footer-section h4,
+:root[data-theme='darker'] .app-content .category-header h4 {
+  color: var(--rk-accent-orange) !important;
+}
+
+:root[data-theme='darker'] .app-content p,
+:root[data-theme='darker'] .app-content li,
+:root[data-theme='darker'] .app-content label,
+:root[data-theme='darker'] .app-content span,
+:root[data-theme='darker'] .app-content .nav-link,
+:root[data-theme='darker'] .app-content .filter-button,
+:root[data-theme='darker'] .app-content .loading-state {
+  color: #d5d9ea;
+}
+
+:root[data-theme='darker'] .app-content .mono-icon {
+  color: #ffffff !important;
+}
+
+:root[data-theme='darker'] .dashboard-container,
+:root[data-theme='darker'] .career-tools-container,
+:root[data-theme='darker'] .workplace-tools-container,
+:root[data-theme='darker'] .social-media-tools-container,
+:root[data-theme='darker'] .workspace-container,
+:root[data-theme='darker'] .documents-page {
+  background: #02040c !important;
+}
+
+:root[data-theme='darker'] .app-content .tool-card,
+:root[data-theme='darker'] .app-content .info-card,
+:root[data-theme='darker'] .app-content .setting-card,
+:root[data-theme='darker'] .app-content .action-card,
+:root[data-theme='darker'] .app-content .feature,
+:root[data-theme='darker'] .app-content .usage-card,
+:root[data-theme='darker'] .app-content .usage-stat,
+:root[data-theme='darker'] .app-content .stat-card,
+:root[data-theme='darker'] .app-content .document-card,
+:root[data-theme='darker'] .app-content .plan-card,
+:root[data-theme='darker'] .app-content .plan-card-profile,
+:root[data-theme='darker'] .app-content .score-card,
+:root[data-theme='darker'] .app-content .platform-card,
+:root[data-theme='darker'] .app-content .answer-card,
+:root[data-theme='darker'] .app-content .pricing-card,
+:root[data-theme='darker'] .app-content .input-section,
+:root[data-theme='darker'] .app-content .output-section,
+:root[data-theme='darker'] .app-content .interview-output,
+:root[data-theme='darker'] .app-content .job-search-output,
+:root[data-theme='darker'] .app-content .hashtag-results,
+:root[data-theme='darker'] .app-content .search-section,
+:root[data-theme='darker'] .app-content .analysis-section,
+:root[data-theme='darker'] .app-content .prep-section,
+:root[data-theme='darker'] .app-content .feature-description,
+:root[data-theme='darker'] .app-content .answer-card,
+:root[data-theme='darker'] .app-content .optimized-output,
+:root[data-theme='darker'] .app-content .suggestions-list,
+:root[data-theme='darker'] .app-content .empty-state,
+:root[data-theme='darker'] .app-content .no-documents,
+:root[data-theme='darker'] .app-content .hashtags-container,
+:root[data-theme='darker'] .app-content .category-section,
+:root[data-theme='darker'] .app-content .info-box,
+:root[data-theme='darker'] .app-content .platform-button,
+:root[data-theme='darker'] .app-content .document-selector,
+:root[data-theme='darker'] .app-content .text-input,
+:root[data-theme='darker'] .app-content .select-input,
+:root[data-theme='darker'] .workspace-sidebar,
+:root[data-theme='darker'] .optimization-controls,
+:root[data-theme='darker'] .panel,
+:root[data-theme='darker'] .doc-item,
+:root[data-theme='darker'] .version-item,
+:root[data-theme='darker'] .profile-nav-link,
+:root[data-theme='darker'] .nav-toggle,
+:root[data-theme='darker'] .toggle-versions,
+:root[data-theme='darker'] .guest-cta {
+  background: #000000 !important;
+  border: 1px solid #1f2a4d !important;
+  box-shadow: none !important;
+}
+
+:root[data-theme='darker'] .doc-item:hover,
+:root[data-theme='darker'] .tool-card:hover,
+:root[data-theme='darker'] .toggle-versions:hover {
+  background: #070a14 !important;
+  border-color: #33406f !important;
+}
+
+:root[data-theme='darker'] .doc-item.active {
+  background: #0d1120 !important;
+  border-color: #4a5ea0 !important;
+}
+
+:root[data-theme='darker'] .app-content .usage-stat {
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+:root[data-theme='darker'] .app-content .library-header .primary-button {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 100%;
+  white-space: nowrap;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+
+:root[data-theme='darker'] .app-content .dashboard-content,
+:root[data-theme='darker'] .app-content .optimizer-content,
+:root[data-theme='darker'] .app-content .hashtag-content,
+:root[data-theme='darker'] .app-content .career-tools-content,
+:root[data-theme='darker'] .app-content .workplace-tools-content,
+:root[data-theme='darker'] .app-content .social-media-tools-content {
+  background: transparent !important;
+}
+
+:root[data-theme='darker'] .app-content .hashtag,
+:root[data-theme='darker'] .app-content .hashtag-pill,
+:root[data-theme='darker'] .app-content .keyword-tag {
+  background: #0a0f1f !important;
+  color: var(--rk-accent-green) !important;
+  border-color: #2f3b63 !important;
 }
 
 .app-background {

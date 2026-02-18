@@ -45,6 +45,14 @@
   gap: 15px;
 }
 
+.form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rk-text);
+  text-align: left;
+  margin-bottom: -6px;
+}
+
 .auth-card input {
   padding: 12px;
   border: 1px solid #ddd;
@@ -212,7 +220,7 @@
   align-items: center;
   gap: 4px;
   cursor: pointer;
-  color: #666;
+  color: var(--rk-text);
   line-height: 1.4;
 }
 
@@ -337,4 +345,17 @@
   border-radius: 6px;
   font-size: 14px;
   margin-bottom: 15px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .verify-icon {
+    animation: none;
+  }
+
+  .auth-card button,
+  .guest-button,
+  .primary-button,
+  .secondary-button {
+    transition: none;
+  }
 }

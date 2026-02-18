@@ -71,7 +71,7 @@ export default function Signup() {
         <h1>Create Your Account</h1>
         <p>Start optimizing your content with AI</p>
         
-        {error && <div className="error-message">{error}</div>}
+        {error && <div className="error-message" role="alert">{error}</div>}
         
         <button
           onClick={handleGoogleSignIn}
@@ -98,25 +98,37 @@ export default function Signup() {
           </button>
         ) : (
           <form onSubmit={handleSubmit}>
+            <label className="form-label" htmlFor="signup-email">Email</label>
             <input
+              id="signup-email"
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              aria-invalid={Boolean(error)}
               required
             />
+            <label className="form-label" htmlFor="signup-password">Password</label>
             <input
+              id="signup-password"
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+              aria-invalid={Boolean(error)}
               required
             />
+            <label className="form-label" htmlFor="signup-confirm-password">Confirm Password</label>
             <input
+              id="signup-confirm-password"
               type="password"
               placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
+              aria-invalid={Boolean(error)}
               required
             />
             <div className="terms-checkbox">

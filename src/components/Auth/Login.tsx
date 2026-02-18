@@ -58,7 +58,7 @@ export default function Login() {
         <h1>Welcome to <span className="brand-name">RankKit</span></h1>
         <p>Optimize your resumes and social posts with AI</p>
         
-        {error && <div className="error-message">{error}</div>}
+        {error && <div className="error-message" role="alert">{error}</div>}
         
         <button
           onClick={handleGoogleSignIn}
@@ -85,18 +85,26 @@ export default function Login() {
           </button>
         ) : (
           <form onSubmit={handleSubmit}>
+            <label className="form-label" htmlFor="login-email">Email</label>
             <input
+              id="login-email"
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              aria-invalid={Boolean(error)}
               required
             />
+            <label className="form-label" htmlFor="login-password">Password</label>
             <input
+              id="login-password"
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              aria-invalid={Boolean(error)}
               required
             />
             <button type="submit" disabled={loading}>

@@ -35,6 +35,8 @@ import { promotionalNotifications } from './config/notifications';
 import { CookieConsentBanner } from './components/Shared/CookieConsentBanner';
 import './App.css';
 
+type ThemeMode = 'light' | 'dark' | 'darker';
+
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { currentUser, loading } = useAuth();
   const location = useLocation();
@@ -67,6 +69,10 @@ function ScrollToTop() {
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      mainContent.focus();
+    }
   }, [pathname]);
 
   return null;
@@ -75,11 +81,42 @@ function ScrollToTop() {
 function App() {
   // Use root basename for custom domain www.rankkit.net
   const basename = '/';
+  const [theme, setTheme] = React.useState<ThemeMode>(() => {
+    if (typeof window === 'undefined') {
+      return 'light';
+    }
+    const savedTheme = window.localStorage.getItem('rankkit-theme');
+    if (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'darker') {
+      return savedTheme;
+    }
+
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  React.useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    window.localStorage.setItem('rankkit-theme', theme);
+  }, [theme]);
+
+  const handleThemeToggle = React.useCallback(() => {
+    setTheme((currentTheme) => {
+      if (currentTheme === 'light') {
+        return 'dark';
+      }
+
+      if (currentTheme === 'dark') {
+        return 'darker';
+      }
+
+      return 'light';
+    });
+  }, []);
     
   return (
     <ErrorBoundary>
       <AuthProvider>
         <div className="app-shell">
+          <a href="#main-content" className="skip-link">Skip to main content</a>
           <div className="app-background" aria-hidden="true">
             <div className="starfield layer-one" />
             <div className="starfield layer-two" />
@@ -103,135 +140,137 @@ function App() {
             <Router basename={basename}>
               <ScrollToTop />
               <NotificationWrapper />
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/verify-email" element={<VerifyEmail />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route
-                  path="/documents"
-                  element={
-                    <PrivateRoute>
-                      <DocumentLibrary />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/optimize/:documentId?"
-                  element={
-                    <PrivateRoute>
-                      <OptimizationWorkspace />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <PrivateRoute>
-                      <Profile />
-                    </PrivateRoute>
-                  }
-                />
-                <Route path="/career-tools" element={<CareerToolsDashboard />} />
-                <Route path="/workplace-tools" element={<WorkplaceToolsDashboard />} />
-                <Route
-                  path="/cold-email"
-                  element={
-                    <PrivateRoute>
-                      <ColdEmailGenerator />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/selling-points"
-                  element={
-                    <PrivateRoute>
-                      <SellingPointsFinder />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/sales-script"
-                  element={
-                    <PrivateRoute>
-                      <SalesScriptBuilder />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/objection-handler"
-                  element={
-                    <PrivateRoute>
-                      <ObjectionHandler />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/pitch-perfect"
-                  element={
-                    <PrivateRoute>
-                      <PitchPerfect />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/resume-optimizer"
-                  element={
-                    <PrivateRoute>
-                      <ResumeOptimizer />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/post-optimizer"
-                  element={
-                    <PrivateRoute>
-                      <PostOptimizer />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/cover-letter"
-                  element={
-                    <PrivateRoute>
-                      <CoverLetterWriter />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/interview-prep"
-                  element={
-                    <PrivateRoute>
-                      <InterviewPrep />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/job-search"
-                  element={
-                    <PrivateRoute>
-                      <JobSearchAssistant />
-                    </PrivateRoute>
-                  }
-                />
-                <Route path="/social-media-tools" element={<SocialMediaToolsDashboard />} />
-                <Route
-                  path="/hashtag-generator"
-                  element={
-                    <PrivateRoute>
-                      <HashtagGenerator />
-                    </PrivateRoute>
-                  }
-                />
-                <Route path="/terms" element={<TermsOfService />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/success-disclaimer" element={<SuccessDisclaimer />} />
-                <Route path="/cookie-policy" element={<CookiePolicy />} />
-                <Route path="/legal-disclaimer" element={<LegalDisclaimer />} />
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/" element={<Navigate to="/dashboard" />} />
-              </Routes>
-              <Footer />
+              <main id="main-content" tabIndex={-1}>
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/verify-email" element={<VerifyEmail />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route
+                    path="/documents"
+                    element={
+                      <PrivateRoute>
+                        <DocumentLibrary />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/optimize/:documentId?"
+                    element={
+                      <PrivateRoute>
+                        <OptimizationWorkspace />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <PrivateRoute>
+                        <Profile />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route path="/career-tools" element={<CareerToolsDashboard />} />
+                  <Route path="/workplace-tools" element={<WorkplaceToolsDashboard />} />
+                  <Route
+                    path="/cold-email"
+                    element={
+                      <PrivateRoute>
+                        <ColdEmailGenerator />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/selling-points"
+                    element={
+                      <PrivateRoute>
+                        <SellingPointsFinder />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/sales-script"
+                    element={
+                      <PrivateRoute>
+                        <SalesScriptBuilder />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/objection-handler"
+                    element={
+                      <PrivateRoute>
+                        <ObjectionHandler />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/pitch-perfect"
+                    element={
+                      <PrivateRoute>
+                        <PitchPerfect />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/resume-optimizer"
+                    element={
+                      <PrivateRoute>
+                        <ResumeOptimizer />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/post-optimizer"
+                    element={
+                      <PrivateRoute>
+                        <PostOptimizer />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/cover-letter"
+                    element={
+                      <PrivateRoute>
+                        <CoverLetterWriter />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/interview-prep"
+                    element={
+                      <PrivateRoute>
+                        <InterviewPrep />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/job-search"
+                    element={
+                      <PrivateRoute>
+                        <JobSearchAssistant />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route path="/social-media-tools" element={<SocialMediaToolsDashboard />} />
+                  <Route
+                    path="/hashtag-generator"
+                    element={
+                      <PrivateRoute>
+                        <HashtagGenerator />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route path="/terms" element={<TermsOfService />} />
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/success-disclaimer" element={<SuccessDisclaimer />} />
+                  <Route path="/cookie-policy" element={<CookiePolicy />} />
+                  <Route path="/legal-disclaimer" element={<LegalDisclaimer />} />
+                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/" element={<Navigate to="/dashboard" />} />
+                </Routes>
+              </main>
+              <Footer theme={theme} onToggleTheme={handleThemeToggle} />
             </Router>
             <CookieConsentBanner />
           </div>

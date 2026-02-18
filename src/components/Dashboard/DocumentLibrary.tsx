@@ -256,7 +256,7 @@ export default function DocumentLibrary() {
           <h2>Document Library</h2>
           <button className="primary-button" onClick={() => setUploadModalOpen(true)}>
             <MonoIcon icon={Upload} size={16} className="mono-icon inline" />
-            Upload Document
+            Upload
           </button>
         </div>
 
@@ -352,7 +352,7 @@ export default function DocumentLibrary() {
             <h3>No documents yet</h3>
             <p>Upload your first document to get started</p>
             <button className="primary-button" onClick={() => setUploadModalOpen(true)}>
-              Upload Document
+              Upload
             </button>
           </div>
         ) : (

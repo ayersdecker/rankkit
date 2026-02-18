@@ -1,7 +1,7 @@
 .footer {
-  background: rgba(10, 15, 30, 0.8);
-  border-top: 1px solid rgba(130, 160, 255, 0.15);
-  color: #d0d0d0;
+  background: var(--rk-footer-bg);
+  border-top: 1px solid var(--rk-footer-border);
+  color: var(--rk-footer-text);
   padding: 40px 20px 20px;
   margin-top: 60px;
   backdrop-filter: blur(10px);
@@ -26,14 +26,14 @@
 }
 
 .footer-section h4 {
-  color: #e0e0e0;
+  color: var(--rk-footer-heading);
   font-size: 0.95em;
   margin-bottom: 12px;
   font-weight: 600;
 }
 
 .footer-section p {
-  color: #999;
+  color: var(--rk-footer-muted);
   font-size: 0.9em;
   line-height: 1.5;
 }
@@ -50,7 +50,7 @@
 }
 
 .footer-section a {
-  color: #e0e0e0;
+  color: var(--rk-footer-link);
   text-decoration: none;
   transition: all 0.3s ease;
   font-size: 0.9em;
@@ -68,7 +68,7 @@
 .bug-report-link {
   background: none;
   border: none;
-  color: #e0e0e0;
+  color: var(--rk-footer-link);
   cursor: pointer;
   text-decoration: none;
   transition: all 0.3s ease;
@@ -88,7 +88,7 @@
 .admin-link {
   background: none;
   border: none;
-  color: #e0e0e0;
+  color: var(--rk-footer-link);
   cursor: pointer;
   text-decoration: none;
   transition: all 0.3s ease;
@@ -110,10 +110,27 @@
   max-width: 1200px;
   margin: 0 auto;
   padding-top: 20px;
-  border-top: 1px solid rgba(130, 160, 255, 0.1);
+  border-top: 1px solid var(--rk-footer-border);
   text-align: center;
-  color: #888;
+  color: var(--rk-footer-bottom);
   font-size: 0.85em;
+}
+
+.theme-toggle-button {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--rk-footer-button-border);
+  background: var(--rk-footer-button-bg);
+  color: var(--rk-footer-link);
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.theme-toggle-button:hover {
+  opacity: 0.85;
 }
 
 @media (max-width: 768px) {

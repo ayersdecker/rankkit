@@ -1,3 +1,72 @@
+:root {
+  --rk-bg-base: #eef2ff;
+  --rk-shell-accent-1: rgba(147, 197, 253, 0.42);
+  --rk-shell-accent-2: rgba(196, 181, 253, 0.35);
+  --rk-text: #111827;
+  --rk-input-text: #1a1a1a;
+  --rk-auth-bg: rgba(255, 255, 255, 0.92);
+  --rk-auth-border: rgba(99, 102, 241, 0.2);
+  --rk-focus-ring: #4f46e5;
+  --rk-skip-link-bg: #111827;
+  --rk-skip-link-text: #ffffff;
+  --rk-footer-bg: rgba(255, 255, 255, 0.85);
+  --rk-footer-border: rgba(99, 102, 241, 0.2);
+  --rk-footer-heading: #111827;
+  --rk-footer-text: #374151;
+  --rk-footer-muted: #4b5563;
+  --rk-footer-link: #111827;
+  --rk-footer-bottom: #4b5563;
+  --rk-footer-button-bg: rgba(79, 70, 229, 0.08);
+  --rk-footer-button-border: rgba(79, 70, 229, 0.35);
+}
+
+:root[data-theme='dark'] {
+  --rk-bg-base: #070b1b;
+  --rk-shell-accent-1: rgba(42, 58, 120, 0.35);
+  --rk-shell-accent-2: rgba(27, 110, 140, 0.3);
+  --rk-text: #f8f7ff;
+  --rk-input-text: #1a1a1a;
+  --rk-auth-bg: rgba(10, 14, 28, 0.7);
+  --rk-auth-border: rgba(130, 160, 255, 0.2);
+  --rk-focus-ring: #7dadef;
+  --rk-skip-link-bg: #f8f7ff;
+  --rk-skip-link-text: #070b1b;
+  --rk-footer-bg: rgba(10, 15, 30, 0.8);
+  --rk-footer-border: rgba(130, 160, 255, 0.15);
+  --rk-footer-heading: #e0e0e0;
+  --rk-footer-text: #d0d0d0;
+  --rk-footer-muted: #999999;
+  --rk-footer-link: #e0e0e0;
+  --rk-footer-bottom: #888888;
+  --rk-footer-button-bg: rgba(130, 160, 255, 0.12);
+  --rk-footer-button-border: rgba(130, 160, 255, 0.35);
+}
+
+:root[data-theme='darker'] {
+  --rk-bg-base: #02040c;
+  --rk-shell-accent-1: rgba(24, 34, 72, 0.3);
+  --rk-shell-accent-2: rgba(10, 56, 74, 0.22);
+  --rk-text: #f5f7ff;
+  --rk-input-text: #121826;
+  --rk-auth-bg: rgba(4, 8, 18, 0.86);
+  --rk-auth-border: rgba(116, 149, 255, 0.28);
+  --rk-focus-ring: #8bb7ff;
+  --rk-skip-link-bg: #ffffff;
+  --rk-skip-link-text: #02040c;
+  --rk-footer-bg: #000000;
+  --rk-footer-border: rgba(55, 70, 115, 0.45);
+  --rk-footer-heading: #f1f5ff;
+  --rk-footer-text: #d7def2;
+  --rk-footer-muted: #a7b0c7;
+  --rk-footer-link: #e6ecff;
+  --rk-footer-bottom: #9da7c0;
+  --rk-footer-button-bg: rgba(74, 96, 156, 0.2);
+  --rk-footer-button-border: rgba(92, 116, 183, 0.45);
+  --rk-accent-purple: #d6bcff;
+  --rk-accent-green: #9af5b4;
+  --rk-accent-orange: #ffb17a;
+}
+
 html,
 body {
   width: 100%;
@@ -18,7 +87,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #070b1b;
+  background: var(--rk-bg-base);
   overflow-x: hidden;
 }
 
