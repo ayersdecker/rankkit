@@ -17,6 +17,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { MonoIcon } from '../Shared/MonoIcon';
+import { shouldShowGenericUpgradeBanner } from '../../utils/subscriptionVisibility';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -345,7 +346,7 @@ export default function Dashboard() {
                 <span className="stat-label">Plan</span>
                 <span className="stat-value">{currentUser?.isPremium ? 'Premium' : 'Free'}</span>
               </div>
-              {currentUser && !currentUser.isPremium && (
+              {shouldShowGenericUpgradeBanner(currentUser) && (
                 <div className="upgrade-card">
                   <div className="upgrade-card-text">
                     <span className="upgrade-eyebrow">Unlock more power</span>

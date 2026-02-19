@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Briefcase,
   FileText,
+  Link,
   Lightbulb,
   Mail,
   Menu,
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react';
 import { SignOutConfirmation } from '../../components/Shared/SignOutConfirmation';
 import { MonoIcon } from '../../components/Shared/MonoIcon';
+import { shouldShowCategoryUpgradeBanner } from '../../utils/subscriptionVisibility';
 import './CareerToolsDashboard.css';
 
 export default function CareerToolsDashboard() {
@@ -51,6 +53,14 @@ export default function CareerToolsDashboard() {
       description: 'Generate personalized cover letters from your resume and bio',
       path: '/cover-letter',
       color: '#2196F3'
+    },
+    {
+      id: 'job-application-toolkit',
+      title: 'Job Application Toolkit',
+      icon: Link,
+      description: 'Quick links, copy-ready templates, and downloadable application resources',
+      path: '/job-application-toolkit',
+      color: '#5E35B1'
     },
     {
       id: 'interview',
@@ -226,7 +236,7 @@ export default function CareerToolsDashboard() {
             </p>
           </div>
 
-          {currentUser && !currentUser.isPremium && (
+          {shouldShowCategoryUpgradeBanner(currentUser, 'career') && (
             <div className="info-card upgrade-card">
               <h3>
                 <MonoIcon icon={Star} size={18} className="mono-icon inline" />

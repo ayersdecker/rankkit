@@ -24,6 +24,7 @@ import PostOptimizer from './modules/PostRank/PostOptimizer';
 import CoverLetterWriter from './modules/CoverLetter/CoverLetterWriter';
 import InterviewPrep from './modules/Interview/InterviewPrep';
 import JobSearchAssistant from './modules/JobSearch/JobSearchAssistant';
+import JobApplicationToolkit from './modules/CareerTools/JobApplicationToolkit';
 import ColdEmailGenerator from './modules/WorkplaceTools/ColdEmailGenerator';
 import SellingPointsFinder from './modules/WorkplaceTools/SellingPointsFinder';
 import SalesScriptBuilder from './modules/WorkplaceTools/SalesScriptBuilder';
@@ -33,6 +34,11 @@ import SocialMediaToolsDashboard from './modules/SocialMediaTools/SocialMediaToo
 import HashtagGenerator from './modules/SocialMediaTools/HashtagGenerator';
 import { promotionalNotifications } from './config/notifications';
 import { CookieConsentBanner } from './components/Shared/CookieConsentBanner';
+import {
+  getNotificationCategory,
+  hasCategorySubscription,
+  shouldShowSubscribeNotifications
+} from './utils/subscriptionVisibility';
 import './App.css';
 
 type ThemeMode = 'light' | 'dark' | 'darker';
@@ -55,10 +61,29 @@ function NotificationWrapper() {
   if (!currentUser) {
     return null;
   }
+
+  const filteredNotifications = promotionalNotifications.filter((notification) => {
+    if (notification.type === 'subscribe') {
+      return shouldShowSubscribeNotifications(currentUser);
+    }
+
+    if (notification.type === 'promotion') {
+      const category = getNotificationCategory(notification.linkUrl);
+      if (category && hasCategorySubscription(currentUser, category)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  if (filteredNotifications.length === 0) {
+    return null;
+  }
   
   return (
     <PromotionalNotification 
-      notifications={promotionalNotifications}
+      notifications={filteredNotifications}
       intervalMinutes={60}
     />
   );
@@ -249,6 +274,14 @@ function App() {
                     element={
                       <PrivateRoute>
                         <JobSearchAssistant />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/job-application-toolkit"
+                    element={
+                      <PrivateRoute>
+                        <JobApplicationToolkit />
                       </PrivateRoute>
                     }
                   />

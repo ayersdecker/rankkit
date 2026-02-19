@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { SignOutConfirmation } from '../../components/Shared/SignOutConfirmation';
 import { MonoIcon } from '../../components/Shared/MonoIcon';
+import { shouldShowCategoryUpgradeBanner } from '../../utils/subscriptionVisibility';
 import './SocialMediaToolsDashboard.css';
 
 export default function SocialMediaToolsDashboard() {
@@ -237,7 +238,7 @@ export default function SocialMediaToolsDashboard() {
             </p>
           </div>
 
-          {currentUser && !currentUser.isPremium && (
+          {shouldShowCategoryUpgradeBanner(currentUser, 'social') && (
             <div className="info-card upgrade-card">
               <h3>
                 <MonoIcon icon={Flame} size={18} className="mono-icon inline" />

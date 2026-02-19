@@ -1,0 +1,182 @@
+.job-app-toolkit-container {
+  min-height: 100vh;
+}
+
+.job-app-toolkit-content {
+  width: 100%;
+}
+
+.job-toolkit-header {
+  margin-bottom: 2rem;
+}
+
+.job-toolkit-grid {
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+  align-items: start;
+}
+
+.toolkit-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.quick-links-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.quick-link-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(127, 127, 127, 0.2);
+  border-radius: 10px;
+  padding: 0.85rem;
+  background: transparent;
+  gap: 0.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quick-link-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.quick-link-label {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.quick-link-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quick-link-open {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.quick-link-actions button {
+  border: none;
+  border-radius: 8px;
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+  background: rgba(127, 127, 127, 0.22);
+  color: inherit;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.copy-block-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.copy-block-item {
+  border: 1px solid rgba(127, 127, 127, 0.2);
+  border-radius: 10px;
+  padding: 0.9rem;
+  background: transparent;
+}
+
+.block-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: none;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.block-toggle h4 {
+  margin: 0;
+}
+
+.copy-block-item p {
+  margin: 0.7rem 0 0.75rem 0;
+  color: inherit;
+  line-height: 1.5;
+}
+
+.copy-block-actions,
+.packet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.copy-block-actions button,
+.packet-actions button,
+.upgrade-button {
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  cursor: pointer;
+  background: #667eea;
+  color: #fff;
+  font-weight: 600;
+}
+
+.copy-block-actions button.ghost,
+.packet-actions button.ghost {
+  background: rgba(127, 127, 127, 0.22);
+  color: inherit;
+}
+
+.plan-box {
+  border: 1px solid rgba(127, 127, 127, 0.2);
+  border-radius: 10px;
+  padding: 0.9rem;
+  background: transparent;
+  margin-bottom: 0.75rem;
+}
+
+.plan-box ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: inherit;
+}
+
+.plan-box li {
+  margin-bottom: 0.45rem;
+}
+
+.plan-box p {
+  margin: 0;
+  color: inherit;
+  line-height: 1.5;
+}
+
+.toolkit-upgrade-card {
+  margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  .job-toolkit-grid {
+    gap: 0.85rem;
+  }
+
+  .quick-link-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .quick-link-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

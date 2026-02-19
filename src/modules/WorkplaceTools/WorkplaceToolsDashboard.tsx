@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { SignOutConfirmation } from '../../components/Shared/SignOutConfirmation';
 import { MonoIcon } from '../../components/Shared/MonoIcon';
+import { shouldShowCategoryUpgradeBanner } from '../../utils/subscriptionVisibility';
 import './WorkplaceToolsDashboard.css';
 
 export default function WorkplaceToolsDashboard() {
@@ -238,7 +239,7 @@ export default function WorkplaceToolsDashboard() {
             </p>
           </div>
 
-          {currentUser && !currentUser.isPremium && (
+          {shouldShowCategoryUpgradeBanner(currentUser, 'work') && (
             <div className="info-card upgrade-card">
               <h3>
                 <MonoIcon icon={Flame} size={18} className="mono-icon inline" />
