@@ -31,6 +31,18 @@ jobs:
       - name: Install Functions Dependencies
         run: npm --prefix functions ci
 
+      - name: Validate Required Secrets
+        run: |
+          if [ -z "${{ secrets.FIREBASE_TOKEN }}" ]; then
+            echo "::error::Missing required GitHub secret: FIREBASE_TOKEN"
+            exit 1
+          fi
+
+          if [ -z "${{ secrets.REACT_APP_OPENAI_API_KEY }}" ]; then
+            echo "::error::Missing required GitHub secret: REACT_APP_OPENAI_API_KEY"
+            exit 1
+          fi
+
       - name: Sync OPENAI secret to Firebase
         run: |
           echo "${{ secrets.REACT_APP_OPENAI_API_KEY }}" | firebase functions:secrets:set OPENAI_API_KEY \
