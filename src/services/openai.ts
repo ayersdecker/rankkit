@@ -1,8 +1,8 @@
 import axios, { AxiosError } from 'axios';
-import { OPENAI_API_KEY } from '../config';
+import { OPENAI_PROXY_URL } from '../config';
 import { trackUsage } from './usageTracking';
+import { auth } from './firebase';
 
-const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 const MAX_RETRIES = 3;
 const INITIAL_RETRY_DELAY = 3000; // 3 seconds
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -90,12 +90,6 @@ function validateRequest(request: OptimizationRequest): void {
     );
   }
 
-  if (!OPENAI_API_KEY || OPENAI_API_KEY === 'YOUR_OPENAI_API_KEY') {
-    throw new OptimizationError(
-      'OpenAI API key not configured',
-      'API_KEY_MISSING'
-    );
-  }
 }
 
 /**
@@ -169,33 +163,31 @@ async function makeOpenAIRequestInternal(
   await throttleRequest();
   
   try {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      throw new OptimizationError('You must be logged in to use AI tools', 'UNAUTHENTICATED', 401);
+    }
+
+    const idToken = await currentUser.getIdToken();
+
     const response = await axios.post(
-      OPENAI_API_URL,
-      {
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert ATS resume optimizer. CRITICAL: Always use the candidate\'s REAL NAME from their resume - never use placeholders like "John Doe" or "Jane Smith". Extract and use their actual name. Always respond with valid JSON.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ], 
-        temperature: 0.7,
-        max_tokens: 1500 // Reduced from 2000 to help with TPM limits
-      },
+      OPENAI_PROXY_URL,
+      { prompt },
       {
         headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Authorization': `Bearer ${idToken}`,
           'Content-Type': 'application/json'
         },
         timeout: 30000 // 30 second timeout
       }
     );
 
-    return response.data.choices[0].message.content;
+    const content = response.data?.content;
+    if (!content || typeof content !== 'string') {
+      throw new OptimizationError('Invalid response from AI service', 'INVALID_RESPONSE');
+    }
+
+    return content;
   } catch (error) {
     const axiosError = error as AxiosError;
     
@@ -203,6 +195,14 @@ async function makeOpenAIRequestInternal(
     const errorData = axiosError.response?.data as { error?: { message?: string; type?: string } } | undefined;
     const errorMessage = errorData?.error?.message?.toLowerCase() || '';
     
+    if (axiosError.response?.status === 401) {
+      throw new OptimizationError(
+        'You must be logged in to use AI tools',
+        'UNAUTHENTICATED',
+        401
+      );
+    }
+
     // Check if this is a 429 error
     if (axiosError.response?.status === 429) {
       // Distinguish between quota and rate limit
@@ -252,15 +252,6 @@ async function makeOpenAIRequestInternal(
       console.log(`[OpenAI] Server error. Retry ${retryCount + 1}/${MAX_RETRIES} after ${delayMs}ms`);
       await delay(delayMs);
       return makeOpenAIRequestInternal(prompt, retryCount + 1);
-    }
-
-    // Authentication error
-    if (axiosError.response?.status === 401) {
-      throw new OptimizationError(
-        'Invalid OpenAI API key',
-        'INVALID_API_KEY',
-        401
-      );
     }
 
     // Generic error

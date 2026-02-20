@@ -11,7 +11,7 @@ export const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
-export const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API_KEY || '';
+export const OPENAI_PROXY_URL = process.env.REACT_APP_OPENAI_PROXY_URL || '/api/openai/chat';
 
 // Whitelist for testing - these emails have unlimited access
 export const WHITELISTED_EMAILS = [

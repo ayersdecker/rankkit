@@ -1,0 +1,46 @@
+name: Deploy Firebase Functions
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - "functions/**"
+      - "firebase.json"
+      - ".github/workflows/deploy-functions.yml"
+
+env:
+  FIREBASE_PROJECT_ID: rankkit-1a209
+
+jobs:
+  deploy-functions:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Install Functions Dependencies
+        run: npm --prefix functions ci
+
+      - name: Sync OPENAI secret to Firebase
+        run: |
+          echo "${{ secrets.REACT_APP_OPENAI_API_KEY }}" | firebase functions:secrets:set OPENAI_API_KEY \
+            --project "$FIREBASE_PROJECT_ID" \
+            --data-file=- \
+            --force
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+      - name: Deploy openaiChatProxy
+        run: firebase deploy --only functions:openaiChatProxy --project "$FIREBASE_PROJECT_ID" --non-interactive
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

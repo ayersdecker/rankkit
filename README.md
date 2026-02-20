@@ -107,7 +107,7 @@ RankKit is a comprehensive AI-powered SaaS platform that optimizes content acros
 
 - Node.js 18+ and npm
 - Firebase account
-- OpenAI API key
+- OpenAI API key (stored as Firebase Functions secret)
 
 ### Installation
 
@@ -137,22 +137,22 @@ RankKit is a comprehensive AI-powered SaaS platform that optimizes content acros
    - Copy the key
 
 5. **Configure Environment**
-   
-   Edit `src/config.ts`:
-   ```typescript
-   export const firebaseConfig = {
-     apiKey: "YOUR_FIREBASE_API_KEY",
-     authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-     projectId: "YOUR_PROJECT_ID",
-     storageBucket: "YOUR_PROJECT_ID.appspot.com",
-     messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-     appId: "YOUR_APP_ID"
-   };
+   - Copy `.env.example` to `.env`
+   - Fill in all `REACT_APP_FIREBASE_*` values from Firebase Console
+   - Optional: set `REACT_APP_OPENAI_PROXY_URL` only if you want a custom proxy URL
 
-   export const OPENAI_API_KEY = "YOUR_OPENAI_API_KEY";
+6. **Set OpenAI Secret for Cloud Functions**
+   ```bash
+   firebase functions:secrets:set OPENAI_API_KEY
+   ```
+   Then paste your OpenAI API key when prompted.
+
+7. **Deploy Functions + Hosting**
+   ```bash
+   firebase deploy --only functions,hosting
    ```
 
-6. **Run Development Server**
+8. **Run Development Server**
    ```bash
    npm start
    ```

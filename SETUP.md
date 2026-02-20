@@ -26,26 +26,24 @@ Project initialized! Here's what's been built:
 ### 2. Get OpenAI API Key
 1. Go to https://platform.openai.com/api-keys
 2. Create new API key
-3. Copy it for the next step
+3. Copy it for the functions secret step
 
 ### 3. Add Your Credentials
-Edit `/src/config.ts` and replace placeholders:
-```typescript
-export const firebaseConfig = {
-  apiKey: "YOUR_ACTUAL_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
+Copy `.env.example` to `.env` and set your `REACT_APP_FIREBASE_*` values.
 
-export const OPENAI_API_KEY = "sk-...YOUR_OPENAI_KEY";
+### 4. Set OpenAI Secret (server-side)
+```bash
+firebase functions:secrets:set OPENAI_API_KEY
 ```
 
-### 4. Run the App
+### 5. Deploy Functions + Hosting
 ```bash
-cd /Users/deckerayers/rankkit
+firebase deploy --only functions,hosting
+```
+
+### 6. Run the App
+```bash
+cd /workspaces/rankkit
 npm start
 ```
 
@@ -80,7 +78,7 @@ The app will open at http://localhost:3000
 1. **Add Stripe for payments**
 2. **Save optimizations to Firestore**
 3. **Build landing page**
-4. **Deploy to GitHub Pages**
+4. **Deploy to Firebase Hosting**
 
 ## 💾 Current State
 - Code is ready to run
@@ -93,7 +91,7 @@ The app will open at http://localhost:3000
 **When you're back, just:**
 1. Set up Firebase project (10 min)
 2. Get OpenAI API key (2 min)
-3. Update config.ts (1 min)
+3. Set `OPENAI_API_KEY` functions secret (1 min)
 4. Run `npm start`
 
 Then we can test it and iterate. 💙
