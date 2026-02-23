@@ -140,6 +140,7 @@ RankKit is a comprehensive AI-powered SaaS platform that optimizes content acros
    - Copy `.env.example` to `.env`
    - Fill in all `REACT_APP_FIREBASE_*` values from Firebase Console
    - Optional: set `REACT_APP_OPENAI_PROXY_URL` only if you want a custom proxy URL
+   - If omitted, localhost uses `/api/openai/chat` (dev proxy) and production/static hosts use your deployed Cloud Function URL based on `REACT_APP_FIREBASE_PROJECT_ID`
 
 6. **Set OpenAI Secret for Cloud Functions**
    ```bash

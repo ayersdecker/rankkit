@@ -11,7 +11,17 @@ export const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
-export const OPENAI_PROXY_URL = process.env.REACT_APP_OPENAI_PROXY_URL || '/api/openai/chat';
+const isLocalDev =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+const fallbackFunctionUrl = firebaseConfig.projectId
+  ? `https://us-central1-${firebaseConfig.projectId}.cloudfunctions.net/openaiChatProxy`
+  : '/api/openai/chat';
+
+export const OPENAI_PROXY_URL =
+  process.env.REACT_APP_OPENAI_PROXY_URL ||
+  (isLocalDev ? '/api/openai/chat' : fallbackFunctionUrl);
 
 // Whitelist for testing - these emails have unlimited access
 export const WHITELISTED_EMAILS = [
