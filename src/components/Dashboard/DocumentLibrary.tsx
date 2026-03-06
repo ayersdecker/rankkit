@@ -9,7 +9,18 @@ import {
   getAuthenticatedFileBlob
 } from '../../services/firestore';
 import { extractTextFromFile, validateFile, formatFileSize, getFileIcon, validateDocumentPages } from '../../utils/fileUtils';
-import { exportAsPDF, exportAsWord, formatExportFileName, isExportable } from '../../utils/documentExport';
+import {
+  exportAsPDF,
+  exportAsWord,
+  formatExportFileName,
+  isExportable,
+  EXPORT_DENSITY_OPTIONS,
+  EXPORT_STYLE_OPTIONS,
+  EXPORT_PALETTE_OPTIONS,
+  type ExportDensityLevel,
+  type ExportStyleLevel,
+  type ExportPalette
+} from '../../utils/documentExport';
 import { Document } from '../../types';
 import { hasPremiumAccess } from '../../utils/premiumUtils';
 import { DeleteDocumentConfirmation } from '../Shared/DeleteDocumentConfirmation';
@@ -786,12 +797,42 @@ function DocumentViewModal({
   document: Document;
   onClose: () => void;
 }) {
+  const resolveStoredLevel = (key: string): ExportDensityLevel | ExportStyleLevel => {
+    const raw = window.localStorage.getItem(key);
+    const parsed = Number(raw);
+    if (!parsed || Number.isNaN(parsed)) return 3;
+    if (parsed <= 1) return 1;
+    if (parsed >= 5) return 5;
+    return Math.round(parsed) as ExportDensityLevel | ExportStyleLevel;
+  };
+
+  const resolveStoredPalette = (): ExportPalette => {
+    const raw = window.localStorage.getItem('rankkit-export-palette');
+    if (raw && EXPORT_PALETTE_OPTIONS.some((option) => option.value === raw)) {
+      return raw as ExportPalette;
+    }
+    return 'professional-blue';
+  };
+
   const [viewMode, setViewMode] = useState<'original' | 'text'>(document.fileUrl ? 'original' : 'text');
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState('');
   const [blobUrl, setBlobUrl] = useState<string>('');
   const [loadingFile, setLoadingFile] = useState(false);
   const [fileError, setFileError] = useState('');
+  const [densityLevel, setDensityLevel] = useState<ExportDensityLevel>(() => resolveStoredLevel('rankkit-export-density') as ExportDensityLevel);
+  const [styleLevel, setStyleLevel] = useState<ExportStyleLevel>(() => resolveStoredLevel('rankkit-export-style') as ExportStyleLevel);
+  const [palette, setPalette] = useState<ExportPalette>(() => resolveStoredPalette());
+
+  const selectedDensity = EXPORT_DENSITY_OPTIONS.find((option) => option.level === densityLevel);
+  const selectedStyle = EXPORT_STYLE_OPTIONS.find((option) => option.level === styleLevel);
+  const selectedPalette = EXPORT_PALETTE_OPTIONS.find((option) => option.value === palette);
+
+  useEffect(() => {
+    window.localStorage.setItem('rankkit-export-density', String(densityLevel));
+    window.localStorage.setItem('rankkit-export-style', String(styleLevel));
+    window.localStorage.setItem('rankkit-export-palette', palette);
+  }, [densityLevel, styleLevel, palette]);
 
   // Load authenticated blob URL when viewing original file
   useEffect(() => {
@@ -834,7 +875,11 @@ function DocumentViewModal({
       setExporting(true);
       setExportError('');
       const fileName = formatExportFileName(document.name);
-      await exportAsPDF(document.content, fileName);
+      await exportAsPDF(document.content, fileName, {
+        densityLevel,
+        styleLevel,
+        palette
+      });
     } catch (error) {
       console.error('PDF export failed:', error);
       setExportError('Failed to export as PDF');
@@ -853,7 +898,11 @@ function DocumentViewModal({
       setExporting(true);
       setExportError('');
       const fileName = formatExportFileName(document.name);
-      await exportAsWord(document.content, fileName);
+      await exportAsWord(document.content, fileName, {
+        densityLevel,
+        styleLevel,
+        palette
+      });
     } catch (error) {
       console.error('Word export failed:', error);
       setExportError('Failed to export as Word');
@@ -960,39 +1009,108 @@ function DocumentViewModal({
           </div>
         )}
 
-        <div className="modal-actions">
-          <div className="export-actions">
-            <button 
-              onClick={handleExportPDF}
-              disabled={exporting}
-              className="export-button pdf"
-              title="Export as PDF"
-            >
-              <MonoIcon icon={File} size={16} className="mono-icon inline" />
-              {exporting ? 'Exporting...' : 'Export PDF'}
-            </button>
-            <button 
-              onClick={handleExportWord}
-              disabled={exporting}
-              className="export-button word"
-              title="Export as Word Document"
-            >
-              <MonoIcon icon={FileText} size={16} className="mono-icon inline" />
-              {exporting ? 'Exporting...' : 'Export Word'}
-            </button>
+        <div className="export-workflow">
+          <div className="export-config-panel">
+            <div className="export-config-header">
+              <h3>
+                <span className="step-pill">Step 1</span>
+                Choose Export Formatting
+              </h3>
+              <p>Pick density, style, and palette, then export with the buttons below.</p>
+            </div>
+
+            <div className="export-config-grid">
+              <label className="export-config-field">
+                <span>Density (1-5)</span>
+                <select
+                  value={densityLevel}
+                  onChange={(event) => setDensityLevel(Number(event.target.value) as ExportDensityLevel)}
+                >
+                  {EXPORT_DENSITY_OPTIONS.map((option) => (
+                    <option key={option.level} value={option.level}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="export-config-field">
+                <span>Style (1-5)</span>
+                <select
+                  value={styleLevel}
+                  onChange={(event) => setStyleLevel(Number(event.target.value) as ExportStyleLevel)}
+                >
+                  {EXPORT_STYLE_OPTIONS.map((option) => (
+                    <option key={option.level} value={option.level}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="export-config-field">
+                <span>Color Palette</span>
+                <select
+                  value={palette}
+                  onChange={(event) => setPalette(event.target.value as ExportPalette)}
+                >
+                  {EXPORT_PALETTE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
           </div>
-          <div className="action-buttons">
-            {document.fileUrl && blobUrl && (
-              <a 
-                href={blobUrl} 
-                download={document.originalFileName || document.name}
-                className="download-link-button"
-              >
-                <MonoIcon icon={Download} size={16} className="mono-icon inline" />
-                Download Original
-              </a>
-            )}
-            <button onClick={onClose}>Close</button>
+
+          <div className="modal-actions">
+            <div className="export-actions-wrap">
+              <div className="export-actions-header">
+                <span className="step-pill">Step 2</span>
+                <span>Export Using Current Settings</span>
+              </div>
+              <div className="active-export-options" aria-live="polite">
+                <span className="active-option-chip">{selectedDensity?.label ?? 'Density 3'}</span>
+                <span className="active-option-chip">{selectedStyle?.label ?? 'Style 3'}</span>
+                <span className="active-option-chip">{selectedPalette?.label ?? 'Professional Blue'}</span>
+              </div>
+
+              <div className="export-actions">
+                <button 
+                  onClick={handleExportPDF}
+                  disabled={exporting}
+                  className="export-button pdf"
+                  title="Export as PDF"
+                >
+                  <MonoIcon icon={File} size={16} className="mono-icon inline" />
+                  {exporting ? 'Exporting...' : 'Export PDF'}
+                </button>
+                <button 
+                  onClick={handleExportWord}
+                  disabled={exporting}
+                  className="export-button word"
+                  title="Export as Word Document"
+                >
+                  <MonoIcon icon={FileText} size={16} className="mono-icon inline" />
+                  {exporting ? 'Exporting...' : 'Export Word'}
+                </button>
+              </div>
+            </div>
+
+            <div className="action-buttons">
+              {document.fileUrl && blobUrl && (
+                <a 
+                  href={blobUrl} 
+                  download={document.originalFileName || document.name}
+                  className="download-link-button"
+                >
+                  <MonoIcon icon={Download} size={16} className="mono-icon inline" />
+                  Download Original
+                </a>
+              )}
+              <button onClick={onClose}>Close</button>
+            </div>
           </div>
         </div>
       </div>

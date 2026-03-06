@@ -338,10 +338,15 @@ INSTRUCTIONS:
 9. Preserve all original accomplishments and experience
 10. Format for both ATS readability and human review
 11. Maintain truthfulness - do not add fake experience
+12. Formatting hierarchy requirements:
+   - First line MUST be '# Full Name' (real name from resume)
+   - Second line should contain contact details in one line if available
+   - Main sections should use '##' headings in Title Case (not all caps)
+   - Use '###' for company/role entries
 
 OUTPUT FORMAT (Valid JSON only):
 {
-  "optimized_resume": "# ACTUAL NAME FROM RESUME\\n\\n[Only include contact info that exists in original - no placeholders]\\n\\n## PROFESSIONAL SUMMARY\\n\\n[2-3 sentence compelling summary based on actual experience]\\n\\n## PROFESSIONAL EXPERIENCE\\n\\n### [Company Name] | [Job Title]\\n*[Dates]*\\n\\n- [Achievement with metrics from original resume]\\n- [Achievement with metrics]\\n- [Achievement with metrics]\\n\\n[Continue with all experience from original]\\n\\n## EDUCATION\\n\\n[Actual education from resume]\\n\\n## TECHNICAL SKILLS\\n\\n[Actual skills from resume, organized by category]\\n\\n## KEY STRENGTHS\\n\\n[Notable strengths based on actual experience]",
+  "optimized_resume": "# ACTUAL NAME FROM RESUME\\n\\n[Only include contact info that exists in original - no placeholders]\\n\\n## Professional Summary\\n\\n[2-3 sentence compelling summary based on actual experience]\\n\\n## Professional Experience\\n\\n### [Company Name] | [Job Title]\\n*[Dates]*\\n\\n- [Achievement with metrics from original resume]\\n- [Achievement with metrics]\\n- [Achievement with metrics]\\n\\n[Continue with all experience from original]\\n\\n## Education\\n\\n[Actual education from resume]\\n\\n## Technical Skills\\n\\n[Actual skills from resume, organized by category]\\n\\n## Key Strengths\\n\\n[Notable strengths based on actual experience]",
   "match_score": 85,
   "suggestions": ["Specific improvements made to enhance the resume"],
   "missing_keywords": ["keyword1", "keyword2"]
@@ -501,6 +506,34 @@ function parseOptimizationResult(
         .filter((line: string, index: number) => index >= 5 || line.trim() !== '')  // Only filter first 5 lines
         .join('\n')
         .replace(/\n{3,}/g, '\n\n');  // Collapse multiple blank lines
+
+      // Ensure top-level heading hierarchy remains balanced if the model drifts.
+      const normalizedLines = optimizedResume.split('\n');
+      const firstNonEmptyIndex = normalizedLines.findIndex((line: string) => line.trim().length > 0);
+
+      if (firstNonEmptyIndex !== -1) {
+        const firstLine = normalizedLines[firstNonEmptyIndex].trim();
+        if (!firstLine.startsWith('# ')) {
+          normalizedLines[firstNonEmptyIndex] = `# ${firstLine.replace(/^#+\s*/, '')}`;
+        }
+
+        let seenMainHeading = false;
+        for (let i = firstNonEmptyIndex; i < normalizedLines.length; i++) {
+          const line = normalizedLines[i].trim();
+          const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+
+          if (headingMatch) {
+            if (!seenMainHeading) {
+              seenMainHeading = true;
+              normalizedLines[i] = `# ${headingMatch[2]}`;
+            } else if (headingMatch[1].length === 1) {
+              normalizedLines[i] = `## ${headingMatch[2]}`;
+            }
+          }
+        }
+
+        optimizedResume = normalizedLines.join('\n');
+      }
       
       return {
         optimized: optimizedResume,

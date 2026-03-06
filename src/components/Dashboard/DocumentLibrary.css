@@ -472,6 +472,12 @@
 
 .modal-content.large {
   max-width: 900px;
+  width: min(900px, 100%);
+  height: calc(100dvh - 40px);
+  max-height: calc(100dvh - 40px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;
 }
 
 .modal-header {
@@ -480,6 +486,7 @@
   align-items: flex-start;
   padding: 32px 32px 20px 32px;
   border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
 }
 
 .modal-header h2 {
@@ -607,7 +614,9 @@
 
 .document-content {
   padding: 32px;
-  max-height: 500px;
+  max-height: none;
+  min-height: 0;
+  flex: 1;
   overflow-y: auto;
   line-height: 1.7;
 }
@@ -703,6 +712,7 @@
   gap: 10px;
   padding: 20px 30px 0 30px;
   border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
 }
 
 .view-mode-selector .mode-button {
@@ -887,6 +897,12 @@
     border-radius: 0;
   }
 
+  .modal-content.large {
+    width: 100%;
+    height: calc(100dvh - 40px);
+    max-height: calc(100dvh - 40px);
+  }
+
   .filter-bar {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -1025,13 +1041,128 @@
   text-align: center;
 }
 
+.export-workflow {
+  margin: 0 32px 20px;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.export-config-panel {
+  margin: 0;
+  padding: 18px;
+  border: none;
+  border-radius: 0;
+  background: linear-gradient(180deg, #eef6ff 0%, #f8fbff 100%);
+  border-bottom: 1px solid #d7e3f2;
+}
+
+.export-config-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 16px;
+  color: #0f2747;
+}
+
+.export-config-header p {
+  margin: 6px 0 14px;
+  font-size: 13px;
+  color: #35537a;
+}
+
+.step-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #1d4ed8;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.export-config-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.export-config-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.export-config-field span {
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.export-config-field select {
+  width: 100%;
+  border: 1px solid #9db4d2;
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-size: 13px;
+  color: #122842;
+  background: #ffffff;
+}
+
+.export-config-field select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+
 .modal-actions {
   display: flex;
   gap: 20px;
   justify-content: space-between;
+  align-items: flex-end;
+  padding: 16px 18px 18px;
+  border-top: none;
+}
+
+.export-actions-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.export-actions-header {
+  display: flex;
   align-items: center;
-  padding: 20px 32px 32px 32px;
-  border-top: 1px solid #e5e7eb;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.active-export-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.active-option-chip {
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .action-buttons {
@@ -1061,6 +1192,19 @@
   .modal-actions {
     flex-direction: column;
     gap: 12px;
+    align-items: stretch;
+  }
+
+  .export-workflow {
+    margin: 0 16px 16px;
+  }
+
+  .export-config-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .export-actions-wrap {
+    width: 100%;
   }
 
   .export-actions {
