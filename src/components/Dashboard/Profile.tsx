@@ -635,12 +635,13 @@ function BillingPlans() {
   const [billingPending, setBillingPending] = useState(false);
   const [billingError, setBillingError] = useState('');
   const isSubscribed = hasPremiumAccess(currentUser);
+  const hasBillingAccount = !!currentUser?.stripeCustomerId;
 
   async function handleBilling(planId?: string) {
     setBillingPending(true);
     setBillingError('');
     try {
-      if (isSubscribed || !planId) await openBillingPortal();
+      if ((isSubscribed && hasBillingAccount) || !planId) await openBillingPortal();
       else await startSubscriptionCheckout(planId);
     } catch (error: any) {
       setBillingError(error.message || 'Unable to open billing.');
@@ -824,17 +825,17 @@ function BillingPlans() {
             
             <button 
               className={`primary-button ${
-                currentUser?.subscriptionPlan === plan.id ? 'active' : ''
+                isSubscribed && hasBillingAccount && currentUser?.subscriptionPlan === plan.id ? 'active' : ''
               }`}
-              disabled={billingPending || (isSubscribed && currentUser?.subscriptionPlan === plan.id) || !currentUser?.emailVerified}
+              disabled={billingPending || (isSubscribed && hasBillingAccount && currentUser?.subscriptionPlan === plan.id) || !currentUser?.emailVerified}
               onClick={() => handleBilling(plan.id)}
               title={!currentUser?.emailVerified ? 'Please verify your email first' : ''}
             >
-              {isSubscribed && currentUser?.subscriptionPlan === plan.id
+              {isSubscribed && hasBillingAccount && currentUser?.subscriptionPlan === plan.id
                 ? 'Current Plan' 
                 : !currentUser?.emailVerified 
                   ? 'Verify email first'
-                  : billingPending ? 'Opening...' : isSubscribed ? 'Change Plan' : 'Subscribe'}
+                  : billingPending ? 'Opening...' : isSubscribed && hasBillingAccount ? 'Change Plan' : 'Subscribe'}
             </button>
           </div>
         ))}
