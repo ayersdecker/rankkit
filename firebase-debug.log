@@ -1,0 +1,230 @@
+[debug] [2026-10-04T05:23:48.383Z] ----------------------------------------------------------------------
+[debug] [2026-10-04T05:23:48.385Z] Command:       /usr/local/share/nvm/versions/node/v24.21.0/bin/node /home/codespace/nvm/current/bin/firebase deploy --only functions --project rankkit-1a209
+[debug] [2026-10-04T05:23:48.385Z] CLI Version:   15.32.1
+[debug] [2026-10-04T05:23:48.386Z] Platform:      linux
+[debug] [2026-10-04T05:23:48.386Z] Node Version:  v24.21.0
+[debug] [2026-10-04T05:23:48.386Z] Detected Agent: unknown
+[debug] [2026-10-04T05:23:48.387Z] Time:          Sun Oct 04 2026 05:23:48 GMT+0000 (Coordinated Universal Time)
+[debug] [2026-10-04T05:23:48.387Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-10-04T05:23:50.289Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-10-04T05:23:50.290Z] > authorizing via signed-in user (ayersdecker@gmail.com)
+[debug] [2026-10-04T05:23:50.290Z] [iam] checking project rankkit-1a209 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-10-04T05:23:50.303Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:50.303Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:50.304Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/rankkit-1a209:testIamPermissions [none]
+[debug] [2026-10-04T05:23:50.304Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/rankkit-1a209:testIamPermissions  x-goog-user-project=rankkit-1a209
+[debug] [2026-10-04T05:23:50.304Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/rankkit-1a209:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-10-04T05:23:50.418Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/rankkit-1a209:testIamPermissions 200
+[debug] [2026-10-04T05:23:50.419Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/rankkit-1a209:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-10-04T05:23:50.421Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:50.421Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:50.421Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/rankkit-1a209/serviceAccounts/rankkit-1a209@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-10-04T05:23:50.422Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/rankkit-1a209/serviceAccounts/rankkit-1a209@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-10-04T05:23:50.522Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/rankkit-1a209/serviceAccounts/rankkit-1a209@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-10-04T05:23:50.522Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/rankkit-1a209/serviceAccounts/rankkit-1a209@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'rankkit-1a209'...
+[info] 
+[info] i  deploying functions 
+[debug] [2026-10-04T05:23:50.526Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:50.526Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:50.526Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/rankkit-1a209 [none]
+[debug] [2026-10-04T05:23:50.621Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/rankkit-1a209 200
+[debug] [2026-10-04T05:23:50.622Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/rankkit-1a209 {"projectNumber":"613612674236","projectId":"rankkit-1a209","lifecycleState":"ACTIVE","name":"rankkit","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-02-03T12:12:38.957815Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[debug] [2026-10-04T05:23:50.624Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:50.624Z] Checked if tokens are valid: true, expires at: 1791093301769
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[debug] [2026-10-04T05:23:50.625Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:50.625Z] Checked if tokens are valid: true, expires at: 1791093301769
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-10-04T05:23:50.625Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:50.625Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:50.625Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/runtimeconfig.googleapis.com [none]
+[debug] [2026-10-04T05:23:50.625Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/runtimeconfig.googleapis.com  x-goog-user-project=rankkit-1a209
+[debug] [2026-10-04T05:23:50.628Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/cloudbuild.googleapis.com [none]
+[debug] [2026-10-04T05:23:50.628Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/cloudbuild.googleapis.com  x-goog-user-project=rankkit-1a209
+[debug] [2026-10-04T05:23:50.630Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/artifactregistry.googleapis.com [none]
+[debug] [2026-10-04T05:23:50.630Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/artifactregistry.googleapis.com  x-goog-user-project=rankkit-1a209
+[debug] [2026-10-04T05:23:50.836Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/runtimeconfig.googleapis.com 200
+[debug] [2026-10-04T05:23:50.836Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/runtimeconfig.googleapis.com [omitted]
+[debug] [2026-10-04T05:23:50.844Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/artifactregistry.googleapis.com 200
+[debug] [2026-10-04T05:23:50.845Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/artifactregistry.googleapis.com [omitted]
+[info] ✔  artifactregistry: required API artifactregistry.googleapis.com is enabled 
+[debug] [2026-10-04T05:23:50.914Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/cloudbuild.googleapis.com 200
+[debug] [2026-10-04T05:23:50.914Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/cloudbuild.googleapis.com [omitted]
+[info] ✔  functions: required API cloudbuild.googleapis.com is enabled 
+[debug] [2026-10-04T05:23:50.924Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:50.925Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:50.925Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/rankkit-1a209/adminSdkConfig [none]
+[debug] [2026-10-04T05:23:51.272Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/rankkit-1a209/adminSdkConfig 200
+[debug] [2026-10-04T05:23:51.272Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/rankkit-1a209/adminSdkConfig {"projectId":"rankkit-1a209","storageBucket":"rankkit-1a209.firebasestorage.app"}
+[debug] [2026-10-04T05:23:51.273Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:51.273Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:51.273Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/rankkit-1a209/configs [none]
+[debug] [2026-10-04T05:23:51.412Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/rankkit-1a209/configs 200
+[debug] [2026-10-04T05:23:51.413Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/rankkit-1a209/configs {}
+[debug] [2026-10-04T05:23:51.415Z] Validating nodejs source
+[warn] ⚠  functions: Runtime Node.js 20 was deprecated on 2026-04-30 and will be decommissioned on 2026-10-30, after which you will not be able to deploy without upgrading. Consider upgrading now to avoid disruption. See https://cloud.google.com/functions/docs/runtime-support for full details on the lifecycle policy 
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2026-10-04T05:23:51.881Z] > [functions] package.json contents: {
+  "name": "rankkit-functions",
+  "private": true,
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test *.test.js",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^6.0.1",
+    "openai": "^5.22.0",
+    "stripe": "^23.0.0"
+  },
+  "devDependencies": {
+    "http-proxy-middleware": "^3.0.5"
+  }
+}
+[debug] [2026-10-04T05:23:51.882Z] Building nodejs source
+[info] i  functions: Loaded environment variables from functions/.env.rankkit-1a209 
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2026-10-04T05:23:51.884Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-10-04T05:23:51.891Z] Found firebase-functions binary at '/workspaces/rankkit/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8454
+
+[debug] [2026-10-04T05:23:52.358Z] Got response from /__/functions.yaml {"endpoints":{"createCheckoutSession":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","region":["us-central1"],"secretEnvironmentVariables":[{"key":"STRIPE_SECRET_KEY"}],"labels":{},"httpsTrigger":{},"entryPoint":"createCheckoutSession"},"createBillingPortalSession":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","region":["us-central1"],"secretEnvironmentVariables":[{"key":"STRIPE_SECRET_KEY"}],"labels":{},"httpsTrigger":{},"entryPoint":"createBillingPortalSession"},"stripeWebhook":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","region":["us-central1"],"secretEnvironmentVariables":[{"key":"STRIPE_SECRET_KEY"},{"key":"STRIPE_WEBHOOK_SECRET"}],"labels":{},"httpsTrigger":{},"entryPoint":"stripeWebhook"},"openaiChatProxy":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","region":["us-central1"],"secretEnvironmentVariables":[{"key":"OPENAI_API_KEY"}],"labels":{},"httpsTrigger":{},"entryPoint":"openaiChatProxy"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[debug] [2026-10-04T05:23:55.394Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:55.394Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:55.394Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/rankkit-1a209/locations/-/functions [none]
+[debug] [2026-10-04T05:23:55.985Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/rankkit-1a209/locations/-/functions 200
+[debug] [2026-10-04T05:23:55.985Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/rankkit-1a209/locations/-/functions {}
+[debug] [2026-10-04T05:23:55.986Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:55.986Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:55.986Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/rankkit-1a209/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2026-10-04T05:23:56.404Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/rankkit-1a209/locations/-/functions 200
+[debug] [2026-10-04T05:23:56.404Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/rankkit-1a209/locations/-/functions {"functions":[{"name":"projects/rankkit-1a209/locations/us-central1/functions/openaiChatProxy","buildConfig":{"build":"projects/613612674236/locations/us-central1/builds/139ac169-3028-4115-a183-29aa47bbdfbc","runtime":"nodejs20","entryPoint":"openaiChatProxy","source":{"storageSource":{"bucket":"gcf-v2-sources-613612674236-us-central1","object":"openaiChatProxy/function-source.zip","generation":"1771561882850123"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRepository":"projects/rankkit-1a209/locations/us-central1/repositories/gcf-artifacts","sourceProvenance":{"resolvedStorageSource":{"bucket":"gcf-v2-sources-613612674236-us-central1","object":"openaiChatProxy/function-source.zip","generation":"1771561882850123"}},"dockerRegistry":"ARTIFACT_REGISTRY","serviceAccount":"projects/rankkit-1a209/serviceAccounts/613612674236-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/rankkit-1a209/locations/us-central1/services/openaichatproxy","timeoutSeconds":60,"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"rankkit-1a209\",\"storageBucket\":\"rankkit-1a209.firebasestorage.app\"}","GCLOUD_PROJECT":"rankkit-1a209","EVENTARC_CLOUD_EVENT_SOURCE":"projects/rankkit-1a209/locations/us-central1/services/openaiChatProxy","FUNCTION_TARGET":"openaiChatProxy","LOG_EXECUTION_ID":"true"},"ingressSettings":"ALLOW_ALL","uri":"https://openaichatproxy-w5r72w57ea-uc.a.run.app","serviceAccountEmail":"613612674236-compute@developer.gserviceaccount.com","availableMemory":"256Mi","allTrafficOnLatestRevision":true,"secretEnvironmentVariables":[{"key":"OPENAI_API_KEY","projectId":"rankkit-1a209","secret":"OPENAI_API_KEY","version":"1"}],"revision":"openaichatproxy-00001-fiq","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"state":"ACTIVE","updateTime":"2026-02-20T04:32:39.850030887Z","labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"e1ab7fe7e3e7b3a1f0960b80bde866a890201f7f"},"environment":"GEN_2","url":"https://us-central1-rankkit-1a209.cloudfunctions.net/openaiChatProxy","createTime":"2026-02-20T04:31:23.311418411Z","satisfiesPzi":true}]}
+[info] i  extensions: ensuring required API firebaseextensions.googleapis.com is enabled... 
+[debug] [2026-10-04T05:23:56.406Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:56.406Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:56.406Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/firebaseextensions.googleapis.com [none]
+[debug] [2026-10-04T05:23:56.406Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/firebaseextensions.googleapis.com  x-goog-user-project=rankkit-1a209
+[debug] [2026-10-04T05:23:56.657Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/firebaseextensions.googleapis.com 200
+[debug] [2026-10-04T05:23:56.657Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/firebaseextensions.googleapis.com [omitted]
+[info] ✔  extensions: required API firebaseextensions.googleapis.com is enabled 
+[debug] [2026-10-04T05:23:56.661Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-10-04T05:23:56.661Z] > authorizing via signed-in user (ayersdecker@gmail.com)
+[debug] [2026-10-04T05:23:56.662Z] [iam] checking project rankkit-1a209 for permissions ["firebase.projects.get","firebaseextensions.instances.list"]
+[debug] [2026-10-04T05:23:56.662Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:56.662Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:56.662Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/rankkit-1a209:testIamPermissions [none]
+[debug] [2026-10-04T05:23:56.662Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/rankkit-1a209:testIamPermissions  x-goog-user-project=rankkit-1a209
+[debug] [2026-10-04T05:23:56.662Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/rankkit-1a209:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-10-04T05:23:56.718Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/rankkit-1a209:testIamPermissions 200
+[debug] [2026-10-04T05:23:56.718Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/rankkit-1a209:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-10-04T05:23:56.718Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:56.718Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:56.718Z] >>> [apiv2][query] GET https://firebaseextensions.googleapis.com/v1beta/projects/rankkit-1a209/instances pageSize=100&pageToken=
+[debug] [2026-10-04T05:23:56.969Z] <<< [apiv2][status] GET https://firebaseextensions.googleapis.com/v1beta/projects/rankkit-1a209/instances 200
+[debug] [2026-10-04T05:23:56.969Z] <<< [apiv2][body] GET https://firebaseextensions.googleapis.com/v1beta/projects/rankkit-1a209/instances {}
+[info] i  functions: Loaded environment variables from functions/.env.rankkit-1a209 
+[debug] [2026-10-04T05:23:56.971Z] Attempting to merge .env secret bindings {} into declared secrets...)}
+[debug] [2026-10-04T05:23:56.971Z] createCheckoutSession declared secrets: [{"key":"STRIPE_SECRET_KEY","secret":"STRIPE_SECRET_KEY","projectId":"rankkit-1a209"}]
+[debug] [2026-10-04T05:23:56.971Z] createBillingPortalSession declared secrets: [{"key":"STRIPE_SECRET_KEY","secret":"STRIPE_SECRET_KEY","projectId":"rankkit-1a209"}]
+[debug] [2026-10-04T05:23:56.971Z] stripeWebhook declared secrets: [{"key":"STRIPE_SECRET_KEY","secret":"STRIPE_SECRET_KEY","projectId":"rankkit-1a209"},{"key":"STRIPE_WEBHOOK_SECRET","secret":"STRIPE_WEBHOOK_SECRET","projectId":"rankkit-1a209"}]
+[debug] [2026-10-04T05:23:56.971Z] openaiChatProxy declared secrets: [{"key":"OPENAI_API_KEY","secret":"OPENAI_API_KEY","projectId":"rankkit-1a209"}]
+[info] i  functions: preparing functions directory for uploading... 
+[info] i  functions: packaged /workspaces/rankkit/functions (37.66 KB) for uploading 
+[info] i  functions: ensuring required API run.googleapis.com is enabled... 
+[debug] [2026-10-04T05:23:57.037Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.037Z] Checked if tokens are valid: true, expires at: 1791093301769
+[info] i  functions: ensuring required API eventarc.googleapis.com is enabled... 
+[debug] [2026-10-04T05:23:57.037Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.037Z] Checked if tokens are valid: true, expires at: 1791093301769
+[info] i  functions: ensuring required API pubsub.googleapis.com is enabled... 
+[debug] [2026-10-04T05:23:57.038Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.038Z] Checked if tokens are valid: true, expires at: 1791093301769
+[info] i  functions: ensuring required API storage.googleapis.com is enabled... 
+[debug] [2026-10-04T05:23:57.038Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.038Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.038Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/run.googleapis.com [none]
+[debug] [2026-10-04T05:23:57.040Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/run.googleapis.com  x-goog-user-project=613612674236
+[debug] [2026-10-04T05:23:57.040Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/eventarc.googleapis.com [none]
+[debug] [2026-10-04T05:23:57.040Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/eventarc.googleapis.com  x-goog-user-project=613612674236
+[debug] [2026-10-04T05:23:57.042Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/pubsub.googleapis.com [none]
+[debug] [2026-10-04T05:23:57.042Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/pubsub.googleapis.com  x-goog-user-project=613612674236
+[debug] [2026-10-04T05:23:57.043Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/storage.googleapis.com [none]
+[debug] [2026-10-04T05:23:57.043Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/storage.googleapis.com  x-goog-user-project=613612674236
+[debug] [2026-10-04T05:23:57.233Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/pubsub.googleapis.com 200
+[debug] [2026-10-04T05:23:57.233Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/pubsub.googleapis.com [omitted]
+[info] ✔  functions: required API pubsub.googleapis.com is enabled 
+[debug] [2026-10-04T05:23:57.251Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/run.googleapis.com 200
+[debug] [2026-10-04T05:23:57.251Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/run.googleapis.com [omitted]
+[info] ✔  functions: required API run.googleapis.com is enabled 
+[debug] [2026-10-04T05:23:57.283Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/eventarc.googleapis.com 200
+[debug] [2026-10-04T05:23:57.283Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/eventarc.googleapis.com [omitted]
+[info] ✔  functions: required API eventarc.googleapis.com is enabled 
+[debug] [2026-10-04T05:23:57.366Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/storage.googleapis.com 200
+[debug] [2026-10-04T05:23:57.366Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/storage.googleapis.com [omitted]
+[info] ✔  functions: required API storage.googleapis.com is enabled 
+[info] i  functions: generating the service identity for pubsub.googleapis.com... 
+[debug] [2026-10-04T05:23:57.370Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.370Z] Checked if tokens are valid: true, expires at: 1791093301769
+[info] i  functions: generating the service identity for eventarc.googleapis.com... 
+[debug] [2026-10-04T05:23:57.370Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.370Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.370Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/613612674236/services/pubsub.googleapis.com:generateServiceIdentity [none]
+[debug] [2026-10-04T05:23:57.370Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1beta1/projects/613612674236/services/pubsub.googleapis.com:generateServiceIdentity  x-goog-user-project=613612674236
+[debug] [2026-10-04T05:23:57.370Z] >>> [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/613612674236/services/pubsub.googleapis.com:generateServiceIdentity {}
+[debug] [2026-10-04T05:23:57.371Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/613612674236/services/eventarc.googleapis.com:generateServiceIdentity [none]
+[debug] [2026-10-04T05:23:57.371Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1beta1/projects/613612674236/services/eventarc.googleapis.com:generateServiceIdentity  x-goog-user-project=613612674236
+[debug] [2026-10-04T05:23:57.371Z] >>> [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/613612674236/services/eventarc.googleapis.com:generateServiceIdentity {}
+[debug] [2026-10-04T05:23:57.665Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/613612674236/services/pubsub.googleapis.com:generateServiceIdentity 200
+[debug] [2026-10-04T05:23:57.665Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/613612674236/services/pubsub.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-613612674236@gcp-sa-pubsub.iam.gserviceaccount.com","uniqueId":"107279791484669026711"}}
+[debug] [2026-10-04T05:23:57.668Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/613612674236/services/eventarc.googleapis.com:generateServiceIdentity 200
+[debug] [2026-10-04T05:23:57.668Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/613612674236/services/eventarc.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-613612674236@gcp-sa-eventarc.iam.gserviceaccount.com","uniqueId":"110040979606897342219"}}
+[info] i  functions: ensuring required API secretmanager.googleapis.com is enabled... 
+[debug] [2026-10-04T05:23:57.669Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.669Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.669Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/secretmanager.googleapis.com [none]
+[debug] [2026-10-04T05:23:57.669Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/secretmanager.googleapis.com  x-goog-user-project=613612674236
+[debug] [2026-10-04T05:23:57.862Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/secretmanager.googleapis.com 200
+[debug] [2026-10-04T05:23:57.862Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/613612674236/services/secretmanager.googleapis.com [omitted]
+[info] ✔  functions: required API secretmanager.googleapis.com is enabled 
+[debug] [2026-10-04T05:23:57.877Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.877Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.877Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.877Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.878Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.878Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.878Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/rankkit-1a209/secrets/STRIPE_SECRET_KEY/versions/latest [none]
+[debug] [2026-10-04T05:23:57.879Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/rankkit-1a209/secrets/STRIPE_WEBHOOK_SECRET/versions/latest [none]
+[debug] [2026-10-04T05:23:57.882Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/rankkit-1a209/secrets/OPENAI_API_KEY/versions/latest [none]
+[debug] [2026-10-04T05:23:57.975Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/rankkit-1a209/secrets/STRIPE_WEBHOOK_SECRET/versions/latest 200
+[debug] [2026-10-04T05:23:57.975Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/rankkit-1a209/secrets/STRIPE_WEBHOOK_SECRET/versions/latest {"name":"projects/613612674236/secrets/STRIPE_WEBHOOK_SECRET/versions/1","createTime":"2026-10-04T05:22:49.113392Z","state":"ENABLED","replicationStatus":{"automatic":{}},"etag":"\"165cfcf4d0f730\""}
+[debug] [2026-10-04T05:23:57.976Z] Resolved latest secret version of STRIPE_WEBHOOK_SECRET to 1.
+[debug] [2026-10-04T05:23:57.977Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/rankkit-1a209/secrets/STRIPE_SECRET_KEY/versions/latest 200
+[debug] [2026-10-04T05:23:57.977Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/rankkit-1a209/secrets/STRIPE_SECRET_KEY/versions/latest {"name":"projects/613612674236/secrets/STRIPE_SECRET_KEY/versions/1","createTime":"2026-10-04T05:17:02.223731Z","state":"ENABLED","replicationStatus":{"automatic":{}},"etag":"\"165cfce023d973\""}
+[debug] [2026-10-04T05:23:57.977Z] Resolved latest secret version of STRIPE_SECRET_KEY to 1.
+[debug] [2026-10-04T05:23:57.979Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/rankkit-1a209/secrets/OPENAI_API_KEY/versions/latest 200
+[debug] [2026-10-04T05:23:57.979Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/rankkit-1a209/secrets/OPENAI_API_KEY/versions/latest {"name":"projects/613612674236/secrets/OPENAI_API_KEY/versions/1","createTime":"2026-02-20T04:31:05.590690Z","state":"ENABLED","replicationStatus":{"automatic":{}},"etag":"\"164b39e3b237a2\""}
+[debug] [2026-10-04T05:23:57.979Z] Resolved latest secret version of OPENAI_API_KEY to 1.
+[debug] [2026-10-04T05:23:57.981Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.981Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:57.982Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/cloudbilling.googleapis.com [none]
+[debug] [2026-10-04T05:23:57.982Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/cloudbilling.googleapis.com  x-goog-user-project=rankkit-1a209
+[debug] [2026-10-04T05:23:58.189Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/cloudbilling.googleapis.com 200
+[debug] [2026-10-04T05:23:58.189Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/cloudbilling.googleapis.com [omitted]
+[debug] [2026-10-04T05:23:58.189Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:58.189Z] Checked if tokens are valid: true, expires at: 1791093301769
+[debug] [2026-10-04T05:23:58.189Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/cloudbilling.googleapis.com:enable [none]
+[debug] [2026-10-04T05:23:58.189Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/cloudbilling.googleapis.com:enable  x-goog-user-project=rankkit-1a209
+[debug] [2026-10-04T05:23:58.886Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/cloudbilling.googleapis.com:enable 200
+[debug] [2026-10-04T05:23:58.886Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/rankkit-1a209/services/cloudbilling.googleapis.com:enable [omitted]
