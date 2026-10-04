@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { MonoIcon } from '../Shared/MonoIcon';
 import { shouldShowGenericUpgradeBanner } from '../../utils/subscriptionVisibility';
+import { hasPremiumAccess } from '../../utils/premiumUtils';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -179,7 +180,7 @@ export default function Dashboard() {
           <div className="guest-cta">
             <div>
               <h3>Explore RankKit as a guest</h3>
-              <p>Browse our AI-powered career, workplace, and social media tools. Sign in to save work and run unlimited optimizations.</p>
+              <p>Create a free account to manage your document. Subscribe to unlock AI tools and document search.</p>
             </div>
             <div className="guest-cta-actions">
               <button onClick={() => navigate('/signup')}>Create free account</button>
@@ -188,6 +189,16 @@ export default function Dashboard() {
           </div>
         )}
 
+        {!hasPremiumAccess(currentUser) && (
+          <div className="guest-cta">
+            <h3>Your Documents</h3>
+            <div className="guest-cta-actions">
+              <button onClick={() => navigate('/documents')}>Open Documents</button>
+              <button onClick={() => navigate('/profile?tab=billing')}>Subscribe</button>
+            </div>
+          </div>
+        )}
+        {hasPremiumAccess(currentUser) && <>
         <div className="quick-actions">
           <h3>Tool Dashboards</h3>
           <div className="actions-grid main-dashboards">
@@ -326,6 +337,7 @@ export default function Dashboard() {
           </div>
         </div>
 
+        </>}
         {isAuthed ? (
           <div className="usage-summary">
             <h3>Your Usage</h3>

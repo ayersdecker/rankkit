@@ -8,6 +8,9 @@ export interface User {
   isPremium: boolean;
   subscriptionPlan?: 'free' | 'career' | 'work' | 'social' | 'pro-bundle' | 'ultimate-bundle';
   subscriptionStatus?: 'active' | 'canceled' | 'expired' | 'trial';
+  subscriptionValidUntil?: number;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
   usageCount: number;
   freeOptimizationsRemaining: number;
   createdAt: Date;

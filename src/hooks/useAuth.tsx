@@ -15,7 +15,7 @@ import {
   sendEmailVerification,
   reload as firebaseReload
 } from 'firebase/auth';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../services/firebase';
 import { deleteUserData } from '../services/firestore';
 import { User } from '../types';
@@ -80,11 +80,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
 
+  const userId = currentUser?.uid;
+  useEffect(() => {
+    if (!userId) return;
+    return onSnapshot(doc(db, 'users', userId), snapshot => {
+      const firebaseUser = auth.currentUser;
+      if (snapshot.exists() && firebaseUser?.uid === userId) {
+        setCurrentUser({ ...snapshot.data() as User, uid: userId,
+          email: firebaseUser.email || '', emailVerified: firebaseUser.emailVerified });
+      }
+    }, error => console.error('Failed to refresh subscription:', error));
+  }, [userId]);
+
   async function loadUserData(firebaseUser: FirebaseUser): Promise<User> {
     const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
     
     if (userDoc.exists()) {
-      const userData = userDoc.data() as User;
+      const userData = { ...userDoc.data(), uid: firebaseUser.uid, email: firebaseUser.email || '' } as User;
       // Merge photoURL from Firebase Auth if it exists and isn't in Firestore
       if (firebaseUser.photoURL && !userData.photoURL) {
         const updatedUser = { ...userData, photoURL: firebaseUser.photoURL, emailVerified: firebaseUser.emailVerified };

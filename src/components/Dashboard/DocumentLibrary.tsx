@@ -22,7 +22,7 @@ import {
   type ExportPalette
 } from '../../utils/documentExport';
 import { Document } from '../../types';
-import { hasPremiumAccess } from '../../utils/premiumUtils';
+import { hasPremiumAccess, getDocumentLimit, getSubscriptionTier } from '../../utils/premiumUtils';
 import { DeleteDocumentConfirmation } from '../Shared/DeleteDocumentConfirmation';
 import { SignOutConfirmation } from '../Shared/SignOutConfirmation';
 import type { LucideIcon } from 'lucide-react';
@@ -311,10 +311,10 @@ export default function DocumentLibrary() {
           </div>
           <div className="stat-card">
             <div className="stat-icon">
-              <MonoIcon icon={currentUser?.isPremium ? Star : Package} size={20} className="mono-icon" />
+              <MonoIcon icon={hasPremiumAccess(currentUser) ? Star : Package} size={20} className="mono-icon" />
             </div>
             <div className="stat-info">
-              <div className="stat-value">{currentUser?.isPremium ? 'Premium' : 'Free'}</div>
+              <div className="stat-value">{getSubscriptionTier(currentUser)}</div>
               <div className="stat-label">Account Type</div>
             </div>
           </div>
@@ -505,7 +505,7 @@ function UploadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (
       
       // Check document count limit
       const existingDocs = await getUserDocuments(currentUser.uid);
-      const maxDocs = hasPremiumAccess(currentUser) ? 30 : 1;
+      const maxDocs = getDocumentLimit(currentUser);
       
       if (existingDocs.length >= maxDocs) {
         setError(`Document limit reached (${maxDocs} documents). ${!hasPremiumAccess(currentUser) ? 'Upgrade to Premium for up to 30 documents.' : ''}`);

@@ -2,7 +2,7 @@ import { SubscriptionPlan } from '../types';
 
 /**
  * Subscription pricing configuration
- * Note: All accounts are currently free while in beta/development
+ * Paid tools require an active subscription.
  */
 
 export const SUBSCRIPTION_PLANS: Record<string, SubscriptionPlan> = {
@@ -12,9 +12,9 @@ export const SUBSCRIPTION_PLANS: Record<string, SubscriptionPlan> = {
     price: 0,
     interval: 'month',
     features: [
-      '1 free optimization on signup',
-      'Access to basic tools',
-      'Limited document storage',
+      'Create and manage 1 document',
+      'Upload and download your documents',
+      'Subscription required for AI and tools',
     ],
     toolCategories: [],
   },
@@ -137,18 +137,12 @@ export function hasAccessToCategory(
   userPlan: string | undefined, 
   requiredCategory: 'career' | 'work' | 'social'
 ): boolean {
-  // For now, everyone has access (free while in beta)
-  return true;
-  
-  // Uncomment below when paywall is enabled:
-  /*
   if (!userPlan || userPlan === 'free') return false;
   
   const plan = SUBSCRIPTION_PLANS[userPlan];
   if (!plan) return false;
   
   return plan.toolCategories.includes(requiredCategory);
-  */
 }
 
 /**

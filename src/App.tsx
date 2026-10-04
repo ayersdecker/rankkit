@@ -34,6 +34,7 @@ import SocialMediaToolsDashboard from './modules/SocialMediaTools/SocialMediaToo
 import HashtagGenerator from './modules/SocialMediaTools/HashtagGenerator';
 import { promotionalNotifications } from './config/notifications';
 import { CookieConsentBanner } from './components/Shared/CookieConsentBanner';
+import { SubscriptionBoundary } from './components/Shared/SubscriptionBoundary';
 import {
   getNotificationCategory,
   hasCategorySubscription,
@@ -166,6 +167,7 @@ function App() {
               <ScrollToTop />
               <NotificationWrapper />
               <main id="main-content" tabIndex={-1}>
+                <SubscriptionBoundary>
                 <Routes>
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
@@ -302,6 +304,7 @@ function App() {
                   <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/" element={<Navigate to="/dashboard" />} />
                 </Routes>
+                </SubscriptionBoundary>
               </main>
               <Footer theme={theme} onToggleTheme={handleThemeToggle} />
             </Router>

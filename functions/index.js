@@ -1,6 +1,12 @@
 const { onRequest } = require('firebase-functions/v2/https');
 const logger = require('firebase-functions/logger');
 const OpenAI = require('openai');
+const { hasSubscriptionAccess, isDeveloper } = require('./subscriptionAccess');
+const { createCheckoutSession, createBillingPortalSession, stripeWebhook } = require('./subscriptions');
+
+exports.createCheckoutSession = createCheckoutSession;
+exports.createBillingPortalSession = createBillingPortalSession;
+exports.stripeWebhook = stripeWebhook;
 
 exports.openaiChatProxy = onRequest(
   {
@@ -44,7 +50,22 @@ exports.openaiChatProxy = onRequest(
       if (!admin.apps.length) {
         admin.initializeApp();
       }
-      await admin.auth().verifyIdToken(token);
+      let user;
+      try { user = await admin.auth().verifyIdToken(token, true); } catch {
+        res.status(401).json({ error: { message: 'Unauthorized: invalid auth token' } });
+        return;
+      }
+
+      const category = req.body?.category;
+      if (!['career', 'work', 'social'].includes(category)) {
+        res.status(400).json({ error: { message: 'A valid tool category is required' } });
+        return;
+      }
+      const profile = await admin.firestore().doc(`users/${user.uid}`).get();
+      if (!isDeveloper(user) && !hasSubscriptionAccess(profile.data(), category)) {
+        res.status(403).json({ error: { message: 'An active subscription for this tool is required.', code: 'SUBSCRIPTION_REQUIRED' } });
+        return;
+      }
 
       const { prompt } = req.body || {};
       if (!prompt || typeof prompt !== 'string' || !prompt.trim()) {

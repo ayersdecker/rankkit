@@ -1,15 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import { getFirebaseConfigurationErrors } from './config';
 import reportWebVitals from './reportWebVitals';
 
+const App = React.lazy(() => import('./App'));
+const configurationErrors = getFirebaseConfigurationErrors();
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    {configurationErrors.length > 0 ? (
+      <main style={{ maxWidth: 680, margin: '48px auto', padding: '0 24px' }}>
+        <h1>RankKit</h1>
+        <h2>Firebase Configuration Required</h2>
+        <p>Add your Firebase web app configuration to the local environment file, then restart the development server.</p>
+        <p>Missing or invalid settings:</p>
+        <ul>{configurationErrors.map(variable => <li key={variable}><code>{variable}</code></li>)}</ul>
+        <p>Get the values from Firebase Console: Project settings, Your apps, Web app configuration.</p>
+      </main>
+    ) : (
+      <React.Suspense fallback={<div role="status">Loading RankKit...</div>}>
+        <App />
+      </React.Suspense>
+    )}
   </React.StrictMode>
 );
 

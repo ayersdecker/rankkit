@@ -1,4 +1,5 @@
 import { User } from '../types';
+import { isWhitelistedEmail } from '../config';
 
 type ToolCategory = 'career' | 'work' | 'social';
 
@@ -13,24 +14,21 @@ const PLAN_CATEGORIES: Record<string, ToolCategory[]> = {
   'ultimate-bundle': ['career', 'work', 'social']
 };
 
-function hasActivePaidPlan(user: User | null): boolean {
+export function hasActivePaidPlan(user: User | null): boolean {
   if (!user) {
     return false;
   }
 
-  if (user.isPremium) {
+  if (user.emailVerified && isWhitelistedEmail(user.email)) {
     return true;
   }
 
-  if (!user.subscriptionPlan || user.subscriptionPlan === 'free') {
+  if (!user.subscriptionPlan || user.subscriptionPlan === 'free' || !PLAN_CATEGORIES[user.subscriptionPlan]) {
     return false;
   }
 
-  if (!user.subscriptionStatus) {
-    return true;
-  }
-
-  return ACTIVE_STATUSES.has(user.subscriptionStatus);
+  return ACTIVE_STATUSES.has(user.subscriptionStatus || '') &&
+    typeof user.subscriptionValidUntil === 'number' && user.subscriptionValidUntil > Date.now();
 }
 
 export function hasCategorySubscription(user: User | null, category: ToolCategory): boolean {
@@ -38,7 +36,7 @@ export function hasCategorySubscription(user: User | null, category: ToolCategor
     return false;
   }
 
-  if (user.isPremium) {
+  if (user.emailVerified && isWhitelistedEmail(user.email)) {
     return true;
   }
 
@@ -91,6 +89,7 @@ export function getNotificationCategory(linkUrl?: string): ToolCategory | null {
 
   if (
     linkUrl.includes('/social-media-tools') ||
+    linkUrl.includes('/post-optimizer') ||
     linkUrl.includes('/hashtag-generator')
   ) {
     return 'social';

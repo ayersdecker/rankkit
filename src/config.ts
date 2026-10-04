@@ -11,6 +11,20 @@ export const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
+export function getFirebaseConfigurationErrors(config = firebaseConfig): string[] {
+  const requiredFields = ['apiKey', 'authDomain', 'projectId', 'appId'] as const;
+  const variableNames = {
+    apiKey: 'REACT_APP_FIREBASE_API_KEY',
+    authDomain: 'REACT_APP_FIREBASE_AUTH_DOMAIN',
+    projectId: 'REACT_APP_FIREBASE_PROJECT_ID',
+    appId: 'REACT_APP_FIREBASE_APP_ID'
+  };
+  return requiredFields.filter(field => {
+    const value = config[field]?.trim();
+    return !value || /^your[_-]/i.test(value) || (field === 'apiKey' && value.includes(':'));
+  }).map(field => variableNames[field]);
+}
+
 const isLocalDev =
   typeof window !== 'undefined' &&
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');

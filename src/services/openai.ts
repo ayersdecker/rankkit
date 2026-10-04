@@ -157,6 +157,7 @@ async function throttleRequest(): Promise<void> {
  */
 async function makeOpenAIRequestInternal(
   prompt: string,
+  category: 'career' | 'work' | 'social',
   retryCount = 0
 ): Promise<string> {
   // Throttle request to prevent rate limiting
@@ -172,7 +173,7 @@ async function makeOpenAIRequestInternal(
 
     const response = await axios.post(
       OPENAI_PROXY_URL,
-      { prompt },
+      { prompt, category },
       {
         headers: {
           'Authorization': `Bearer ${idToken}`,
@@ -203,6 +204,10 @@ async function makeOpenAIRequestInternal(
       );
     }
 
+    if (axiosError.response?.status === 403) {
+      throw new OptimizationError('Subscribe to access this AI tool and document search.', 'SUBSCRIPTION_REQUIRED', 403);
+    }
+
     // Check if this is a 429 error
     if (axiosError.response?.status === 429) {
       // Distinguish between quota and rate limit
@@ -224,7 +229,7 @@ async function makeOpenAIRequestInternal(
         const waitMs = Number(retryAfter) * 1000;
         console.log(`[OpenAI] Rate limited. Retry-After header: ${retryAfter}s. Retry ${retryCount + 1}/${MAX_RETRIES}`);
         await delay(waitMs);
-        return makeOpenAIRequestInternal(prompt, retryCount + 1);
+        return makeOpenAIRequestInternal(prompt, category, retryCount + 1);
       }
       
       // Fall back to exponential backoff if within retry limit
@@ -232,7 +237,7 @@ async function makeOpenAIRequestInternal(
         const delayMs = INITIAL_RETRY_DELAY * Math.pow(2, retryCount); // 3s, 6s, 12s
         console.log(`[OpenAI] Rate limited. Retry ${retryCount + 1}/${MAX_RETRIES} after ${delayMs}ms`);
         await delay(delayMs);
-        return makeOpenAIRequestInternal(prompt, retryCount + 1);
+        return makeOpenAIRequestInternal(prompt, category, retryCount + 1);
       }
       
       // Exhausted retries
@@ -251,7 +256,7 @@ async function makeOpenAIRequestInternal(
       const delayMs = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
       console.log(`[OpenAI] Server error. Retry ${retryCount + 1}/${MAX_RETRIES} after ${delayMs}ms`);
       await delay(delayMs);
-      return makeOpenAIRequestInternal(prompt, retryCount + 1);
+      return makeOpenAIRequestInternal(prompt, category, retryCount + 1);
     }
 
     // Generic error
@@ -268,9 +273,10 @@ async function makeOpenAIRequestInternal(
  */
 async function makeOpenAIRequest(
   prompt: string,
+  category: 'career' | 'work' | 'social',
   retryCount = 0
 ): Promise<string> {
-  return enqueue(() => makeOpenAIRequestInternal(prompt, retryCount));
+  return enqueue(() => makeOpenAIRequestInternal(prompt, category, retryCount));
 }
 
 /**
@@ -589,7 +595,7 @@ export async function optimizeContent(
   const prompt = generatePrompt(request);
   
   // Make API call with retry logic
-  const rawResult = await makeOpenAIRequest(prompt);
+  const rawResult = await makeOpenAIRequest(prompt, request.type === 'resume' ? 'career' : 'social');
   
   // Parse result with original content for name extraction fallback
   const result = parseOptimizationResult(rawResult, request.type, request.content);
@@ -661,7 +667,7 @@ OUTPUT (Valid JSON only):
   `.trim();
 
   try {
-    const rawResult = await makeOpenAIRequest(prompt);
+    const rawResult = await makeOpenAIRequest(prompt, 'career');
     const jsonMatch = rawResult.match(/```json\s*([\s\S]*?)\s*```/) || rawResult.match(/\{[\s\S]*\}/);
     
     if (!jsonMatch) {
@@ -737,7 +743,7 @@ OUTPUT (Valid JSON only):
   `.trim();
 
   try {
-    const rawResult = await makeOpenAIRequest(prompt);
+    const rawResult = await makeOpenAIRequest(prompt, 'career');
     const jsonMatch = rawResult.match(/```json\s*([\s\S]*?)\s*```/) || rawResult.match(/\{[\s\S]*\}/);
     
     if (!jsonMatch) {
@@ -811,7 +817,7 @@ OUTPUT (Valid JSON only):
   `.trim();
 
   try {
-    const rawResult = await makeOpenAIRequest(prompt);
+    const rawResult = await makeOpenAIRequest(prompt, 'career');
     const jsonMatch = rawResult.match(/```json\s*([\s\S]*?)\s*```/) || rawResult.match(/\{[\s\S]*\}/);
     
     if (!jsonMatch) {
@@ -889,7 +895,7 @@ OUTPUT (Valid JSON only):
   `.trim();
 
   try {
-    const rawResult = await makeOpenAIRequest(prompt);
+    const rawResult = await makeOpenAIRequest(prompt, 'work');
     const jsonMatch = rawResult.match(/```json\s*([\s\S]*?)\s*```/) || rawResult.match(/\{[\s\S]*\}/);
     
     if (!jsonMatch) {
@@ -970,7 +976,7 @@ OUTPUT (Valid JSON only):
   `.trim();
 
   try {
-    const rawResult = await makeOpenAIRequest(prompt);
+    const rawResult = await makeOpenAIRequest(prompt, 'work');
     const jsonMatch = rawResult.match(/```json\s*([\s\S]*?)\s*```/) || rawResult.match(/\{[\s\S]*\}/);
     
     if (!jsonMatch) {
@@ -1047,7 +1053,7 @@ OUTPUT (Valid JSON only):
   `.trim();
 
   try {
-    const rawResult = await makeOpenAIRequest(prompt);
+    const rawResult = await makeOpenAIRequest(prompt, 'work');
     const jsonMatch = rawResult.match(/```json\s*([\s\S]*?)\s*```/) || rawResult.match(/\{[\s\S]*\}/);
     
     if (!jsonMatch) {
@@ -1133,7 +1139,7 @@ OUTPUT (Valid JSON only):
   `.trim();
 
   try {
-    const rawResult = await makeOpenAIRequest(prompt);
+    const rawResult = await makeOpenAIRequest(prompt, 'work');
     const jsonMatch = rawResult.match(/```json\s*([\s\S]*?)\s*```/) || rawResult.match(/\{[\s\S]*\}/);
 
     if (!jsonMatch) {
@@ -1221,7 +1227,7 @@ OUTPUT (Valid JSON only):
   `.trim();
 
   try {
-    const rawResult = await makeOpenAIRequest(prompt);
+    const rawResult = await makeOpenAIRequest(prompt, 'work');
     const jsonMatch = rawResult.match(/```json\s*([\s\S]*?)\s*```/) || rawResult.match(/\{[\s\S]*\}/);
 
     if (!jsonMatch) {
@@ -1298,7 +1304,7 @@ OUTPUT (Valid JSON only):
   `.trim();
 
   try {
-    const rawResult = await makeOpenAIRequest(prompt);
+    const rawResult = await makeOpenAIRequest(prompt, 'social');
     const jsonMatch = rawResult.match(/```json\s*([\s\S]*?)\s*```/) || rawResult.match(/\{[\s\S]*\}/);
     
     if (!jsonMatch) {

@@ -4,7 +4,15 @@ service cloud.firestore {
     
     // Users collection - users can only access their own profile
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, delete: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId &&
+        request.resource.data.isPremium == false &&
+        request.resource.data.get('subscriptionPlan', 'free') == 'free' &&
+        !request.resource.data.keys().hasAny(['subscriptionStatus', 'subscriptionValidUntil', 'stripeCustomerId', 'stripeSubscriptionId']);
+      allow update: if request.auth != null && request.auth.uid == userId &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'isPremium', 'subscriptionPlan', 'subscriptionStatus', 'subscriptionValidUntil', 'stripeCustomerId', 'stripeSubscriptionId'
+        ]);
     }
     
     // Documents collection - users can only access their own documents

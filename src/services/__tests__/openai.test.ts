@@ -7,8 +7,10 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 // Mock config
 jest.mock('../../config', () => ({
-  OPENAI_API_KEY: 'test-api-key'
+  OPENAI_PROXY_URL: '/api/openai/chat'
 }));
+jest.mock('../firebase', () => ({ auth: { currentUser: { getIdToken: jest.fn().mockResolvedValue('test-token') } } }));
+jest.mock('../usageTracking', () => ({ trackUsage: jest.fn() }));
 
 describe('OpenAI Service', () => {
   beforeEach(() => {
@@ -20,16 +22,12 @@ describe('OpenAI Service', () => {
     it('should optimize resume content successfully', async () => {
       const mockResponse = {
         data: {
-          choices: [{
-            message: {
               content: JSON.stringify({
                 optimized_resume: 'Optimized resume content',
                 match_score: 85,
                 suggestions: ['Added action verbs', 'Quantified achievements'],
                 missing_keywords: ['JavaScript', 'React']
               })
-            }
-          }]
         }
       };
 
@@ -41,17 +39,17 @@ describe('OpenAI Service', () => {
         context: 'Job posting for React developer'
       });
 
-      expect(result.optimized).toBe('Optimized resume content');
+      expect(result.optimized).toBe('# Optimized resume content');
       expect(result.score).toBe(85);
       expect(result.suggestions).toHaveLength(2);
       expect(result.metadata?.missing_keywords).toContain('JavaScript');
+      expect(mockedAxios.post).toHaveBeenCalledWith('/api/openai/chat',
+        expect.objectContaining({ category: 'career' }), expect.any(Object));
     });
 
     it('should optimize post content successfully', async () => {
       const mockResponse = {
         data: {
-          choices: [{
-            message: {
               content: JSON.stringify({
                 optimized_post: 'Optimized post content',
                 engagement_score: 78,
@@ -59,8 +57,6 @@ describe('OpenAI Service', () => {
                 hashtags: ['#coding', '#tech'],
                 alternatives: ['Alternative 1', 'Alternative 2']
               })
-            }
-          }]
         }
       };
 
@@ -75,6 +71,8 @@ describe('OpenAI Service', () => {
       expect(result.optimized).toBe('Optimized post content');
       expect(result.score).toBe(78);
       expect(result.metadata?.hashtags).toContain('#coding');
+      expect(mockedAxios.post).toHaveBeenCalledWith('/api/openai/chat',
+        expect.objectContaining({ category: 'social' }), expect.any(Object));
     });
 
     it('should validate empty content', async () => {
@@ -112,16 +110,12 @@ describe('OpenAI Service', () => {
     it('should use cached result for duplicate requests', async () => {
       const mockResponse = {
         data: {
-          choices: [{
-            message: {
               content: JSON.stringify({
                 optimized_resume: 'Cached content',
                 match_score: 90,
                 suggestions: ['Test'],
                 missing_keywords: []
               })
-            }
-          }]
         }
       };
 
@@ -150,16 +144,12 @@ describe('OpenAI Service', () => {
         })
         .mockResolvedValueOnce({
           data: {
-            choices: [{
-              message: {
                 content: JSON.stringify({
                   optimized_resume: 'Success after retry',
                   match_score: 85,
                   suggestions: [],
                   missing_keywords: []
                 })
-              }
-            }]
           }
         });
 
@@ -169,11 +159,11 @@ describe('OpenAI Service', () => {
         context: 'Test job'
       });
 
-      expect(result.optimized).toBe('Success after retry');
+      expect(result.optimized).toBe('# Success after retry');
       expect(mockedAxios.post).toHaveBeenCalledTimes(2);
     });
 
-    it('should handle invalid API key', async () => {
+    it('should handle an invalid authentication token', async () => {
       mockedAxios.post.mockRejectedValueOnce({
         response: {
           status: 401,
@@ -187,22 +177,25 @@ describe('OpenAI Service', () => {
           content: 'Test',
           context: 'Test job'
         })
-      ).rejects.toThrow('Invalid OpenAI API key');
+      ).rejects.toThrow('You must be logged in to use AI tools');
+    });
+
+    it('should require a subscription without retrying a denied request', async () => {
+      mockedAxios.post.mockRejectedValueOnce({ response: { status: 403 } });
+      await expect(optimizeContent({ type: 'resume', content: 'Resume', context: 'Job' }))
+        .rejects.toMatchObject({ code: 'SUBSCRIPTION_REQUIRED', statusCode: 403 });
+      expect(mockedAxios.post).toHaveBeenCalledTimes(1);
     });
 
     it('should clamp score between 0 and 100', async () => {
       const mockResponse = {
         data: {
-          choices: [{
-            message: {
               content: JSON.stringify({
                 optimized_resume: 'Test',
                 match_score: 150, // Invalid score
                 suggestions: [],
                 missing_keywords: []
               })
-            }
-          }]
         }
       };
 
@@ -222,16 +215,12 @@ describe('OpenAI Service', () => {
     it('should clear cache', async () => {
       const mockResponse = {
         data: {
-          choices: [{
-            message: {
               content: JSON.stringify({
                 optimized_resume: 'Test',
                 match_score: 85,
                 suggestions: [],
                 missing_keywords: []
               })
-            }
-          }]
         }
       };
 

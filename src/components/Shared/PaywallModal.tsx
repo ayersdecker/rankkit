@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAvailablePlans, getRecommendedPlan } from '../../config/pricing';
-import { Lock, Sparkles, Star } from 'lucide-react';
+import { Lock, Star } from 'lucide-react';
 import { MonoIcon } from './MonoIcon';
 import './PaywallModal.css';
 
@@ -38,10 +38,6 @@ export function PaywallModal({ toolName, toolCategory, onClose }: PaywallModalPr
           <p className="paywall-message">
             <strong>{toolName}</strong> requires a subscription.
             {toolCategory && <span className="category-badge">{toolCategory}</span>}
-          </p>
-          <p className="beta-notice">
-            <MonoIcon icon={Sparkles} size={16} className="mono-icon inline" />
-            <strong>Beta Access:</strong> All features are currently free! Choose a plan to prepare for launch.
           </p>
         </div>
         
@@ -91,7 +87,7 @@ export function PaywallModal({ toolName, toolCategory, onClose }: PaywallModalPr
             All plans include secure storage • Priority support • Cancel anytime
           </p>
           <button className="cancel-button-text" onClick={onClose}>
-            I'll stick with the free trial for now
+            Return to my documents
           </button>
         </div>
       </div>

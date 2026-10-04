@@ -13,11 +13,12 @@ import {
   Folder,
   Mail,
   Menu,
-  Sparkles,
   Upload,
   User
 } from 'lucide-react';
 import { MonoIcon } from '../Shared/MonoIcon';
+import { startSubscriptionCheckout, openBillingPortal } from '../../services/billing';
+import { hasPremiumAccess, getSubscriptionTier } from '../../utils/premiumUtils';
 import './Profile.css';
 
 export default function Profile() {
@@ -631,6 +632,22 @@ function BillingPlans() {
   const [isResending, setIsResending] = useState(false);
   const [resendMessage, setResendMessage] = useState('');
   const selectedPlan = searchParams.get('plan');
+  const [billingPending, setBillingPending] = useState(false);
+  const [billingError, setBillingError] = useState('');
+  const isSubscribed = hasPremiumAccess(currentUser);
+
+  async function handleBilling(planId?: string) {
+    setBillingPending(true);
+    setBillingError('');
+    try {
+      if (isSubscribed || !planId) await openBillingPortal();
+      else await startSubscriptionCheckout(planId);
+    } catch (error: any) {
+      setBillingError(error.message || 'Unable to open billing.');
+    } finally {
+      setBillingPending(false);
+    }
+  }
 
   const plans = [
     {
@@ -758,30 +775,21 @@ function BillingPlans() {
         </div>
       )}
       
-      <div className="setting-card beta-banner">
-        <div className="beta-badge">
-          <MonoIcon icon={Sparkles} size={16} className="mono-icon inline" />
-          Beta Launch Special
-        </div>
-        <h3>All Features Free During Beta!</h3>
-        <p>
-          Thank you for being an early user! While we're in beta, all premium features 
-          are completely free. Choose your plan below to be ready when we officially launch.
-        </p>
-      </div>
+      {billingError && <p role="alert">{billingError}</p>}
+      {searchParams.get('checkout') === 'success' && !isSubscribed && (
+        <p role="status">Payment received. Waiting for subscription confirmation.</p>
+      )}
+      {searchParams.get('checkout') === 'canceled' && <p role="status">Checkout canceled. Your plan has not changed.</p>}
 
       <div className="setting-card">
         <h3>Current Plan</h3>
         <div className="plan-current">
           <div className="plan-badge">
-            {currentUser?.subscriptionPlan === 'ultimate-bundle' ? 'Ultimate Bundle' :
-             currentUser?.subscriptionPlan === 'pro-bundle' ? 'Pro Bundle' :
-             currentUser?.subscriptionPlan === 'career' ? 'Career Tools' :
-             currentUser?.subscriptionPlan === 'work' ? 'Workplace Tools' :
-             currentUser?.subscriptionPlan === 'social' ? 'Social Media Tools' :
-             'Free (Beta Access)'}
+            {getSubscriptionTier(currentUser)}
           </div>
-          <p>Full access to all features during beta period</p>
+          <p>{isSubscribed ? 'Your subscribed tools are available.' : 'Free document management. Subscribe for AI tools and search.'}</p>
+          {currentUser?.stripeCustomerId && <button className="secondary-button" disabled={billingPending}
+            onClick={() => handleBilling()}><MonoIcon icon={CreditCard} size={16} className="mono-icon inline" /> Manage Subscription</button>}
         </div>
       </div>
 
@@ -818,14 +826,15 @@ function BillingPlans() {
               className={`primary-button ${
                 currentUser?.subscriptionPlan === plan.id ? 'active' : ''
               }`}
-              disabled={currentUser?.subscriptionPlan === plan.id || !currentUser?.emailVerified}
+              disabled={billingPending || (isSubscribed && currentUser?.subscriptionPlan === plan.id) || !currentUser?.emailVerified}
+              onClick={() => handleBilling(plan.id)}
               title={!currentUser?.emailVerified ? 'Please verify your email first' : ''}
             >
-              {currentUser?.subscriptionPlan === plan.id 
+              {isSubscribed && currentUser?.subscriptionPlan === plan.id
                 ? 'Current Plan' 
                 : !currentUser?.emailVerified 
                   ? 'Verify email first'
-                  : 'Coming Soon'}
+                  : billingPending ? 'Opening...' : isSubscribed ? 'Change Plan' : 'Subscribe'}
             </button>
           </div>
         ))}
@@ -834,8 +843,8 @@ function BillingPlans() {
       <div className="billing-faq">
         <h3>Frequently Asked Questions</h3>
         <div className="faq-item">
-          <h4>When will billing start?</h4>
-          <p>Billing will begin after the beta period ends. We'll notify all users well in advance.</p>
+          <h4>When does access start?</h4>
+          <p>Your tools unlock after payment is confirmed. Free accounts can still manage their documents.</p>
         </div>
         <div className="faq-item">
           <h4>Can I change my plan later?</h4>

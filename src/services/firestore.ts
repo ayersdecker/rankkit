@@ -16,7 +16,8 @@ import {
 import type { DocumentReference } from 'firebase/firestore';
 import { ref, uploadBytes, deleteObject, getBlob } from 'firebase/storage';
 import { db, storage } from './firebase';
-import { Document, OptimizationVersion } from '../types';
+import { Document, OptimizationVersion, User } from '../types';
+import { hasPremiumAccess } from '../utils/premiumUtils';
 import { isWhitelistedEmail } from '../config';
 
 export class FirestoreError extends Error {
@@ -647,25 +648,13 @@ export async function canUserOptimize(userId: string): Promise<{ canOptimize: bo
 
     const userData = userSnap.data();
     
-    // Whitelisted users can always optimize
-    if (isWhitelistedEmail(userData.email)) {
-      return { canOptimize: true };
-    }
-    
-    // Premium users can always optimize
-    if (userData.isPremium) {
-      return { canOptimize: true };
-    }
-
-    // Non-premium users need free optimizations remaining
-    const freeOptimizations = userData.freeOptimizationsRemaining || 0;
-    if (freeOptimizations > 0) {
+    if (hasPremiumAccess(userData as User)) {
       return { canOptimize: true };
     }
 
     return { 
       canOptimize: false, 
-      reason: 'No free optimizations remaining. Please subscribe to continue.' 
+      reason: 'An active subscription is required. Please subscribe to continue.'
     };
   } catch (error: any) {
     if (error instanceof FirestoreError) {
