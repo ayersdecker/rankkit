@@ -29,7 +29,13 @@ Project initialized! Here's what's been built:
 3. Copy it for the functions secret step
 
 ### 3. Add Your Credentials
-Copy `.env.example` to `.env` and set your `REACT_APP_FIREBASE_*` values.
+Set your `REACT_APP_FIREBASE_*` values in the ignored `.env.local` file in the
+project root. Get them from Firebase Console, Project settings, Your apps, Web app
+configuration. The required settings are API key, auth domain, project ID, and app
+ID; also configure storage and messaging for those services. The tracked
+`.env.example` lists the available variables but contains placeholders, not working
+credentials. `.env.local` overrides `.env`, so do not leave empty values in it
+when relying on `.env`. Restart `npm start` after changing environment variables.
 
 ### 4. Set OpenAI Secret (server-side)
 ```bash
